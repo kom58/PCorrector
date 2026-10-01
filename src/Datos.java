@@ -64,5 +64,4 @@ public class Datos {
         idioma = "";
         chatGptAPI = "";
     }
-
 }
