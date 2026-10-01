@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -15,11 +16,16 @@ import java.util.regex.Pattern;
 public class MetodosLb {
 
     private static final String NOMBRE_ARCHIVO_CONFIGURACION = "acr.ini";
+    private static final String NOMBRE_ARCHIVO_API = "pcr.ini";
     private static final Pattern PATRON_EMAIL = Pattern.compile(
             "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
     );
 
     public Path rutaArchivoPcrIni() {
+        return rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_CONFIGURACION);
+    }
+
+    private Path rutaArchivoJuntoAplicacion(String nombreArchivo) {
         try {
             Path ubicacionAplicacion = Path.of(
                     MetodosLb.class.getProtectionDomain()
@@ -32,7 +38,7 @@ public class MetodosLb {
             if (Files.isRegularFile(ubicacionAplicacion)) {
                 Path carpetaJar = ubicacionAplicacion.getParent();
                 if (carpetaJar != null) {
-                    return carpetaJar.resolve(NOMBRE_ARCHIVO_CONFIGURACION);
+                    return carpetaJar.resolve(nombreArchivo);
                 }
             }
         } catch (NullPointerException | SecurityException | URISyntaxException e) {
@@ -43,7 +49,7 @@ public class MetodosLb {
         return Path.of(System.getProperty("user.dir"))
                 .toAbsolutePath()
                 .normalize()
-                .resolve(NOMBRE_ARCHIVO_CONFIGURACION);
+                .resolve(nombreArchivo);
     }
 
     public boolean crearArchivoPcrIni() throws IOException {
@@ -213,6 +219,198 @@ public class MetodosLb {
         return rutaFichero;
     }
 
+    /**
+     * Lee y desencripta todos los informes almacenados en un fichero .lgx.
+     *
+     * <p>El metodo es compatible con el formato generado por
+     * {@link #escribirInforme()}, que puede contener varios informes
+     * concatenados en un mismo fichero.</p>
+     *
+     * @param rutaFichero ruta del fichero .lgx
+     * @return el contenido en texto claro de todos los informes
+     * @throws IOException si el fichero no se puede leer o su formato no es valido
+     */
+    public String leerInforme(Path rutaFichero) throws IOException {
+        if (rutaFichero == null) {
+            throw new IllegalArgumentException("La ruta del informe no puede ser nula.");
+        }
+
+        String contenidoCifrado = Files.readString(
+                rutaFichero,
+                StandardCharsets.UTF_8
+        );
+
+        StringBuilder contenidoDesencriptado = new StringBuilder();
+        EncripDecrip ed = new EncripDecrip();
+        Datos datos = new Datos();
+        int posicion = 0;
+
+        while (posicion < contenidoCifrado.length()) {
+            int finClave = contenidoCifrado.indexOf('\n', posicion);
+            if (finClave < 0) {
+                throw formatoInformeNoValido(posicion);
+            }
+
+            String clave = quitarRetornoCarro(
+                    contenidoCifrado.substring(posicion, finClave)
+            );
+            if (!clave.matches("\\d{4}")) {
+                throw formatoInformeNoValido(posicion);
+            }
+            posicion = finClave + 1;
+
+            int finVersion = contenidoCifrado.indexOf('\n', posicion);
+            if (finVersion < 0) {
+                throw formatoInformeNoValido(posicion);
+            }
+            String versionCifrada = quitarRetornoCarro(
+                    contenidoCifrado.substring(posicion, finVersion)
+            );
+            // La version forma parte del formato interno del fichero, pero no
+            // debe mostrarse como contenido del informe.
+            desencriptarBloque(ed, versionCifrada, clave, posicion);
+            posicion = finVersion + 1;
+
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n       *********************************\n\n", clave, ed,
+                    contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "                  ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "                  ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "                     ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n            ***********************\n\n", clave, ed,
+                    contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "FICHA    :    ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "Hora de inicio       : ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "Hora de finalización : ", clave, ed, contenidoDesencriptado);
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            posicion = reemplazarBloqueFijo(contenidoCifrado, posicion,
+                    "[[[ R ]]]", "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            StringBuilder respuestaDesencriptada = new StringBuilder();
+            posicion = agregarCampo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, respuestaDesencriptada);
+            String respUsuario = respuestaDesencriptada.toString();
+            datos.setRespUsuario(respUsuario);
+            contenidoDesencriptado.append(respUsuario);
+            String correccion = correccionChatGpt(respUsuario);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+            contenidoDesencriptado.append("CORRECCIÓN:\n\n");
+            if (correccion != null) {
+                contenidoDesencriptado.append(correccion);
+            }
+            contenidoDesencriptado.append("\n\n");
+            posicion = reemplazarBloqueFijo(contenidoCifrado, posicion,
+                    "<=#©#=>", "\n", clave, ed, contenidoDesencriptado);
+            posicion = agregarBloqueFijo(contenidoCifrado, posicion,
+                    "\n\n", clave, ed, contenidoDesencriptado);
+        }
+
+        return contenidoDesencriptado.toString();
+    }
+
+    private int agregarBloqueFijo(String contenidoCifrado, int posicion,
+                                  String textoClaro, String clave,
+                                  EncripDecrip ed, StringBuilder resultado)
+            throws IOException {
+        return reemplazarBloqueFijo(contenidoCifrado, posicion, textoClaro,
+                textoClaro, clave, ed, resultado);
+    }
+
+    private int reemplazarBloqueFijo(String contenidoCifrado, int posicion,
+                                     String textoClaro, String reemplazo,
+                                     String clave, EncripDecrip ed,
+                                     StringBuilder resultado)
+            throws IOException {
+        String bloqueCifrado = ed.encripLin(textoClaro, clave);
+        if (bloqueCifrado == null
+                || !contenidoCifrado.startsWith(bloqueCifrado, posicion)) {
+            throw formatoInformeNoValido(posicion);
+        }
+
+        resultado.append(reemplazo);
+        return posicion + bloqueCifrado.length();
+    }
+
+    private int agregarCampo(String contenidoCifrado, int posicion,
+                             String separadorSiguiente, String clave,
+                             EncripDecrip ed, StringBuilder resultado)
+            throws IOException {
+        String separadorCifrado = ed.encripLin(separadorSiguiente, clave);
+        if (separadorCifrado == null) {
+            throw formatoInformeNoValido(posicion);
+        }
+
+        // Incluso una cadena vacia produce un bloque AES de 16 bytes, que
+        // ocupa 24 caracteres en Base64. Empezar la busqueda despues de ese
+        // minimo evita confundir el campo con el separador que lo sigue.
+        int finCampo = contenidoCifrado.indexOf(
+                separadorCifrado,
+                posicion + 24
+        );
+        if (finCampo < 0) {
+            throw formatoInformeNoValido(posicion);
+        }
+
+        String campoCifrado = contenidoCifrado.substring(posicion, finCampo);
+        resultado.append(desencriptarBloque(ed, campoCifrado, clave, posicion));
+        return finCampo;
+    }
+
+    private String desencriptarBloque(EncripDecrip ed, String bloqueCifrado,
+                                      String clave, int posicion)
+            throws IOException {
+        String textoClaro = ed.desencripLin(bloqueCifrado, clave);
+        if (textoClaro == null) {
+            throw formatoInformeNoValido(posicion);
+        }
+        return textoClaro;
+    }
+
+    private String quitarRetornoCarro(String texto) {
+        return texto.endsWith("\r")
+                ? texto.substring(0, texto.length() - 1)
+                : texto;
+    }
+
+    private IOException formatoInformeNoValido(int posicion) {
+        return new IOException(
+                "El formato del informe encriptado no es válido cerca de la posición "
+                        + posicion + "."
+        );
+    }
+
     private String nombreArchivoSeguro(String nombre) {
         String nombreSeguro = nombre == null ? "" : nombre.trim();
 
@@ -257,6 +455,68 @@ public class MetodosLb {
         horaAc = String.format("%02d:%02d", horaA, minA);
 
         return horaAc;
+    }
+
+    public String correccionChatGpt(String respUser) {
+        //System.out.print(respUser);
+        Datos d=new Datos();
+        if (d.getChatGptAPI().isEmpty()){
+            return "Sin acceso a IA !! \nComprobar la conexión a internet y los permisos API";
+        } else {
+
+            String respuesta = ChatGPT.preguntar( "Actúa como profesor.\n" +
+                                    "\n" +
+                                    "        Evalúa de 0 a 10 la respuesta.\n" +
+                                    "\n" +
+                                    "        Explica brevemente los errores encontrados.\n" +
+                                    "\n" +
+                                    "        La explicación no debe superar las 200 palabras.\n" +
+                                    " PREGUNTA : Describe el cuadro de Las Meninas de Velázquez\n" +
+                                    " con un mínimo de 200 palabras\n" +
+                                    "        RESPUESTA: " + respUser);
+
+
+            return respuesta;
+        }
+    }
+
+    public String leerPcrIni() throws IOException {
+        Path rutaPcrIni = rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_API);
+
+        // Durante la ejecucion desde el IDE se admite tambien src/pcr.ini.
+        // Al ejecutar el JAR, el archivo debe estar junto a PCorrector.jar.
+        if (!Files.isRegularFile(rutaPcrIni)) {
+            Path rutaDesarrollo = Path.of(System.getProperty("user.dir"))
+                    .toAbsolutePath()
+                    .normalize()
+                    .resolve("src")
+                    .resolve(NOMBRE_ARCHIVO_API);
+            if (Files.isRegularFile(rutaDesarrollo)) {
+                rutaPcrIni = rutaDesarrollo;
+            }
+        }
+
+        String claveApi;
+        try (BufferedReader lector = Files.newBufferedReader(
+                rutaPcrIni,
+                StandardCharsets.UTF_8
+        )) {
+            claveApi = lector.readLine();
+        }
+
+        if (claveApi != null && claveApi.startsWith("\uFEFF")) {
+            claveApi = claveApi.substring(1);
+        }
+        claveApi = claveApi == null ? "" : claveApi.trim();
+
+        if (claveApi.isEmpty()) {
+            throw new IOException(
+                    "La primera línea de " + NOMBRE_ARCHIVO_API + " está vacía."
+            );
+        }
+
+        new Datos().setChatGptAPI(claveApi);
+        return claveApi;
     }
 
 }

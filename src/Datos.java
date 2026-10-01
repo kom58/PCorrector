@@ -27,6 +27,7 @@ public class Datos {
     public void setHoraInicio(String horaIni) {horaInicio = horaIni;}
     public void setHoraFin(String horaF) { horaFin = horaF;}
     public void setIdioma(String idioma) {idioma = idioma;}
+    public void setChatGptAPI(String chatGptA) {chatGptAPI = chatGptA;}
 
     public void setArchivoInicialFch(String archIniF) {
         archivoInicialFch = archIniF;
@@ -46,6 +47,7 @@ public class Datos {
     public String getHoraInicio(){ return horaInicio;}
     public String getHoraFin(){ return horaFin;}
     public String getIdioma(){ return idioma;}
+    public String getChatGptAPI(){ return chatGptAPI;}
 
 
 
@@ -60,6 +62,7 @@ public class Datos {
         horaInicio = "";
         horaFin = "";
         idioma = "";
+        chatGptAPI = "";
     }
 
 }
