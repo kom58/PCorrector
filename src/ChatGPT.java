@@ -17,7 +17,7 @@ public class ChatGPT {
     // Modelo que queremos utilizar
     private static final String MODELO = "gpt-5.6-luna";
 
-    // La clave se carga desde pcr.ini al iniciar la aplicacion y no queda
+    // La clave se carga desde pai.dt al iniciar la aplicacion y no queda
     // incrustada en el codigo ni dentro del JAR.
     // ---------------------------------------------------------
     // PREGUNTAR A CHATGPT

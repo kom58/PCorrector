@@ -20,13 +20,14 @@ public class Datos {
 
 
     public void setUsuarioActual(String usuario){ usuarioActual = usuario;}
+    public void setInforme(String infor){informe = infor;}
     public void setNombreFch(String nombre){nombreFch = nombre;}
     public void setEnvioEmailFch(String emailF) { envioEmailFch = emailF;}
     public void setEmailUsuario(String emailF) { emailUsuario = emailF;}
     public void setRespUsuario( String respF) {respUsuario = respF;}
     public void setHoraInicio(String horaIni) {horaInicio = horaIni;}
     public void setHoraFin(String horaF) { horaFin = horaF;}
-    public void setIdioma(String idioma) {idioma = idioma;}
+    public void setIdioma(String idiom) {idioma = idiom;}
     public void setChatGptAPI(String chatGptA) {chatGptAPI = chatGptA;}
 
     public void setArchivoInicialFch(String archIniF) {
@@ -38,6 +39,7 @@ public class Datos {
     }
 
     public String getUsuarioActual(){ return usuarioActual;}
+    public String getInforme(){ return informe;}
     public String getNombreFch(){ return nombreFch;}
     public String getEnvioEmailFch(){ return envioEmailFch;}
     public String getEmailUsuario(){ return emailUsuario;}
@@ -53,6 +55,7 @@ public class Datos {
 
     public static void inicializar() {
         usuarioActual = "";
+        informe = "";
         nombreFch = "";
         archivoInicialFch = "";
         envioEmailFch = "";

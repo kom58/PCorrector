@@ -29,5 +29,6 @@ bin/
 ### Mac OS ###
 .DS_Store
 /src/EncripDecrip.java
+/pai.dt
+/src/pai.dt
 /pcr.ini
-/src/pcr.ini

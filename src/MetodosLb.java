@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,12 +12,13 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class MetodosLb {
 
-    private static final String NOMBRE_ARCHIVO_CONFIGURACION = "acr.ini";
-    private static final String NOMBRE_ARCHIVO_API = "pcr.ini";
+    private static final String NOMBRE_ARCHIVO_CONFIGURACION = "pcr.ini";
+    private static final String NOMBRE_ARCHIVO_API = "pai.dt";
     private static final Pattern PATRON_EMAIL = Pattern.compile(
             "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
     );
@@ -59,7 +61,7 @@ public class MetodosLb {
         }
 
         JComboBox<String> selectorIdioma = new JComboBox<>(
-                new String[]{"Español", "Català"}
+                new String[]{"Español", "Català", "Valencià"}
         );
         int resultado = JOptionPane.showConfirmDialog(
                 null,
@@ -77,9 +79,9 @@ public class MetodosLb {
         String contenido = "email=" + email + System.lineSeparator()
                 + "idioma=" + idioma + System.lineSeparator();
 
-        Path archivoAcrIni = rutaArchivoPcrIni();
+        Path archivoPcrIni = rutaArchivoPcrIni();
         Files.writeString(
-                archivoAcrIni,
+                archivoPcrIni,
                 contenido,
                 StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE_NEW,
@@ -88,7 +90,7 @@ public class MetodosLb {
         return true;
     }
 
-    public String leerArchivPcrIni() throws IOException {
+    public String leerArchivoPcrIni() throws IOException {
         String contenido = Files.readString(
                 rutaArchivoPcrIni(),
                 StandardCharsets.UTF_8
@@ -111,6 +113,52 @@ public class MetodosLb {
         }
 
         return contenido;
+    }
+
+    public String leerMensajeIdioma(String codigo) throws IOException {
+        String idioma = new Datos().getIdioma();
+        String nombreArchivo = "Català".equalsIgnoreCase(idioma)
+                || "Valencià".equalsIgnoreCase(idioma)
+                ? "Català.lng"
+                : "Español.lng";
+
+        String contenido = leerContenidoIdioma(nombreArchivo);
+        for (String linea : contenido.split("\\R")) {
+            String[] mensaje = linea.split("=", 2);
+            if (mensaje.length == 2 && mensaje[0].trim().equals(codigo)) {
+                return mensaje[1].trim();
+            }
+        }
+
+        throw new IOException(
+                "No se encuentra el mensaje " + codigo + " en " + nombreArchivo
+        );
+    }
+
+    private String leerContenidoIdioma(String nombreArchivo) throws IOException {
+        Path juntoAplicacion = rutaArchivoJuntoAplicacion(nombreArchivo);
+        if (Files.isRegularFile(juntoAplicacion)) {
+            return Files.readString(juntoAplicacion, StandardCharsets.UTF_8);
+        }
+
+        Path rutaDesarrollo = Path.of(System.getProperty("user.dir"))
+                .toAbsolutePath()
+                .normalize()
+                .resolve("src")
+                .resolve(nombreArchivo);
+        if (Files.isRegularFile(rutaDesarrollo)) {
+            return Files.readString(rutaDesarrollo, StandardCharsets.UTF_8);
+        }
+
+        try (InputStream recurso = MetodosLb.class.getResourceAsStream(
+                "/" + nombreArchivo
+        )) {
+            if (recurso != null) {
+                return new String(recurso.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        }
+
+        throw new IOException("No se encuentra el archivo " + nombreArchivo);
     }
 
     private String pedirEmailValido() {
@@ -146,7 +194,12 @@ public class MetodosLb {
         Datos d = new Datos();
 
         if (d.getCarpetaFch() == null || d.getCarpetaFch().isBlank()) {
-            throw new IOException("No se ha podido determinar la carpeta del informe.");
+            throw new IOException(
+                    mensajeSeguro(
+                            "3000",
+                            "No se ha podido determinar la carpeta del informe"
+                    ) + "."
+            );
         }
 
         String nombreInforme = nombreArchivoSeguro(d.getUsuarioActual()) + ".lgx";
@@ -154,7 +207,10 @@ public class MetodosLb {
         try {
             rutaFichero = Path.of(d.getCarpetaFch()).resolve(nombreInforme);
         } catch (InvalidPathException e) {
-            throw new IOException("La ruta del informe no es válida.", e);
+            throw new IOException(
+                    mensajeSeguro("3010", "La ruta del informe no es válida") + ".",
+                    e
+            );
         }
 
         int clv = (int) (Math.random() * 8999 + 1000);                      // Clave pública
@@ -191,12 +247,15 @@ public class MetodosLb {
         txt.append(ed.encripLin(horaActual(), clave));
         txt.append(ed.encripLin("\n", clave));
         txt.append(ed.encripLin("\n            ***********************\n\n", clave));
+        //txt.append(ed.encripLin("FICHA    :    ", clave));
         txt.append(ed.encripLin("FICHA    :    ", clave));
         txt.append(ed.encripLin(d.getNombreFch(), clave));
         txt.append(ed.encripLin("\n\n", clave));
+        //txt.append(ed.encripLin("Hora de inicio       : ", clave));
         txt.append(ed.encripLin("Hora de inicio       : ", clave));
         txt.append(ed.encripLin(d.getHoraInicio(), clave));
         txt.append(ed.encripLin("\n", clave));
+        //txt.append(ed.encripLin("Hora de finalización : ", clave));
         txt.append(ed.encripLin("Hora de finalización : ", clave));
         txt.append(ed.encripLin(d.getHoraFin(), clave));
         txt.append(ed.encripLin("\n\n", clave));
@@ -232,7 +291,9 @@ public class MetodosLb {
      */
     public String leerInforme(Path rutaFichero) throws IOException {
         if (rutaFichero == null) {
-            throw new IllegalArgumentException("La ruta del informe no puede ser nula.");
+            throw new IllegalArgumentException(
+                    mensajeSeguro("4110", "La ruta del informe no puede ser nula")
+            );
         }
 
         String contenidoCifrado = Files.readString(
@@ -406,8 +467,10 @@ public class MetodosLb {
 
     private IOException formatoInformeNoValido(int posicion) {
         return new IOException(
-                "El formato del informe encriptado no es válido cerca de la posición "
-                        + posicion + "."
+                mensajeSeguro(
+                        "4210",
+                        "El formato del informe encriptado no es válido cerca de la posición"
+                ) + " " + posicion + "."
         );
     }
 
@@ -420,7 +483,8 @@ public class MetodosLb {
         nombreSeguro = nombreSeguro.replaceAll("[. ]+$", "");
 
         if (nombreSeguro.isBlank()) {
-            nombreSeguro = "informe";
+            nombreSeguro = mensajeSeguro("4070", "Informe")
+                    .toLowerCase(Locale.ROOT);
         }
 
         // Nombres reservados por Windows, incluso cuando llevan extensión.
@@ -461,7 +525,12 @@ public class MetodosLb {
         //System.out.print(respUser);
         Datos d=new Datos();
         if (d.getChatGptAPI().isEmpty()){
-            return "Sin acceso a IA !! \nComprobar la conexión a internet y los permisos API";
+            return mensajeSeguro("4220", "Sin acceso a IA !!")
+                    + "\n"
+                    + mensajeSeguro(
+                            "4230",
+                            "Comprobar la conexión a internet y los permisos API"
+                    );
         } else {
 
             String respuesta = ChatGPT.preguntar( "Actúa como profesor.\n" +
@@ -483,7 +552,7 @@ public class MetodosLb {
     public String leerPcrIni() throws IOException {
         Path rutaPcrIni = rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_API);
 
-        // Durante la ejecucion desde el IDE se admite tambien src/pcr.ini.
+        // Durante la ejecucion desde el IDE se admite tambien src/pai.dt.
         // Al ejecutar el JAR, el archivo debe estar junto a PCorrector.jar.
         if (!Files.isRegularFile(rutaPcrIni)) {
             Path rutaDesarrollo = Path.of(System.getProperty("user.dir"))
@@ -511,12 +580,22 @@ public class MetodosLb {
 
         if (claveApi.isEmpty()) {
             throw new IOException(
-                    "La primera línea de " + NOMBRE_ARCHIVO_API + " está vacía."
+                    mensajeSeguro("4300", "La primera línea de")
+                            + " " + NOMBRE_ARCHIVO_API + " "
+                            + mensajeSeguro("4301", "está vacía")
             );
         }
 
         new Datos().setChatGptAPI(claveApi);
         return claveApi;
+    }
+
+    private String mensajeSeguro(String codigo, String mensajePredeterminado) {
+        try {
+            return leerMensajeIdioma(codigo);
+        } catch (IOException | SecurityException e) {
+            return mensajePredeterminado;
+        }
     }
 
 }

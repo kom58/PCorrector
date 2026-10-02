@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -15,26 +16,71 @@ void main() {
 void seleccionarInforme() {
 
     Datos.inicializar();
+    MetodosLb metodos = new MetodosLb();
+
+    Path archivoPcrIni = metodos.rutaArchivoPcrIni();
+    try {
+        if (Files.notExists(archivoPcrIni) && !metodos.crearArchivoPcrIni()) {
+            return;
+        }
+    } catch (IOException | SecurityException e) {
+        JOptionPane.showMessageDialog(
+                null,
+                mensajeSeguro(metodos, "1010", "No se pudo crear")
+                        + " pcr.ini:\n" + e.getMessage(),
+                mensajeSeguro(metodos, "1011", "Error de configuración"),
+                JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
 
     try {
-        new MetodosLb().leerPcrIni();
+        metodos.leerArchivoPcrIni();
+    } catch (IOException | SecurityException e) {
+        JOptionPane.showMessageDialog(
+                null,
+                mensajeSeguro(metodos, "1012", "No se pudo leer")
+                        + " pcr.ini:\n" + e.getMessage(),
+                mensajeSeguro(metodos, "1011", "Error de configuración"),
+                JOptionPane.ERROR_MESSAGE
+        );
+        return;
+    }
+
+    try {
+        metodos.leerPcrIni();
     } catch (IOException e) {
         JOptionPane.showMessageDialog(
                 null,
-                "No se ha podido cargar pcr.ini.\n"
-                        + "La corrección con IA no estará disponible.\n\n"
+                mensajeSeguro(metodos, "4010", "No se ha podido cargar")
+                        + " pai.dt.\n"
+                        + mensajeSeguro(
+                                metodos,
+                                "4020",
+                                "La corrección con IA no estará disponible"
+                        ) + ".\n\n"
                         + e.getMessage(),
-                "Configuración de la API",
+                mensajeSeguro(metodos, "4030", "Configuración de la API"),
                 JOptionPane.WARNING_MESSAGE
         );
     }
 
     JFileChooser selectorInforme = new JFileChooser();
-    selectorInforme.setDialogTitle("Selecciona el informe que quieres abrir");
+    selectorInforme.setDialogTitle(
+            mensajeSeguro(
+                    metodos,
+                    "4040",
+                    "Selecciona el informe que quieres abrir"
+            )
+    );
     selectorInforme.setFileSelectionMode(JFileChooser.FILES_ONLY);
     selectorInforme.setAcceptAllFileFilterUsed(false);
     selectorInforme.setFileFilter(
-            new FileNameExtensionFilter("Informes encriptados (*.lgx)", "lgx")
+            new FileNameExtensionFilter(
+                    mensajeSeguro(metodos, "4050", "Informes encriptados")
+                            + " (*.lgx)",
+                    "lgx"
+            )
     );
 
     int resultado = selectorInforme.showOpenDialog(null);
@@ -43,12 +89,16 @@ void seleccionarInforme() {
     }
 
     Path rutaInforme = selectorInforme.getSelectedFile().toPath();
-    mostrarInforme(rutaInforme);
+    mostrarInforme(rutaInforme, metodos);
 }
 
-void mostrarInforme(Path rutaInforme) {
+void mostrarInforme(Path rutaInforme, MetodosLb metodos) {
     JTextArea areaInforme = new JTextArea(
-            "Abriendo el informe y generando la corrección..."
+            mensajeSeguro(
+                    metodos,
+                    "4060",
+                    "Abriendo el informe y generando la corrección..."
+            )
     );
     areaInforme.setEditable(false);
     areaInforme.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
@@ -57,7 +107,8 @@ void mostrarInforme(Path rutaInforme) {
     areaInforme.setMargin(new Insets(15, 15, 15, 15));
 
     JFrame ventanaInforme = new JFrame(
-            "Informe - " + rutaInforme.getFileName()
+            mensajeSeguro(metodos, "4070", "Informe")
+                    + " - " + rutaInforme.getFileName()
     );
     ventanaInforme.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     JScrollPane desplazamientoInforme = new JScrollPane(
@@ -89,12 +140,30 @@ void mostrarInforme(Path rutaInforme) {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 mostrarError(ventanaInforme, areaInforme,
-                        "La apertura del informe se ha interrumpido.");
+                        mensajeSeguro(
+                                metodos,
+                                "4080",
+                                "La apertura del informe se ha interrumpido"
+                        ),
+                        mensajeSeguro(
+                                metodos,
+                                "4100",
+                                "Error al abrir el informe"
+                        ));
             } catch (ExecutionException e) {
                 Throwable causa = e.getCause();
                 String mensaje = causa == null ? e.getMessage() : causa.getMessage();
                 mostrarError(ventanaInforme, areaInforme,
-                        "No se ha podido abrir el informe:\n" + mensaje);
+                        mensajeSeguro(
+                                metodos,
+                                "4090",
+                                "No se ha podido abrir el informe"
+                        ) + ":\n" + mensaje,
+                        mensajeSeguro(
+                                metodos,
+                                "4100",
+                                "Error al abrir el informe"
+                        ));
             }
         }
     };
@@ -109,12 +178,22 @@ void mostrarInforme(Path rutaInforme) {
     cargaInforme.execute();
 }
 
-void mostrarError(JFrame ventana, JTextArea areaInforme, String mensaje) {
+void mostrarError(JFrame ventana, JTextArea areaInforme, String mensaje,
+                  String titulo) {
     areaInforme.setText(mensaje);
     JOptionPane.showMessageDialog(
             ventana,
             mensaje,
-            "Error al abrir el informe",
+            titulo,
             JOptionPane.ERROR_MESSAGE
     );
+}
+
+String mensajeSeguro(MetodosLb metodos, String codigo,
+                     String mensajePredeterminado) {
+    try {
+        return metodos.leerMensajeIdioma(codigo);
+    } catch (IOException | SecurityException e) {
+        return mensajePredeterminado;
+    }
 }
