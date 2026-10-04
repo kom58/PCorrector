@@ -7,6 +7,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
@@ -15,6 +19,8 @@ public class BlocDeTexto extends JFrame {
     private static final MetodosLb METODOS = new MetodosLb();
     private final JTextArea texto = new JTextArea();
     private final JFileChooser selector = new JFileChooser();
+    private final JFileChooser selectorCriterios = new JFileChooser();
+    private final JFileChooser selectorFichas = new JFileChooser();
     private final JLabel contador = new JLabel();
     private final JMenuItem abrir = new JMenuItem();
     private final JMenuItem sinCorregir = new JMenuItem();
@@ -54,6 +60,39 @@ public class BlocDeTexto extends JFrame {
                 )
         );
 
+        selectorCriterios.setDialogTitle(
+                mensajeSeguro(
+                        "1075",
+                        "Selecciona un archivo de criterios de corrección"
+                )
+        );
+        selectorCriterios.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selectorCriterios.setAcceptAllFileFilterUsed(false);
+        selectorCriterios.setFileFilter(
+                new FileNameExtensionFilter(
+                        mensajeSeguro("1076", "Archivos de criterios") + " (*.cri)",
+                        "cri"
+                )
+        );
+
+        selectorFichas.setDialogTitle(
+                mensajeSeguro("1050", "Selecciona un archivo")
+        );
+        selectorFichas.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selectorFichas.setAcceptAllFileFilterUsed(false);
+        selectorFichas.setFileFilter(
+                new FileNameExtensionFilter(
+                        mensajeSeguro("1051", "Archivos")
+                                + ": HTML, PDF, JPG, GIF, PNG",
+                        "html",
+                        "htm",
+                        "pdf",
+                        "jpg",
+                        "gif",
+                        "png"
+                )
+        );
+
         // Área de escritura
         texto.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
         texto.setLineWrap(true);
@@ -61,7 +100,7 @@ public class BlocDeTexto extends JFrame {
         add(new JScrollPane(texto), BorderLayout.CENTER);
 
         // Contador de palabras
-        contador.setText(etiquetaPalabras + ": 0" + " / Aqui nombre de los criterios de corrección");
+        contador.setText(etiquetaPalabras + ": 0" + " " + Datos.fchCriteriosCorrec);
         contador.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         add(contador, BorderLayout.SOUTH);
 
@@ -112,16 +151,22 @@ public class BlocDeTexto extends JFrame {
         JMenuItem modificarCriterio = new JMenuItem(
                 mensajeSeguro("1062", "Modificar")
         );
-        JMenuItem guardarCriterio = new JMenuItem(
-                mensajeSeguro("1053", "Guardar")
+        JMenuItem eliminarCriterio = new JMenuItem(
+                mensajeSeguro("1065", "Eliminar")
         );
+
+        nuevoCriterio.addActionListener(e -> METODOS.crearNuevoCriterio());
+        abrirCriterio.addActionListener(e -> abrirArchivoCriterios());
+        anadirCriterio.addActionListener(e -> anadirFichaCriterio());
+        modificarCriterio.addActionListener(e -> seleccionarFichaParaModificar());
+        eliminarCriterio.addActionListener(e -> seleccionarFichaParaEliminar());
 
         criterios.add(abrirCriterio);
         criterios.add(nuevoCriterio);
         fichas.add(anadirCriterio);
         fichas.add(modificarCriterio);
+        fichas.add(eliminarCriterio);
         criterios.add(fichas);
-        criterios.add(guardarCriterio);
 
         barra.add(archivo);
         barra.add(criterios);
@@ -192,7 +237,402 @@ public class BlocDeTexto extends JFrame {
                 ? 0
                 : contenido.split("\\s+").length;
 
-        contador.setText(etiquetaPalabras + ": " + palabras + " / Criterios");
+        contador.setText(etiquetaPalabras + ": " + palabras + " " + Datos.fchCriteriosCorrec);
+    }
+
+    private void abrirArchivoCriterios() {
+        if (selectorCriterios.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File archivo = selectorCriterios.getSelectedFile();
+        try {
+            String contenido = Files.readString(
+                    archivo.toPath(),
+                    StandardCharsets.UTF_8
+            );
+            int numeroFichas = METODOS.leerNumeroFichasCriterio(
+                    archivo.toPath()
+            );
+            Datos.inicializarNomFchCriterFch();
+            new Datos().setNumeroFichas(numeroFichas);
+            new Datos().setFchCriteriosCorrec(
+                    archivo.toPath().toAbsolutePath().normalize().toString()
+            );
+            texto.setText(contenido);
+            texto.setCaretPosition(0);
+        } catch (IOException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+        }
+    }
+
+    private void anadirFichaCriterio() {
+        if (Datos.fchCriteriosCorrec == null
+                || Datos.fchCriteriosCorrec.isBlank()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1080",
+                            "Primero debes crear o abrir un archivo de criterios "
+                                    + "de corrección."
+                    ),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (selectorFichas.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File archivo = selectorFichas.getSelectedFile();
+        if (!abrirEnNavegador(archivo)) {
+            return;
+        }
+
+        int indice = new Datos().getNumeroFichas() + 1;
+        while (Datos.getNombreArchivoFch().size() <= indice) {
+            Datos.getNombreArchivoFch().add("");
+        }
+        while (Datos.getCriteriosCorreccionFch().size() <= indice) {
+            Datos.getCriteriosCorreccionFch().add("");
+        }
+
+        Datos.getNombreArchivoFch().set(indice, archivo.getName());
+        Datos.getCriteriosCorreccionFch().set(indice, "");
+        mostrarEditorCriterios(indice);
+    }
+
+    private void seleccionarFichaParaModificar() {
+        if (Datos.fchCriteriosCorrec == null
+                || Datos.fchCriteriosCorrec.isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        try {
+            rutaCriterios = Path.of(Datos.fchCriteriosCorrec);
+            if (!Files.isRegularFile(rutaCriterios)) {
+                mostrarAvisoSinArchivoCriterios();
+                return;
+            }
+        } catch (InvalidPathException | SecurityException e) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        if (new Datos().getNumeroFichas() <= 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1086",
+                            "El archivo de criterios no contiene fichas."
+                    ),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            java.util.List<String> nombres = METODOS.cargarFichasCriterio(
+                    rutaCriterios
+            );
+            JComboBox<String> selectorFicha = new JComboBox<>(
+                    nombres.toArray(String[]::new)
+            );
+            int resultado = JOptionPane.showConfirmDialog(
+                    this,
+                    selectorFicha,
+                    mensajeSeguro("1062", "Modificar"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+            if (resultado == JOptionPane.OK_OPTION
+                    && selectorFicha.getSelectedIndex() >= 0) {
+                mostrarEditorModificacionCriterios(
+                        selectorFicha.getSelectedIndex() + 1
+                );
+            }
+        } catch (IOException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+        }
+    }
+
+    private void seleccionarFichaParaEliminar() {
+        if (Datos.fchCriteriosCorrec == null
+                || Datos.fchCriteriosCorrec.isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        try {
+            rutaCriterios = Path.of(Datos.fchCriteriosCorrec);
+            if (!Files.isRegularFile(rutaCriterios)) {
+                mostrarAvisoSinArchivoCriterios();
+                return;
+            }
+        } catch (InvalidPathException | SecurityException e) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        if (new Datos().getNumeroFichas() <= 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1086",
+                            "El archivo de criterios no contiene fichas."
+                    ),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        try {
+            java.util.List<String> nombres = METODOS.cargarFichasCriterio(
+                    rutaCriterios
+            );
+            JComboBox<String> selectorFicha = new JComboBox<>(
+                    nombres.toArray(String[]::new)
+            );
+            int resultado = JOptionPane.showConfirmDialog(
+                    this,
+                    selectorFicha,
+                    mensajeSeguro("1065", "Eliminar"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+            if (resultado == JOptionPane.OK_OPTION
+                    && selectorFicha.getSelectedIndex() >= 0) {
+                confirmarEliminacionFicha(
+                        selectorFicha.getSelectedIndex() + 1,
+                        rutaCriterios
+                );
+            }
+        } catch (IOException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+        }
+    }
+
+    private void confirmarEliminacionFicha(
+            int indice,
+            Path rutaCriterios
+    ) {
+        JTextArea contenidoCriterios = new JTextArea(
+                Datos.getCriteriosCorreccionFch().get(indice),
+                12,
+                50
+        );
+        contenidoCriterios.setFont(
+                new Font(Font.MONOSPACED, Font.PLAIN, 14)
+        );
+        contenidoCriterios.setLineWrap(true);
+        contenidoCriterios.setWrapStyleWord(true);
+        contenidoCriterios.setEditable(false);
+        contenidoCriterios.setCaretPosition(0);
+
+        String confirmar = mensajeSeguro("1089", "Confirmar");
+        String cancelar = mensajeSeguro("1082", "Cancelar");
+        int resultado = JOptionPane.showOptionDialog(
+                this,
+                new Object[]{
+                        new JLabel(
+                                mensajeSeguro(
+                                        "1088",
+                                        "¿Confirmas la eliminación de esta ficha?"
+                                )
+                        ),
+                        new JScrollPane(contenidoCriterios)
+                },
+                Datos.getNombreArchivoFch().get(indice),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                new Object[]{confirmar, cancelar},
+                cancelar
+        );
+
+        if (resultado != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        try {
+            METODOS.eliminarFichaCriterio(indice);
+            texto.setText(Files.readString(rutaCriterios, StandardCharsets.UTF_8));
+            texto.setCaretPosition(0);
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1090",
+                            "No se pudo eliminar la ficha"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private void mostrarAvisoSinArchivoCriterios() {
+        JOptionPane.showMessageDialog(
+                this,
+                mensajeSeguro(
+                        "1080",
+                        "Primero debes crear o abrir un archivo de criterios "
+                                + "de corrección."
+                ),
+                mensajeSeguro("1060", "Criterios"),
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private boolean abrirEnNavegador(File archivo) {
+        if (!Desktop.isDesktopSupported()
+                || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1030",
+                            "No se puede abrir el navegador predeterminado"
+                    )
+            );
+            return false;
+        }
+
+        try {
+            Desktop.getDesktop().browse(archivo.toURI());
+            return true;
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1040",
+                            "No se pudo abrir el archivo en el navegador"
+                    ) + ":\n" + e.getMessage()
+            );
+            return false;
+        }
+    }
+
+    private void mostrarEditorCriterios(int indice) {
+        JTextArea areaCriterios = new JTextArea(12, 50);
+        areaCriterios.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        areaCriterios.setLineWrap(true);
+        areaCriterios.setWrapStyleWord(true);
+
+        JScrollPane desplazamiento = new JScrollPane(areaCriterios);
+        String guardar = mensajeSeguro("1053", "Guardar");
+        String cancelar = mensajeSeguro("1082", "Cancelar");
+        int resultado = JOptionPane.showOptionDialog(
+                this,
+                new Object[]{
+                        new JLabel(
+                                mensajeSeguro(
+                                        "1081",
+                                        "Escribe detalladamente la pregunta y sus "
+                                                + "criterios de corrección"
+                                )
+                        ),
+                        desplazamiento
+                },
+                Datos.getNombreArchivoFch().get(indice),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{guardar, cancelar},
+                guardar
+        );
+
+        if (resultado == JOptionPane.OK_OPTION) {
+            Datos.getCriteriosCorreccionFch().set(
+                    indice,
+                    areaCriterios.getText()
+            );
+            try {
+                METODOS.guardarFichaCriterio(indice);
+                mostrarFichaCriterio(indice);
+            } catch (IOException | SecurityException e) {
+                mostrarError(
+                        mensajeSeguro(
+                                "1085",
+                                "No se pudo guardar el archivo de criterios"
+                        ) + ":\n" + e.getMessage()
+                );
+            }
+        }
+    }
+
+    private void mostrarEditorModificacionCriterios(int indice) {
+        JTextArea areaCriterios = new JTextArea(
+                Datos.getCriteriosCorreccionFch().get(indice),
+                12,
+                50
+        );
+        areaCriterios.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        areaCriterios.setLineWrap(true);
+        areaCriterios.setWrapStyleWord(true);
+        areaCriterios.setCaretPosition(0);
+
+        JScrollPane desplazamiento = new JScrollPane(areaCriterios);
+        String guardar = mensajeSeguro("1053", "Guardar");
+        String cancelar = mensajeSeguro("1082", "Cancelar");
+        int resultado = JOptionPane.showOptionDialog(
+                this,
+                new Object[]{
+                        new JLabel(
+                                mensajeSeguro(
+                                        "1087",
+                                        "Ahora puedes modificar los criterios "
+                                                + "de corrección"
+                                )
+                        ),
+                        desplazamiento
+                },
+                Datos.getNombreArchivoFch().get(indice),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{guardar, cancelar},
+                guardar
+        );
+
+        if (resultado == JOptionPane.OK_OPTION) {
+            String criterioAnterior = Datos.getCriteriosCorreccionFch().get(
+                    indice
+            );
+            Datos.getCriteriosCorreccionFch().set(
+                    indice,
+                    areaCriterios.getText()
+            );
+            try {
+                METODOS.modificarFichaCriterio(indice);
+                mostrarFichaCriterio(indice);
+            } catch (IOException | SecurityException e) {
+                Datos.getCriteriosCorreccionFch().set(
+                        indice,
+                        criterioAnterior
+                );
+                mostrarError(
+                        mensajeSeguro(
+                                "1085",
+                                "No se pudo guardar el archivo de criterios"
+                        ) + ":\n" + e.getMessage()
+                );
+            }
+        }
+    }
+
+    private void mostrarFichaCriterio(int indice) {
+        texto.setText(
+                mensajeSeguro("1083", "Nombre de la ficha")
+                        + ":\n"
+                        + Datos.getNombreArchivoFch().get(indice)
+                        + "\n\n"
+                        + mensajeSeguro("1084", "Criterios de corrección")
+                        + ":\n"
+                        + Datos.getCriteriosCorreccionFch().get(indice)
+        );
+        texto.setCaretPosition(0);
     }
 
     private void abrirArchivo(boolean omitirCorreccion) {

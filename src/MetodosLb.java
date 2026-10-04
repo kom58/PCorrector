@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +25,11 @@ public class MetodosLb {
     private static final Pattern PATRON_EMAIL = Pattern.compile(
             "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
     );
+    private static final Pattern PATRON_NOMBRE_RESERVADO_WINDOWS = Pattern.compile(
+            "(?i)^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?$"
+    );
+    private static final String PREFIJO_CRITERIO_ESCAPADO =
+            "[PCorrector:CriterioEscapado]";
 
     public Path rutaArchivoPcrIni() {
         return rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_CONFIGURACION);
@@ -667,6 +674,388 @@ public class MetodosLb {
             return leerMensajeIdioma(codigo);
         } catch (IOException | SecurityException e) {
             return mensajePredeterminado;
+        }
+    }
+
+    public String crearNuevoCriterio() {
+        while (true) {
+            String nombrePropuesto = JOptionPane.showInputDialog(
+                    null,
+                    mensajeSeguro(
+                            "1070",
+                            "Introduce el nombre del nuevo archivo de corrección"
+                    ),
+                    mensajeSeguro("1071", "Nuevo criterio de corrección"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (nombrePropuesto == null) {
+                return "";
+            }
+
+            String nombreBase = nombrePropuesto;
+            if (nombreBase.toLowerCase(Locale.ROOT).endsWith(".cri")) {
+                nombreBase = nombreBase.substring(0, nombreBase.length() - 4);
+            }
+
+            String nombreArchivo = nombreBase + ".cri";
+            if (!esNombreArchivoCompatible(nombreBase, nombreArchivo)) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        mensajeSeguro(
+                                "1072",
+                                "El nombre del archivo no es válido para Windows y macOS."
+                        ),
+                        mensajeSeguro("1004", "Nombre no válido"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                continue;
+            }
+
+            Path rutaCriterio = rutaArchivoJuntoAplicacion(nombreArchivo);
+            try {
+                crearArchivoCriterioInicial(rutaCriterio);
+                new Datos().setFchCriteriosCorrec(rutaCriterio.toString());
+                return rutaCriterio.toString();
+            } catch (FileAlreadyExistsException e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        mensajeSeguro(
+                                "1073",
+                                "Ya existe un archivo con ese nombre."
+                        ),
+                        mensajeSeguro("1004", "Nombre no válido"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+            } catch (IOException | SecurityException e) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        mensajeSeguro(
+                                "1074",
+                                "No se pudo crear el archivo de corrección"
+                        ) + ":\n" + e.getMessage(),
+                        mensajeSeguro("1031", "Error"),
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return "";
+            }
+        }
+    }
+
+    private void crearArchivoCriterioInicial(Path rutaCriterio)
+            throws IOException {
+        String usuarioActual = new Datos().getUsuarioActual();
+        Files.writeString(
+                rutaCriterio,
+                (usuarioActual == null ? "" : usuarioActual)
+                        + System.lineSeparator(),
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE_NEW,
+                StandardOpenOption.WRITE
+        );
+
+        Datos.inicializarNomFchCriterFch();
+        new Datos().setNumeroFichas(0);
+        Files.writeString(
+                rutaCriterio,
+                Datos.numeroFichas + System.lineSeparator(),
+                StandardCharsets.UTF_8,
+                StandardOpenOption.APPEND
+        );
+        Files.write(
+                rutaCriterio,
+                List.of(
+                        Datos.getNombreArchivoFch().get(0),
+                        Datos.getCriteriosCorreccionFch().get(0)
+                ),
+                StandardCharsets.UTF_8,
+                StandardOpenOption.APPEND
+        );
+    }
+
+    public int leerNumeroFichasCriterio(Path rutaCriterio) throws IOException {
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        if (lineas.size() < 2) {
+            throw new IOException("El archivo de criterios no contiene un índice.");
+        }
+
+        try {
+            int numeroFichas = Integer.parseInt(lineas.get(1).trim());
+            if (numeroFichas < 0) {
+                throw new NumberFormatException();
+            }
+            return numeroFichas;
+        } catch (NumberFormatException e) {
+            throw new IOException("El índice del archivo de criterios no es válido.", e);
+        }
+    }
+
+    public void guardarFichaCriterio(int indice) throws IOException {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            throw new IOException("No hay un archivo de criterios seleccionado.");
+        }
+        if (indice <= 0
+                || indice >= Datos.getNombreArchivoFch().size()
+                || indice >= Datos.getCriteriosCorreccionFch().size()) {
+            throw new IOException("El índice de la ficha no es válido.");
+        }
+
+        Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        if (lineas.size() < 2) {
+            throw new IOException("El archivo de criterios no contiene un índice.");
+        }
+
+        int numeroActual = leerNumeroFichasCriterio(rutaCriterio);
+        int nuevoNumero = numeroActual + 1;
+        if (indice != nuevoNumero) {
+            throw new IOException("El índice de la ficha no es consecutivo.");
+        }
+
+        List<FichaCriterio> fichas = leerFichasCriterio(
+                lineas,
+                numeroActual
+        );
+        fichas.add(new FichaCriterio(
+                Datos.getNombreArchivoFch().get(indice),
+                Datos.getCriteriosCorreccionFch().get(indice)
+        ));
+        escribirFichasCriterio(rutaCriterio, lineas, fichas);
+        cargarFichasEnDatos(fichas);
+        datos.setNumeroFichas(nuevoNumero);
+    }
+
+    public void modificarFichaCriterio(int indice) throws IOException {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            throw new IOException("No hay un archivo de criterios seleccionado.");
+        }
+        if (indice <= 0
+                || indice >= Datos.getCriteriosCorreccionFch().size()) {
+            throw new IOException("El índice de la ficha no es válido.");
+        }
+
+        Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
+        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
+        if (indice > numeroFichas) {
+            throw new IOException("El índice de la ficha no es válido.");
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        leerFichasCriterio(lineas, numeroFichas);
+        int posicionCriterio = 4 + (indice - 1) * 2 + 1;
+        lineas.set(
+                posicionCriterio,
+                PREFIJO_CRITERIO_ESCAPADO
+                        + escaparCriterio(
+                                Datos.getCriteriosCorreccionFch().get(indice)
+                        )
+        );
+        Files.write(
+                rutaCriterio,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+    }
+
+    public void eliminarFichaCriterio(int indice) throws IOException {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            throw new IOException("No hay un archivo de criterios seleccionado.");
+        }
+
+        Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
+        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
+        if (indice <= 0 || indice > numeroFichas) {
+            throw new IOException("El índice de la ficha no es válido.");
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        List<FichaCriterio> fichas = leerFichasCriterio(
+                lineas,
+                numeroFichas
+        );
+        fichas.remove(indice - 1);
+        escribirFichasCriterio(rutaCriterio, lineas, fichas);
+        cargarFichasEnDatos(fichas);
+        datos.setNumeroFichas(fichas.size());
+    }
+
+    public List<String> cargarFichasCriterio(Path rutaCriterio)
+            throws IOException {
+        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        List<FichaCriterio> fichas = leerFichasCriterio(
+                lineas,
+                numeroFichas
+        );
+
+        cargarFichasEnDatos(fichas);
+        List<String> nombres = new ArrayList<>();
+        for (FichaCriterio ficha : fichas) {
+            nombres.add(ficha.nombre());
+        }
+        new Datos().setNumeroFichas(numeroFichas);
+        return nombres;
+    }
+
+    private List<FichaCriterio> leerFichasCriterio(
+            List<String> lineas,
+            int numeroFichas
+    ) throws IOException {
+        if (lineas.size() < 4) {
+            throw new IOException(
+                    "El archivo de criterios no contiene la cabecera completa."
+            );
+        }
+        int lineasEsperadas = 4 + numeroFichas * 2;
+        if (lineas.size() != lineasEsperadas) {
+            throw new IOException(
+                    "El archivo de criterios no tiene el formato actual."
+            );
+        }
+
+        List<FichaCriterio> fichas = new ArrayList<>();
+        for (int indice = 0; indice < numeroFichas; indice++) {
+            int posicionNombre = 4 + indice * 2;
+            String nombre = lineas.get(posicionNombre);
+            String criterioGuardado = lineas.get(posicionNombre + 1);
+            String criterio = criterioGuardado.startsWith(
+                    PREFIJO_CRITERIO_ESCAPADO
+            )
+                    ? desescaparCriterio(criterioGuardado.substring(
+                            PREFIJO_CRITERIO_ESCAPADO.length()
+                    ))
+                    : criterioGuardado;
+            fichas.add(new FichaCriterio(nombre, criterio));
+        }
+        return fichas;
+    }
+
+    private void escribirFichasCriterio(
+            Path rutaCriterio,
+            List<String> cabeceraOriginal,
+            List<FichaCriterio> fichas
+    ) throws IOException {
+        List<String> lineas = new ArrayList<>(
+                cabeceraOriginal.subList(0, 4)
+        );
+        lineas.set(1, String.valueOf(fichas.size()));
+        for (FichaCriterio ficha : fichas) {
+            lineas.add(ficha.nombre());
+            lineas.add(
+                    PREFIJO_CRITERIO_ESCAPADO
+                            + escaparCriterio(ficha.criterio())
+            );
+        }
+        Files.write(
+                rutaCriterio,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+    }
+
+    private void cargarFichasEnDatos(List<FichaCriterio> fichas) {
+        Datos.inicializarNomFchCriterFch();
+        for (FichaCriterio ficha : fichas) {
+            Datos.getNombreArchivoFch().add(ficha.nombre());
+            Datos.getCriteriosCorreccionFch().add(ficha.criterio());
+        }
+    }
+
+    private String escaparCriterio(String criterio) {
+        return criterio
+                .replace("\\", "\\\\")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t");
+    }
+
+    private String desescaparCriterio(String criterio) {
+        StringBuilder resultado = new StringBuilder();
+        boolean escapando = false;
+        for (int posicion = 0; posicion < criterio.length(); posicion++) {
+            char caracter = criterio.charAt(posicion);
+            if (!escapando) {
+                if (caracter == '\\') {
+                    escapando = true;
+                } else {
+                    resultado.append(caracter);
+                }
+                continue;
+            }
+
+            switch (caracter) {
+                case 'n' -> resultado.append('\n');
+                case 'r' -> resultado.append('\r');
+                case 't' -> resultado.append('\t');
+                case '\\' -> resultado.append('\\');
+                default -> resultado.append('\\').append(caracter);
+            }
+            escapando = false;
+        }
+        if (escapando) {
+            resultado.append('\\');
+        }
+        return resultado.toString();
+    }
+
+    private record FichaCriterio(String nombre, String criterio) {
+    }
+
+    private boolean esNombreArchivoCompatible(
+            String nombreBase,
+            String nombreArchivo
+    ) {
+        if (nombreBase.isEmpty()
+                || !nombreBase.equals(nombreBase.strip())
+                || nombreBase.equals(".")
+                || nombreBase.equals("..")
+                || nombreBase.endsWith(".")
+                || nombreBase.endsWith(" ")
+                || PATRON_NOMBRE_RESERVADO_WINDOWS.matcher(nombreBase).matches()
+                || nombreArchivo.length() > 255
+                || nombreArchivo.getBytes(StandardCharsets.UTF_8).length > 255) {
+            return false;
+        }
+
+        String caracteresNoPermitidos = "<>:\"/\\|?*";
+        for (int i = 0; i < nombreBase.length(); i++) {
+            char caracter = nombreBase.charAt(i);
+            if (Character.isISOControl(caracter)
+                    || caracteresNoPermitidos.indexOf(caracter) >= 0) {
+                return false;
+            }
+        }
+
+        try {
+            Path.of(nombreArchivo);
+            return true;
+        } catch (InvalidPathException e) {
+            return false;
         }
     }
 

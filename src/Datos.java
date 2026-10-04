@@ -6,7 +6,7 @@ import java.util.List;
 public class Datos {
     public static String usuarioActual;
     public static String ultimoUsuario;
-    public static String criteriosCorrecion;
+    public static String fchCriteriosCorrec;
     public static String clvCriteriosCorrec;
     public static boolean esAdmin;
     public static boolean sinCorreccion;
@@ -14,6 +14,7 @@ public class Datos {
     public static String contrasena;
     public static String informe;
     public static String nombreFch;
+    public static int numeroFichas;
     public static String archivoInicialFch;
     public static String envioEmailFch;
     public static String emailUsuario;
@@ -29,10 +30,11 @@ public class Datos {
 
     public void setUsuarioActual(String usuario){ usuarioActual = usuario;}
     public void setUltimoUsuario(String ultUsuario){ ultimoUsuario = ultUsuario;}
-    public void setCriteriosCorreccion(String criteriosCorrec){ criteriosCorrecion = criteriosCorrec;}
+    public void setFchCriteriosCorrec(String criteriosCorrec){ fchCriteriosCorrec = criteriosCorrec;}
     public void setClvCriteriosCorrec(String clvCriteriosCorrec){}
     public void setInforme(String infor){informe = infor;}
-    public void setNombreFch(String nombre){nombreFch = nombre;}
+    public void setNombreFch(String nombreFch){nombreFch = nombreFch;}
+    public void setNumeroFichas(int numFichas){this.numeroFichas = numFichas;}
     public void setEnvioEmailFch(String emailF) { envioEmailFch = emailF;}
     public void setEmailUsuario(String emailF) { emailUsuario = emailF;}
     public void setRespUsuario( String respF) {respUsuario = respF;}
@@ -53,10 +55,11 @@ public class Datos {
 
     public String getUsuarioActual(){ return usuarioActual;}
     public String getUltimoUsuario(){ return ultimoUsuario;}
-    public String getCriteriosCorrecion(){ return criteriosCorrecion;}
+    public String getFchCriteriosCorrec(){ return fchCriteriosCorrec;}
     public String getClvCriteriosCorrec(){ return clvCriteriosCorrec;}
     public String getInforme(){ return informe;}
     public String getNombreFch(){ return nombreFch;}
+    public int getNumeroFichas(){ return numeroFichas;}
     public String getEnvioEmailFch(){ return envioEmailFch;}
     public String getEmailUsuario(){ return emailUsuario;}
     public String getRespUsuario(){ return respUsuario;}
@@ -73,11 +76,12 @@ public class Datos {
     public static void inicializar() {
         usuarioActual = "";
         ultimoUsuario = "";
-        criteriosCorrecion = "";
+        fchCriteriosCorrec = "";
         clvCriteriosCorrec = "";
         sinCorreccion = false;
         informe = "";
         nombreFch = "";
+        numeroFichas = 0;
         archivoInicialFch = "";
         envioEmailFch = "";
         emailUsuario = "";
@@ -94,7 +98,7 @@ public class Datos {
         nombreArchivoFch.clear();
         criteriosCorreccionFch.clear();
 
-        nombreArchivoFch.add("[NombreFicha]");
-        criteriosCorreccionFch.add("[CriteriosFicha]");
+        nombreArchivoFch.add("[NombreArchivoFch]");
+        criteriosCorreccionFch.add("[CriteriosCorreccionFch]");
     }
 }
