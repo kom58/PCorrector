@@ -1,9 +1,14 @@
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Datos {
     public static String usuarioActual;
+    public static String ultimoUsuario;
+    public static String clvCriteriosCorrec;
     public static boolean esAdmin;
+    public static boolean sinCorreccion;
     public static String administrador;
     public static String contrasena;
     public static String informe;
@@ -17,9 +22,13 @@ public class Datos {
     public static String horaFin;
     public static String idioma;
     public static String chatGptAPI;
-
+                                                                        // Criterios de corrección
+    static List<String> nombreArchivoFch = new ArrayList<>();
+    static List<String> criteriosCorreccionFch = new ArrayList<>();
 
     public void setUsuarioActual(String usuario){ usuarioActual = usuario;}
+    public void setUltimoUsuario(String ultUsuario){ ultimoUsuario = ultUsuario;}
+    public void setClvCriteriosCorrec(String clvCriteriosCorrec){}
     public void setInforme(String infor){informe = infor;}
     public void setNombreFch(String nombre){nombreFch = nombre;}
     public void setEnvioEmailFch(String emailF) { envioEmailFch = emailF;}
@@ -29,6 +38,8 @@ public class Datos {
     public void setHoraFin(String horaF) { horaFin = horaF;}
     public void setIdioma(String idiom) {idioma = idiom;}
     public void setChatGptAPI(String chatGptA) {chatGptAPI = chatGptA;}
+    public static void setNombreArchivoFch(List<String> nomArchivoFch) {nombreArchivoFch = nomArchivoFch;}
+    public static void setCriteriosCorreccionFch(List<String> critCorreccionFch) {criteriosCorreccionFch = critCorreccionFch;}
 
     public void setArchivoInicialFch(String archIniF) {
         archivoInicialFch = archIniF;
@@ -39,6 +50,8 @@ public class Datos {
     }
 
     public String getUsuarioActual(){ return usuarioActual;}
+    public String getUltimoUsuario(){ return ultimoUsuario;}
+    public String getClvCriteriosCorrec(){ return clvCriteriosCorrec;}
     public String getInforme(){ return informe;}
     public String getNombreFch(){ return nombreFch;}
     public String getEnvioEmailFch(){ return envioEmailFch;}
@@ -50,11 +63,15 @@ public class Datos {
     public String getHoraFin(){ return horaFin;}
     public String getIdioma(){ return idioma;}
     public String getChatGptAPI(){ return chatGptAPI;}
-
+    public static List<String> getNombreArchivoFch() {return nombreArchivoFch;}
+    public static List<String> getCriteriosCorreccionFch() {return criteriosCorreccionFch;}
 
 
     public static void inicializar() {
         usuarioActual = "";
+        ultimoUsuario = "";
+        clvCriteriosCorrec = "";
+        sinCorreccion = false;
         informe = "";
         nombreFch = "";
         archivoInicialFch = "";
@@ -66,5 +83,14 @@ public class Datos {
         horaFin = "";
         idioma = "";
         chatGptAPI = "";
+        inicializarNomFchCriterFch();
+    }
+
+    public static void inicializarNomFchCriterFch(){
+        nombreArchivoFch.clear();
+        criteriosCorreccionFch.clear();
+
+        nombreArchivoFch.add("[NombreFicha]");
+        criteriosCorreccionFch.add("[CriteriosFicha]");
     }
 }

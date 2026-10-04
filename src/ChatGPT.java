@@ -1,5 +1,6 @@
 
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -96,8 +97,24 @@ public class ChatGPT {
 
             e.printStackTrace();
 
-            return "ERROR al conectar con IA:\n"
-                    + e.getMessage();
+            //return "ERROR al conectar con IA:\n"+ e.getMessage();
+            return mensajeSeguro("4220", "Sin acceso a IA !!")
+                    + "\n"
+                    + mensajeSeguro(
+                            "4230",
+                            "Comprobar la conexión a internet y los permisos API"
+                    );
+        }
+    }
+
+    private static String mensajeSeguro(
+            String codigo,
+            String mensajePredeterminado
+    ) {
+        try {
+            return new MetodosLb().leerMensajeIdioma(codigo);
+        } catch (IOException | SecurityException e) {
+            return mensajePredeterminado;
         }
     }
 

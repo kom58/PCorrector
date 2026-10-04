@@ -1,19 +1,13 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 void main() {
-    SwingUtilities.invokeLater(this::seleccionarInforme);
+    SwingUtilities.invokeLater(this::iniciarAplicacion);
 }
 
-void seleccionarInforme() {
+void iniciarAplicacion() {
 
     Datos.inicializar();
     MetodosLb metodos = new MetodosLb();
@@ -47,6 +41,10 @@ void seleccionarInforme() {
         return;
     }
 
+    if (!pedirNombreUsuario(metodos)) {
+        return;
+    }
+
     try {
         metodos.leerPcrIni();
     } catch (IOException e) {
@@ -65,128 +63,65 @@ void seleccionarInforme() {
         );
     }
 
-    JFileChooser selectorInforme = new JFileChooser();
-    selectorInforme.setDialogTitle(
-            mensajeSeguro(
-                    metodos,
-                    "4040",
-                    "Selecciona el informe que quieres abrir"
-            )
-    );
-    selectorInforme.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    selectorInforme.setAcceptAllFileFilterUsed(false);
-    selectorInforme.setFileFilter(
-            new FileNameExtensionFilter(
-                    mensajeSeguro(metodos, "4050", "Informes encriptados")
-                            + " (*.lgx)",
-                    "lgx"
-            )
-    );
+    BlocDeTexto blocDeTexto = new BlocDeTexto(1, 1);
+    blocDeTexto.setVisible(true);
+}
 
-    int resultado = selectorInforme.showOpenDialog(null);
-    if (resultado != JFileChooser.APPROVE_OPTION) {
-        return;
+boolean pedirNombreUsuario(MetodosLb metodos) {
+    String usuarioActual;
+
+    do {
+        usuarioActual = (String) JOptionPane.showInputDialog(
+                null,
+                mensajeSeguro(metodos, "1002", "Introduce tu nombre"),
+                mensajeSeguro(metodos, "1001", "Inicio de sesión"),
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                new Datos().getUltimoUsuario()
+        );
+
+        if (usuarioActual == null) {
+            return false;
+        }
+
+        usuarioActual = usuarioActual.trim();
+        if (usuarioActual.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    mensajeSeguro(
+                            metodos,
+                            "1003",
+                            "El nombre no puede estar vacío."
+                    ),
+                    mensajeSeguro(metodos, "1004", "Nombre no válido"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
+    } while (usuarioActual.isEmpty());
+
+    try {
+        metodos.guardarUltimoUsuario(usuarioActual);
+    } catch (IOException | SecurityException e) {
+        JOptionPane.showMessageDialog(
+                null,
+                mensajeSeguro(metodos, "1013", "No se pudo actualizar")
+                        + " pcr.ini:\n" + e.getMessage(),
+                mensajeSeguro(metodos, "1011", "Error de configuración"),
+                JOptionPane.ERROR_MESSAGE
+        );
+        return false;
     }
 
-    Path rutaInforme = selectorInforme.getSelectedFile().toPath();
-    mostrarInforme(rutaInforme, metodos);
-}
-
-void mostrarInforme(Path rutaInforme, MetodosLb metodos) {
-    JTextArea areaInforme = new JTextArea(
-            mensajeSeguro(
-                    metodos,
-                    "4060",
-                    "Abriendo el informe y generando la corrección..."
-            )
-    );
-    areaInforme.setEditable(false);
-    areaInforme.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
-    areaInforme.setLineWrap(true);
-    areaInforme.setWrapStyleWord(true);
-    areaInforme.setMargin(new Insets(15, 15, 15, 15));
-
-    JFrame ventanaInforme = new JFrame(
-            mensajeSeguro(metodos, "4070", "Informe")
-                    + " - " + rutaInforme.getFileName()
-    );
-    ventanaInforme.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-    JScrollPane desplazamientoInforme = new JScrollPane(
-            areaInforme,
-            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-    );
-    ventanaInforme.add(desplazamientoInforme);
-    ventanaInforme.setSize(800, 600);
-    ventanaInforme.setLocationRelativeTo(null);
-    ventanaInforme.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    ventanaInforme.setVisible(true);
-
-    SwingWorker<String, Void> cargaInforme = new SwingWorker<>() {
-        @Override
-        protected String doInBackground() throws Exception {
-            return new MetodosLb().leerInforme(rutaInforme);
-        }
-
-        @Override
-        protected void done() {
-            ventanaInforme.setCursor(Cursor.getDefaultCursor());
-
-            try {
-                areaInforme.setText(get());
-                areaInforme.setCaretPosition(0);
-            } catch (CancellationException e) {
-                // La ventana se ha cerrado antes de terminar la carga.
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                mostrarError(ventanaInforme, areaInforme,
-                        mensajeSeguro(
-                                metodos,
-                                "4080",
-                                "La apertura del informe se ha interrumpido"
-                        ),
-                        mensajeSeguro(
-                                metodos,
-                                "4100",
-                                "Error al abrir el informe"
-                        ));
-            } catch (ExecutionException e) {
-                Throwable causa = e.getCause();
-                String mensaje = causa == null ? e.getMessage() : causa.getMessage();
-                mostrarError(ventanaInforme, areaInforme,
-                        mensajeSeguro(
-                                metodos,
-                                "4090",
-                                "No se ha podido abrir el informe"
-                        ) + ":\n" + mensaje,
-                        mensajeSeguro(
-                                metodos,
-                                "4100",
-                                "Error al abrir el informe"
-                        ));
-            }
-        }
-    };
-
-    ventanaInforme.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosing(WindowEvent e) {
-            cargaInforme.cancel(true);
-        }
-    });
-
-    cargaInforme.execute();
-}
-
-void mostrarError(JFrame ventana, JTextArea areaInforme, String mensaje,
-                  String titulo) {
-    areaInforme.setText(mensaje);
+    new Datos().setUsuarioActual(usuarioActual);
     JOptionPane.showMessageDialog(
-            ventana,
-            mensaje,
-            titulo,
-            JOptionPane.ERROR_MESSAGE
+            null,
+            mensajeSeguro(metodos, "1005", "Bienvenido")
+                    + ", " + usuarioActual + "!",
+            mensajeSeguro(metodos, "1006", "Bienvenida"),
+            JOptionPane.INFORMATION_MESSAGE
     );
+    return true;
 }
 
 String mensajeSeguro(MetodosLb metodos, String codigo,

@@ -12,6 +12,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -61,7 +62,14 @@ public class MetodosLb {
         }
 
         JComboBox<String> selectorIdioma = new JComboBox<>(
-                new String[]{"Español", "Català", "Valencià"}
+                new String[]{
+                        "Español",
+                        "Català",
+                        "Valencià",
+                        "Galego",
+                        "Français",
+                        "English"
+                }
         );
         int resultado = JOptionPane.showConfirmDialog(
                 null,
@@ -77,7 +85,8 @@ public class MetodosLb {
 
         String idioma = (String) selectorIdioma.getSelectedItem();
         String contenido = "email=" + email + System.lineSeparator()
-                + "idioma=" + idioma + System.lineSeparator();
+                + "idioma=" + idioma + System.lineSeparator()
+                + "ultimo=" + System.lineSeparator();
 
         Path archivoPcrIni = rutaArchivoPcrIni();
         Files.writeString(
@@ -109,18 +118,67 @@ public class MetodosLb {
                 datos.setEmailUsuario(valor);
             } else if (clave.equals("idioma")) {
                 datos.setIdioma(valor);
+            } else if (clave.equals("ultimo")) {
+                datos.setUltimoUsuario(valor);
             }
         }
 
         return contenido;
     }
 
+    public void guardarUltimoUsuario(String usuario) throws IOException {
+        guardarPropiedadConfiguracion("ultimo", usuario);
+        new Datos().setUltimoUsuario(usuario);
+    }
+
+    public void guardarIdioma(String idioma) throws IOException {
+        guardarPropiedadConfiguracion("idioma", idioma);
+    }
+
+    private void guardarPropiedadConfiguracion(
+            String clave,
+            String valor
+    ) throws IOException {
+        Path archivoPcrIni = rutaArchivoPcrIni();
+        List<String> lineas = Files.readAllLines(
+                archivoPcrIni,
+                StandardCharsets.UTF_8
+        );
+        boolean propiedadEncontrada = false;
+
+        for (int i = 0; i < lineas.size(); i++) {
+            String[] propiedad = lineas.get(i).split("=", 2);
+            if (propiedad.length == 2
+                    && propiedad[0].trim().equalsIgnoreCase(clave)) {
+                lineas.set(i, clave + "=" + valor);
+                propiedadEncontrada = true;
+            }
+        }
+
+        if (!propiedadEncontrada) {
+            lineas.add(clave + "=" + valor);
+        }
+
+        Files.write(
+                archivoPcrIni,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+    }
+
     public String leerMensajeIdioma(String codigo) throws IOException {
         String idioma = new Datos().getIdioma();
-        String nombreArchivo = "Català".equalsIgnoreCase(idioma)
-                || "Valencià".equalsIgnoreCase(idioma)
-                ? "Català.lng"
-                : "Español.lng";
+        String nombreArchivo = switch (idioma == null
+                ? ""
+                : idioma.trim().toLowerCase(Locale.ROOT)) {
+            case "català", "valencià" -> "Català.lng";
+            case "galego" -> "Galego.lng";
+            case "français" -> "Français.lng";
+            case "english" -> "English.lng";
+            default -> "Español.lng";
+        };
 
         String contenido = leerContenidoIdioma(nombreArchivo);
         for (String linea : contenido.split("\\R")) {
@@ -141,11 +199,15 @@ public class MetodosLb {
             return Files.readString(juntoAplicacion, StandardCharsets.UTF_8);
         }
 
-        Path rutaDesarrollo = Path.of(System.getProperty("user.dir"))
+        Path directorioTrabajo = Path.of(System.getProperty("user.dir"))
                 .toAbsolutePath()
-                .normalize()
-                .resolve("src")
-                .resolve(nombreArchivo);
+                .normalize();
+        Path rutaDesarrollo = directorioTrabajo.resolve(nombreArchivo);
+        if (Files.isRegularFile(rutaDesarrollo)) {
+            return Files.readString(rutaDesarrollo, StandardCharsets.UTF_8);
+        }
+
+        rutaDesarrollo = directorioTrabajo.resolve("src").resolve(nombreArchivo);
         if (Files.isRegularFile(rutaDesarrollo)) {
             return Files.readString(rutaDesarrollo, StandardCharsets.UTF_8);
         }
@@ -531,6 +593,14 @@ public class MetodosLb {
                             "4230",
                             "Comprobar la conexión a internet y los permisos API"
                     );
+        } else if (d.sinCorreccion){
+
+            String respuesta = mensajeSeguro(
+                    "4240",
+                    "Lectura de respuesta sin corregir"
+            );
+            return respuesta;
+
         } else {
 
             String respuesta = ChatGPT.preguntar( "Actúa como profesor.\n" +
