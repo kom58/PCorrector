@@ -6,6 +6,7 @@ import java.util.List;
 public class Datos {
     public static String usuarioActual;
     public static String ultimoUsuario;
+    public static String criteriosCorrecion;
     public static String clvCriteriosCorrec;
     public static boolean esAdmin;
     public static boolean sinCorreccion;
@@ -28,6 +29,7 @@ public class Datos {
 
     public void setUsuarioActual(String usuario){ usuarioActual = usuario;}
     public void setUltimoUsuario(String ultUsuario){ ultimoUsuario = ultUsuario;}
+    public void setCriteriosCorreccion(String criteriosCorrec){ criteriosCorrecion = criteriosCorrec;}
     public void setClvCriteriosCorrec(String clvCriteriosCorrec){}
     public void setInforme(String infor){informe = infor;}
     public void setNombreFch(String nombre){nombreFch = nombre;}
@@ -51,6 +53,7 @@ public class Datos {
 
     public String getUsuarioActual(){ return usuarioActual;}
     public String getUltimoUsuario(){ return ultimoUsuario;}
+    public String getCriteriosCorrecion(){ return criteriosCorrecion;}
     public String getClvCriteriosCorrec(){ return clvCriteriosCorrec;}
     public String getInforme(){ return informe;}
     public String getNombreFch(){ return nombreFch;}
@@ -70,6 +73,7 @@ public class Datos {
     public static void inicializar() {
         usuarioActual = "";
         ultimoUsuario = "";
+        criteriosCorrecion = "";
         clvCriteriosCorrec = "";
         sinCorreccion = false;
         informe = "";

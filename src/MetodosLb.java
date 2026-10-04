@@ -67,6 +67,7 @@ public class MetodosLb {
                         "Català",
                         "Valencià",
                         "Galego",
+                        "Euskara",
                         "Français",
                         "English"
                 }
@@ -175,6 +176,7 @@ public class MetodosLb {
                 : idioma.trim().toLowerCase(Locale.ROOT)) {
             case "català", "valencià" -> "Català.lng";
             case "galego" -> "Galego.lng";
+            case "euskara" -> "Euskara.lng";
             case "français" -> "Français.lng";
             case "english" -> "English.lng";
             default -> "Español.lng";

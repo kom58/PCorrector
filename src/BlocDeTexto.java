@@ -61,7 +61,7 @@ public class BlocDeTexto extends JFrame {
         add(new JScrollPane(texto), BorderLayout.CENTER);
 
         // Contador de palabras
-        contador.setText(etiquetaPalabras + ": 0");
+        contador.setText(etiquetaPalabras + ": 0" + " / Aqui nombre de los criterios de corrección");
         contador.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         add(contador, BorderLayout.SOUTH);
 
@@ -85,6 +85,7 @@ public class BlocDeTexto extends JFrame {
         // Menú Archivo
         JMenuBar barra = new JMenuBar();
         JMenu archivo = new JMenu(mensajeSeguro("1052", "Archivo"));
+        JMenu criterios = new JMenu(mensajeSeguro("1060", "Criterios"));
 
         //JMenuItem nuevo = new JMenuItem("Nuevo");
         abrir.setText(mensajeSeguro("1054", "Abrir"));
@@ -104,7 +105,26 @@ public class BlocDeTexto extends JFrame {
         archivo.add(idioma);
         archivo.add(salir);
 
+        JMenuItem abrirCriterio = new JMenuItem(mensajeSeguro("1054", "Abrir"));
+        JMenuItem nuevoCriterio = new JMenuItem(mensajeSeguro("1061", "Nuevo"));
+        JMenu fichas = new JMenu(mensajeSeguro("1064", "Fichas"));
+        JMenuItem anadirCriterio = new JMenuItem(mensajeSeguro("1063", "Añadir"));
+        JMenuItem modificarCriterio = new JMenuItem(
+                mensajeSeguro("1062", "Modificar")
+        );
+        JMenuItem guardarCriterio = new JMenuItem(
+                mensajeSeguro("1053", "Guardar")
+        );
+
+        criterios.add(abrirCriterio);
+        criterios.add(nuevoCriterio);
+        fichas.add(anadirCriterio);
+        fichas.add(modificarCriterio);
+        criterios.add(fichas);
+        criterios.add(guardarCriterio);
+
         barra.add(archivo);
+        barra.add(criterios);
         setJMenuBar(barra);
     }
 
@@ -115,6 +135,7 @@ public class BlocDeTexto extends JFrame {
                         "Català",
                         "Valencià",
                         "Galego",
+                        "Euskara",
                         "Français",
                         "English"
                 }
@@ -171,7 +192,7 @@ public class BlocDeTexto extends JFrame {
                 ? 0
                 : contenido.split("\\s+").length;
 
-        contador.setText(etiquetaPalabras + ": " + palabras);
+        contador.setText(etiquetaPalabras + ": " + palabras + " / Criterios");
     }
 
     private void abrirArchivo(boolean omitirCorreccion) {
@@ -255,21 +276,6 @@ public class BlocDeTexto extends JFrame {
     private void salirApp() {
         System.exit(0);
     }
-
-    /*
-    private void guardarSalir() {
-        Datos.respUsuario  = texto.getText();
-        Datos d = new Datos();
-        d.setHoraFin(METODOS.horaActual());
-
-        try {
-            METODOS.escribirInforme();
-            System.exit(0);
-        } catch (IOException | SecurityException e) {
-            mostrarError(errorGuardarInforme + ":\n" + e.getMessage());
-        }
-    }
-     */
 
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(
