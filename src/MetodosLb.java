@@ -30,7 +30,7 @@ public class MetodosLb {
 
 
     public String versionPCrr() {
-        return "0.0.1";
+        return "0.0.2";
     }
 
     public Path rutaArchivoPcrIni() {
