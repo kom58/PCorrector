@@ -28,6 +28,11 @@ public class MetodosLb {
     private static final String PREFIJO_CRITERIO_ESCAPADO =
             "[PCorrector:CriterioEscapado]";
 
+
+    public String versionPCrr() {
+        return "0.0.1";
+    }
+
     public Path rutaArchivoPcrIni() {
         return rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_CONFIGURACION);
     }

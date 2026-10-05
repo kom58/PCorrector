@@ -125,6 +125,7 @@ public class BlocDeTexto extends JFrame {
         JMenuBar barra = new JMenuBar();
         JMenu archivo = new JMenu(mensajeSeguro("1052", "Archivo"));
         JMenu criterios = new JMenu(mensajeSeguro("1060", "Criterios"));
+        JMenu ayuda = new JMenu(mensajeSeguro("1100", "Ayuda"));
 
         //JMenuItem nuevo = new JMenuItem("Nuevo");
         abrir.setText(mensajeSeguro("1054", "Abrir"));
@@ -168,9 +169,27 @@ public class BlocDeTexto extends JFrame {
         fichas.add(eliminarCriterio);
         criterios.add(fichas);
 
+        JMenuItem acercaDe = new JMenuItem(
+                mensajeSeguro("1101", "Acerca de")
+        );
+        acercaDe.addActionListener(e -> mostrarAcercaDe());
+        ayuda.add(acercaDe);
+
         barra.add(archivo);
         barra.add(criterios);
+        barra.add(ayuda);
         setJMenuBar(barra);
+    }
+
+    private void mostrarAcercaDe() {
+        JOptionPane.showMessageDialog(
+                this,
+                "PCorrector\n"
+                        + mensajeSeguro("1102", "Versión") + ": "
+                        + METODOS.versionPCrr(),
+                mensajeSeguro("1101", "Acerca de"),
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void mostrarSelectorIdioma() {
