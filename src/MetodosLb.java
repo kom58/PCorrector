@@ -1,8 +1,5 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -429,8 +426,16 @@ public class MetodosLb {
                     contenidoDesencriptado);
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
                     "FICHA    :    ", clave, ed, contenidoDesencriptado);
+            //posicion = agregarCampo(contenidoCifrado, posicion,
+            //        "\n\n", clave, ed, contenidoDesencriptado);
+
+            StringBuilder nombreFichaDesencriptado = new StringBuilder();
             posicion = agregarCampo(contenidoCifrado, posicion,
-                    "\n\n", clave, ed, contenidoDesencriptado);
+                    "\n\n", clave, ed, nombreFichaDesencriptado);
+            String nombreFicha = nombreFichaDesencriptado.toString();
+            contenidoDesencriptado.append(nombreFicha);
+            datos.setFchActiva(nombreFicha);
+
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
                     "\n\n", clave, ed, contenidoDesencriptado);
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
@@ -449,13 +454,16 @@ public class MetodosLb {
                     "[[[ R ]]]", "\n", clave, ed, contenidoDesencriptado);
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
                     "\n\n", clave, ed, contenidoDesencriptado);
+
             StringBuilder respuestaDesencriptada = new StringBuilder();
             posicion = agregarCampo(contenidoCifrado, posicion,
                     "\n\n", clave, ed, respuestaDesencriptada);
             String respUsuario = respuestaDesencriptada.toString();
             datos.setRespUsuario(respUsuario);
             contenidoDesencriptado.append(respUsuario);
+
             String correccion = correccionChatGpt(respUsuario);
+
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
                     "\n\n", clave, ed, contenidoDesencriptado);
             contenidoDesencriptado.append("CORRECCIÓN:\n\n");
@@ -611,19 +619,55 @@ public class MetodosLb {
             return respuesta;
 
         } else {
+            if (d.getFchCriteriosCorrec() == null
+                    || d.getFchCriteriosCorrec().isBlank()) {
+                String error = mensajeSeguro(
+                        "1080",
+                        "Primero debes crear o abrir un archivo de criterios "
+                                + "de corrección."
+                );
+                JOptionPane.showMessageDialog(
+                        null,
+                        error + " (.cri)",
+                        mensajeSeguro("1060", "Criterios"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return "ERROR: " + error;
+            }
 
-            String respuesta = ChatGPT.preguntar( "Actúa como profesor.\n" +
-                                    "\n" +
-                                    "        Evalúa de 0 a 10 la respuesta.\n" +
-                                    "\n" +
-                                    "        Explica brevemente los errores encontrados.\n" +
-                                    "\n" +
-                                    "        La explicación no debe superar las 200 palabras.\n" +
-                                    " PREGUNTA : Describe el cuadro de Las Meninas de Velázquez\n" +
-                                    " con un mínimo de 200 palabras\n" +
-                                    "        RESPUESTA: " + respUser);
+            List<String> nombresFicha = Datos.getNombreArchivoFch();
+            List<String> criteriosFicha = Datos.getCriteriosCorreccionFch();
+            String fichaActiva = d.getFchActiva();
+            int indiceFicha = nombresFicha.indexOf(fichaActiva);
 
+            if (indiceFicha <= 0 || indiceFicha >= criteriosFicha.size()) {
+                return mensajeSeguro(
+                        "5070",
+                        "ERROR: No se encontraron criterios de corrección para la ficha activa: "
+                )
+                        + (fichaActiva == null ? "" : fichaActiva);
+            }
 
+            String criter = criteriosFicha.get(indiceFicha);
+            String respuesta = ChatGPT.preguntar(
+                    mensajeSeguro("5000", "Actúa como profesor.") + "\n\n"
+                            + mensajeSeguro(
+                                    "5010",
+                                    "Evalúa de 0 a 10 la respuesta."
+                            ) + "\n\n"
+                            + mensajeSeguro(
+                                    "5020",
+                                    "Explica brevemente los errores encontrados."
+                            ) + "\n\n"
+                            + mensajeSeguro(
+                                    "5030",
+                                    "La explicación no debe superar las 200 palabras."
+                            ) + "\n"
+                            + mensajeSeguro("5040", "PREGUNTA")
+                            + " : " + criter + "\n"
+                            + mensajeSeguro("5050", "RESPUESTA")
+                            + ": " + respUser
+            );
             return respuesta;
         }
     }

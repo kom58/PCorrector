@@ -251,11 +251,7 @@ public class BlocDeTexto extends JFrame {
                     archivo.toPath(),
                     StandardCharsets.UTF_8
             );
-            int numeroFichas = METODOS.leerNumeroFichasCriterio(
-                    archivo.toPath()
-            );
-            Datos.inicializarNomFchCriterFch();
-            new Datos().setNumeroFichas(numeroFichas);
+            METODOS.cargarFichasCriterio(archivo.toPath());
             new Datos().setFchCriteriosCorrec(
                     archivo.toPath().toAbsolutePath().normalize().toString()
             );

@@ -28,7 +28,8 @@ public class ChatGPT {
 
         String apiKey = new Datos().getChatGptAPI();
         if (apiKey == null || apiKey.isBlank()) {
-            return "ERROR: No existe la variable OPENAI_API_KEY";
+            //return "ERROR: No existe la variable OPENAI_API_KEY";
+            return "ERROR: No _API_KEY";
         }
 
         try {
@@ -86,12 +87,15 @@ public class ChatGPT {
 
         } catch (HttpTimeoutException e) {
 
-            return "ERROR: La corrección ha superado el tiempo máximo de espera.";
+            return mensajeSeguro(
+                    "5060",
+                    "ERROR: La corrección ha superado el tiempo máximo de espera."
+            );
 
         } catch (InterruptedException e) {
 
             Thread.currentThread().interrupt();
-            return "Corrección cancelada.";
+            return mensajeSeguro("5061", "Corrección cancelada.");
 
         } catch (Exception e) {
 

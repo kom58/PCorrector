@@ -8,6 +8,7 @@ public class Datos {
     public static String ultimoUsuario;
     public static String fchCriteriosCorrec;
     public static String clvCriteriosCorrec;
+    public static String fchActiva;
     public static boolean esAdmin;
     public static boolean sinCorreccion;
     public static String administrador;
@@ -32,6 +33,7 @@ public class Datos {
     public void setUltimoUsuario(String ultUsuario){ ultimoUsuario = ultUsuario;}
     public void setFchCriteriosCorrec(String criteriosCorrec){ fchCriteriosCorrec = criteriosCorrec;}
     public void setClvCriteriosCorrec(String clvCriteriosCorrec){}
+    public void setFchActiva(String fchAct){fchActiva = fchAct;}
     public void setInforme(String infor){informe = infor;}
     public void setNombreFch(String nombreFch){nombreFch = nombreFch;}
     public void setNumeroFichas(int numFichas){this.numeroFichas = numFichas;}
@@ -57,6 +59,7 @@ public class Datos {
     public String getUltimoUsuario(){ return ultimoUsuario;}
     public String getFchCriteriosCorrec(){ return fchCriteriosCorrec;}
     public String getClvCriteriosCorrec(){ return clvCriteriosCorrec;}
+    public String getFchActiva(){ return fchActiva;}
     public String getInforme(){ return informe;}
     public String getNombreFch(){ return nombreFch;}
     public int getNumeroFichas(){ return numeroFichas;}
@@ -78,6 +81,7 @@ public class Datos {
         ultimoUsuario = "";
         fchCriteriosCorrec = "";
         clvCriteriosCorrec = "";
+        fchActiva = "";
         sinCorreccion = false;
         informe = "";
         nombreFch = "";
