@@ -1,0 +1,169 @@
+
+   C O R R E C T O R
+   =================
+
+      Corrector és un programa informàtic que permet utilitzar la Intel·ligència Artificial
+   (IA a partir d'ara) per visualitzar i corregir fitxes, en diferents formats, tant en un
+   equip local com dins d'una intranet o a través d'Internet.
+
+      Està pensat per ajudar el professor en la seva tasca diària de correcció i permetre la
+   integració de l'ordinador en l'activitat quotidiana de l'aula.
+
+      La utilització del programa com a instrument de treball a l'aula es pot enfocar des de
+   diferents punts de vista:
+
+     * Pot servir per elaborar informes de referència dels exercicis que els alumnes fan al
+       llarg de la jornada docent, així com del grau de correcció i encert en completar-los.
+       Per fer-ho, el programa desarà informes detallats de tota l'activitat desenvolupada pels
+       alumnes, les entrades realitzades, el temps transcorregut en la seva tasca, les fitxes
+       completades, les respostes introduïdes en els exercicis i la seva correcció per part de
+       la IA.
+
+     * Permet automatitzar el procés de correcció gràcies a la integració amb la IA, que és
+       configurable pel professor, qui decidirà els criteris de correcció que s'han d'aplicar
+       en la resolució de cadascuna de les fitxes.
+
+     * Facilita la navegació dels alumnes per Internet, guiats pel camí traçat prèviament pel
+       professor en haver creat la fitxa d'entrada. D'aquesta manera, pot funcionar com un
+       accés guiat als continguts de la xarxa.
+
+     * Es pot convertir en fitxa gairebé tot el material de què es disposi prèviament i que
+       s'hagi elaborat amb un altre programa informàtic que ja es domini (processador de textos,
+       programa de dibuix, etc.) o fins i tot de manera totalment artesanal, perquè així pugui
+       ser corregit automàticament (per exemple, fitxes en paper ja elaborades que només caldrà
+       escanejar per generar un arxiu «PDF»). Actualment, el programa obri els formats HTML, PDF,
+       GIF, JPG i PNG. Qualsevol arxiu en un d'aquests formats podrà ser obert per l'alumne per
+       llegir-lo, i el professor només haurà de crear els criteris de correcció corresponents
+       perquè la fitxa pugui ser corregida per la IA.
+
+      El programa està format per dos mòduls independents (Acr-ACorrector i Pcr-PCorrector),
+   però que funcionen coordinadament. En principi està pensat perquè un s'executi a l'ordinador
+   de l'alumne (Acr) i l'altre al del professor (Pcr), tot i que no hi ha cap problema perquè
+   tots dos mòduls comparteixin el mateix equip i fins i tot la mateixa carpeta.
+
+      Amb ACorrector, l'alumne té la possibilitat d'obrir la fitxa indicada pel professor i
+   allotjada a l'equip en un dels formats indicats anteriorment. El procés és el següent:
+
+     - La primera vegada que s'inicia el programa, es demanarà una adreça electrònica (que
+       actualment encara no està implementada a l'aplicació, però que obligatòriament ha de
+       seguir el format tradicional nom@xxxxx.com). A continuació, caldrà seleccionar l'idioma
+       predeterminat entre la llista d'idiomes disponibles (Español, Català, Valencià, Galego,
+       Euskara, Français i English).
+
+     - Tot seguit es demanarà el nom de l'alumne. És molt important per respondre la fitxa,
+       ja que els informes que es creïn amb les seves respostes portaran el nom introduït.
+       Per això, s'han d'utilitzar noms acceptats pel sistema operatiu i evitar caràcters
+       especials que el programa no admeti.
+
+     - Després d'una salutació inicial, s'obrirà un quadre de diàleg que demanarà que s'obri
+       una fitxa en un dels formats acceptats.
+
+     - Un cop seleccionada la fitxa, el programa l'obrirà al navegador predeterminat del
+       sistema i, a continuació, s'obrirà el programa mateix en forma de petit editor de text,
+       on l'usuari podrà escriure la resposta sol·licitada a la fitxa oberta i, quan acabi,
+       utilitzar l'opció Desa del menú.
+
+     - En desar la resposta, el programa generarà un arxiu «NomAlumne.lgx» a la mateixa carpeta
+       on es troba la fitxa oberta prèviament. Aquest arxiu està encriptat i l'alumne no el pot
+       modificar, tot i que sí que hi pot afegir més respostes, sempre que utilitzi el mateix
+       nom. Aquest és l'arxiu que s'ha de fer arribar al professor, que haurà d'utilitzar el
+       mòdul PCorrector per llegir-lo.
+
+      Amb PCorrector, el professor podrà desencriptar i llegir les respostes que conté l'arxiu
+   d'informe generat per l'alumne en format *.lgx. Per fer-ho, haurà de seguir aquest procés:
+
+   - En la primera obertura, igual que passa amb Acr, caldrà proporcionar una adreça electrònica
+     vàlida i seleccionar un dels idiomes disponibles.
+
+   - A continuació, haurà d'escriure el seu nom i, després d'una salutació, el programa s'iniciarà
+     directament i mostrarà un menú que, en la versió 0.0.2, és el següent:
+
+      + ARXIU
+           - Obrir
+           - Només respostes
+           - Idioma
+           - Sortir
+      + CRITERIS
+           - Obrir
+           - Nou
+           - Fitxes:
+               - Afegir
+               - Modificar
+               - Eliminar
+      + AJUDA
+          - Quant a
+
+
+   Vegem cadascuna de les opcions:
+
+     - OBRIR: Amb aquesta opció, el professor podrà obrir l'informe enviat per l'alumne en format
+       *.lgx. Tanmateix, perquè la IA pugui corregir les preguntes i no es mostrin només les
+       respostes, s'han de complir aquestes condicions:
+
+        1. Cal tenir oberts uns «Criteris de correcció» vàlids per a les preguntes que conté
+           l'informe de l'alumne. El programa ens n'avisarà, i la seva obertura o creació es fa
+           des del menú «Criteris», que veurem més endavant.
+
+        2. Cal disposar d'una connexió a Internet activa. En cas contrari, no podrem obtenir la
+           correcció per IA o, si és molt lenta, es poden superar els temps màxims de resposta.
+           En qualsevol cas, el programa ens n'avisarà.
+
+        3. Cal disposar d'una clau API vàlida, que ha d'estar emmagatzemada a l'arxiu «pai.dt»,
+           situat a la mateixa carpeta des d'on s'executa l'aplicació. Es tracta d'un simple
+           arxiu de text sense format on s'emmagatzema codificada l'API que ens proporciona
+           l'empresa, previ pagament. Si en disposem i l'API no ha caducat, el programa demanarà
+           a la IA que corregeixi les respostes escrites aplicant els criteris creats pel
+           professor. Al cap d'uns segons, el programa mostrarà les respostes, la correcció i
+           els comentaris adjunts. En la versió 0.0.2, el programa utilitza els serveis API de
+           l'empresa OpenAI; concretament, la versió «5.6-Luna», perquè actualment és força
+           fiable, ràpida i econòmica per a la tasca que li demanarem. L'adquisició i el pagament
+           de l'API es fan des del web d'OpenAI: https://platform.openai.com/home. Segons les
+           proves realitzades fins ara, podem afirmar que el cost és molt baix. Amb 1 € en
+           tindrem prou per corregir aproximadament 2.000 preguntes d'unes 200 paraules cadascuna.
+           És previsible que en el futur aquest cost baixi encara més.
+
+      - NOMÉS RESPOSTES: Aquesta opció del menú permet obrir l'informe de l'alumne simplement
+        per veure què ha escrit, sense que intervingui la IA ni calgui tenir connexió a internet.
+        És una opció molt recomanable quan rebem un informe nou i el volem revisar per primera
+        vegada, per decidir si val la pena obrir-lo i enviar-lo a la IA. D'aquesta manera evitem
+        enviar-hi respostes absurdes que només consumirien crèdit de l'API.
+
+      - IDIOMA: Permet canviar l'idioma de PCorrector, però caldrà reiniciar el programa perquè
+        el canvi tingui efecte.
+
+      - SORTIR: Tanca el programa PCorrector.
+
+      - CRITERIS – Obrir: Amb aquesta opció carregarem al programa un conjunt de «Criteris de
+        correcció» creat prèviament. Es mostrarà un quadre de diàleg on haurem de seleccionar
+        un arxiu «*.cri» i, un cop seleccionat, els criteris es mostraran a la pantalla.
+
+      - CRITERIS – Nou: Si és la primera vegada que utilitzem el programa, el professor haurà
+        de crear un arxiu nou de criteris de correcció mitjançant aquesta opció. En seleccionar-la,
+        es demanarà un nom per al nou arxiu de criteris; la llibertat per triar-lo només està
+        limitada per la compatibilitat amb el sistema de noms d'arxiu de l'ordinador. Un nom com
+        ara «3r ESO Socials» podria ser perfectament vàlid. En desar-lo, el programa hi afegirà
+        l'extensió «.cri» i, de manera predeterminada, el col·locarà a la mateixa carpeta des d'on
+        s'ha iniciat l'aplicació. Posteriorment, el professor podrà canviar-ne el nom, moure'l o
+        copiar-lo a una altra carpeta, però sempre conservant l'extensió «.cri».
+
+     - CRITERIS – Fitxes – Afegir: Un cop creat l'arxiu de criteris amb l'opció anterior, aquí
+       es podran anar afegint els criteris de correcció de les diferents preguntes que es vulguin
+       proposar als alumnes. S'obrirà un quadre de diàleg que demanarà obrir l'arxiu que conté la
+       pregunta i que visualitzarà l'alumne. Recordeu les extensions permeses (HTML, PDF, GIF, JPG
+       i PNG). En seleccionar l'arxiu, aquest s'obrirà al navegador predeterminat, tal com passarà
+       quan l'alumne l'obri. Després es mostrarà una finestra de text titulada amb el nom de
+       l'arxiu obert. Aquest serà el nom que el programa identificarà com a nom de la fitxa. Al
+       quadre de text caldrà escriure la pregunta i els criteris que serviran a la IA per corregir.
+       Un exemple podria ser: «Explica breument la teoria de l'evolució de Darwin (utilitza un
+       mínim de 100 paraules)».
+
+      - CRITERIS – Fitxes – Modificar: Aquesta opció permet modificar qualsevol dels criteris
+        creats prèviament. Pot ser una manera d'augmentar o reduir les exigències de correcció
+        per a la IA. En l'exemple anterior, només augmentant el nombre mínim de paraules ja
+        exigirem més rigor en la resposta de l'alumne.
+
+      - CRITERIS – Fitxes – Eliminar: Permet eliminar completament els criteris d'una fitxa
+        emmagatzemada prèviament. Els informes que continguin respostes sobre aquesta fitxa ja
+        no podran ser corregits per la IA.
+
+      - QUANT A: Mostra la versió del programa.
