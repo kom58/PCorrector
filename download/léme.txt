@@ -1,0 +1,167 @@
+
+   C O R R E C T O R
+   =================
+
+      Corrector é un programa informático que permite utilizar a intelixencia artificial
+   (IA a partir de agora) para visualizar e corrixir fichas, en diferentes formatos, tanto
+   nun equipo local como dentro dunha intranet ou a través da propia Internet.
+
+      Está pensado para axudar ao profesor na súa tarefa diaria de corrección e permitir a
+   integración do ordenador na actividade cotiá da aula.
+
+      A utilización do programa como instrumento de traballo na aula pode enfocarse desde
+   diferentes puntos de vista:
+
+     * Pode servir para elaborar informes de referencia dos exercicios que o alumnado realiza
+       ao longo da xornada docente, así como do grao de corrección e acerto ao completalos.
+       Para iso, o programa gardará informes detallados de toda a actividade desenvolvida polo
+       alumnado, as entradas realizadas, o tempo transcorrido no seu labor, as fichas completadas,
+       as respostas introducidas nos exercicios e a súa corrección por parte da IA.
+
+     * Permite automatizar o proceso de corrección grazas á integración coa IA, que é configurable
+       polo profesor, quen decidirá os criterios de corrección que se deben aplicar na resolución
+       de cada unha das fichas.
+
+     * Facilita a navegación do alumnado por Internet, guiado polo camiño trazado previamente polo
+       profesor ao crear a ficha de entrada. Deste xeito, pode funcionar como un acceso guiado aos
+       contidos da rede.
+
+     * Pódese converter en ficha case todo o material do que se dispoña previamente e que fose
+       elaborado con outro programa informático que xa se domine (procesador de textos, programa
+       de debuxo, etc.) ou mesmo de forma totalmente artesanal, para que así poida ser corrixido
+       automaticamente (por exemplo, fichas en papel xa elaboradas que só haberá que escanear para
+       xerar un ficheiro «PDF»). Actualmente, o programa abre os formatos HTML, PDF, GIF, JPG e PNG.
+       Calquera ficheiro nun destes formatos poderá ser aberto polo alumno para a súa lectura, e o
+       profesor só terá que crear os criterios de corrección correspondentes para que a ficha poida
+       ser corrixida pola IA.
+
+      O programa está composto por dous módulos independentes (Acr-ACorrector e Pcr-PCorrector),
+   pero que funcionan de maneira coordinada. En principio está pensado para que un se execute no
+   ordenador do alumno (Acr) e o outro no do profesor (Pcr), aínda que non hai ningún problema para
+   que os dous módulos compartan o mesmo equipo e mesmo o mesmo cartafol.
+
+      Con ACorrector, o alumno ten a posibilidade de abrir a ficha indicada polo seu profesor e
+   aloxada no equipo nun dos formatos indicados anteriormente. O proceso é o seguinte:
+
+     - A primeira vez que se inicia o programa pediráselle un correo electrónico (que actualmente
+       aínda non está implementado na aplicación, pero que obrigatoriamente debe seguir o formato
+       tradicional nome@xxxxx.com). A continuación, terá que seleccionar o idioma predeterminado
+       entre a lista de idiomas dispoñibles (Español, Català, Valencià, Galego, Euskara, Français
+       e English).
+
+     - Deseguido pediráselle o seu nome. É moi importante para responder a ficha, xa que os informes
+       que se creen coas súas propias respostas levarán o nome introducido. Por iso, débense utilizar
+       nomes aceptados polo sistema operativo e evitar caracteres especiais que o programa non admita.
+
+     - Tras un saúdo inicial, abrirase un cadro de diálogo no que se lle pedirá que abra unha ficha
+       nun dos formatos aceptados.
+
+     - Despois de seleccionar a ficha, o programa abriráa no navegador predeterminado do sistema e,
+       a continuación, abrirase o propio programa en forma de pequeno editor de textos, onde o usuario
+       poderá escribir a resposta solicitada na ficha aberta e, unha vez rematada, utilizar a opción
+       Gardar do menú.
+
+     - Ao gardar a resposta, o programa xerará un ficheiro «NomeAlumno.lgx» no mesmo cartafol onde
+       se atopa a ficha aberta previamente. Ese ficheiro está encriptado e non pode ser modificado
+       polo alumno, aínda que si pode engadir máis respostas, sempre que utilice o mesmo nome. Ese
+       ficheiro é o que se debe facer chegar ao profesor, que deberá utilizar o módulo PCorrector
+       para lelo.
+
+      Con PCorrector, o profesor poderá desencriptar e ler as respostas que contén o ficheiro de
+   informe xerado polo alumno en formato *.lgx. Para iso, deberá seguir o seguinte proceso:
+
+   - Na primeira apertura, igual que ocorre con Acr, haberá que proporcionar un correo electrónico
+     válido e seleccionar un dos idiomas dispoñibles.
+
+   - A continuación, deberá escribir o seu nome e, tras un saúdo, o programa iniciarase directamente
+     mostrando un menú que, na versión 0.0.2, é o seguinte:
+
+      + FICHEIRO
+           - Abrir
+           - Só respostas
+           - Idioma
+           - Pechar
+      + CRITERIOS
+           - Abrir
+           - Novo
+           - Fichas:
+               - Engadir
+               - Modificar
+               - Eliminar
+      + AXUDA
+          - Acerca de
+
+
+   Vexamos cada unha das opcións:
+
+     - ABRIR: Con esta opción, o profesor poderá abrir o informe enviado polo alumno en formato
+       *.lgx. Pero, para que as preguntas poidan ser corrixidas pola IA e non só se nos presenten
+       as respostas, deberanse cumprir estas condicións:
+
+        1. Hai que ter abertos uns «Criterios de corrección» válidos para as preguntas que contén
+           o informe do alumno. O programa avisaranos diso, e a súa apertura ou creación realízase
+           desde o menú «Criterios», que veremos máis adiante.
+
+        2. Cómpre dispoñer dunha conexión activa a Internet. De non ser así, non poderemos obter
+           a corrección mediante IA ou, se é moi lenta, pode que se superen os tempos mínimos de
+           resposta. En calquera caso, o programa avisaranos.
+
+        3. Hai que dispoñer dunha clave API válida, que debe estar almacenada no ficheiro «pai.dt»
+           situado no mesmo cartafol desde o que se executa a aplicación. Este é un simple ficheiro
+           de texto plano sen formato onde se almacena codificada a API que nos proporciona a empresa,
+           logo do pagamento. Se dispoñemos dela e a API non está caducada, o programa pediralle á IA
+           que corrixa as respostas escritas aplicando os criterios creados polo profesor. Veremos que,
+           tras uns breves segundos, o programa mostra as respostas e a súa corrección con comentarios
+           anexos. Na versión 0.0.2, o programa utiliza os servizos API da empresa OpenAI; en concreto,
+           usa a súa versión «5.6-Luna» por ser, hoxe en día, unha versión bastante fiable, rápida e
+           económica para o que lle imos pedir. A adquisición e o pagamento da API realízanse desde
+           o sitio web de OpenAI: https://platform.openai.com/home. Segundo as probas realizadas ata
+           o momento, podemos dicir que o seu custo é moi baixo. Con 1 € teremos suficiente para
+           corrixir aproximadamente 2.000 preguntas dunhas 200 palabras cada unha. É de esperar que
+           no futuro este baixo custo se reduza aínda máis.
+
+      - SÓ RESPOSTAS: Esta opción do menú permite abrir o informe do alumno simplemente para ver
+        o que escribiu, sen que interveña a IA nin sexa necesario ter conexión a Internet. É unha
+        opción moi recomendable cando recibimos un informe novo e queremos revisalo por primeira vez,
+        para comprobar se paga a pena abrilo e envialo á IA. Deste xeito evitamos enviar á IA respostas
+        absurdas que só consumirían crédito da API.
+
+      - IDIOMA: Permite cambiar o idioma de PCorrector, pero para que teña efecto deberemos reiniciar
+        o programa.
+
+      - PECHAR: Pecha o programa PCorrector.
+
+      - CRITERIOS – Abrir: Con esta opción cargaremos no programa un conxunto de «Criterios de
+        corrección» creados previamente. Mostrarase un cadro de diálogo onde teremos que seleccionar
+        un ficheiro «*.cri» e, tras seleccionalo, os criterios mostraranse na pantalla.
+
+      - CRITERIOS – Novo: Se é a primeira vez que utilizamos o programa, o profesor deberá crear un
+        novo ficheiro de criterios de corrección mediante esta opción. Ao seleccionala, pediráselle
+        que lle dea un nome ao novo ficheiro de criterios; a liberdade para escollelo só está limitada
+        pola compatibilidade co sistema de nomes de ficheiro do ordenador. Un nome como «3º ESO Sociais»
+        podería ser perfectamente válido. Ao gardalo, o programa engadirá a extensión «.cri» e, de xeito
+        predeterminado, colocarao no mesmo cartafol desde o que se iniciou a aplicación. Posteriormente,
+        o profesor poderá cambiarlle o nome, movelo ou copialo noutro cartafol, pero sempre conservando
+        a extensión «.cri».
+
+     - CRITERIOS – Fichas – Engadir: Unha vez creado o ficheiro de criterios coa opción anterior,
+       aquí poderá ir engadindo os criterios de corrección das diferentes preguntas que queira propoñer
+       ao alumnado. Para iso, abrirase un cadro de diálogo no que se lle pedirá que abra o ficheiro que
+       contén a pregunta e que será o que visualice o alumno. Lembre as extensións permitidas (HTML, PDF,
+       GIF, JPG e PNG). Ao seleccionar o ficheiro, este abrirase no navegador predeterminado, igual que
+       ocorrerá cando o alumno o abra. Despois mostrarase unha xanela de texto que levará como título o
+       nome do ficheiro aberto. Este será o nome que o programa identificará como nome da ficha. No cadro
+       de texto deberá escribir a pregunta e os criterios que lle servirán á IA para corrixir. Un exemplo
+       podería ser: «Explica brevemente a teoría da evolución de Darwin (utiliza un mínimo de 100 palabras)».
+
+      - CRITERIOS – Fichas – Modificar: Nesta opción poderemos modificar calquera dos criterios creados
+        previamente. Pode ser unha forma de aumentar ou diminuír as esixencias de corrección para a IA.
+        No exemplo anterior, só con aumentar o número mínimo de palabras xa estaremos esixindo maior rigor
+        na resposta do alumno.
+
+      - CRITERIOS – Fichas – Eliminar: Permite eliminar completamente os criterios dunha ficha almacenada
+        previamente. Os informes que conteñan respostas sobre esa ficha xa non poderán ser corrixidos pola IA.
+
+      - ACERCA DE: Mostra a versión do programa.
+
+   Este ficheiro foi traducido pola IA.
