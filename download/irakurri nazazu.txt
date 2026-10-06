@@ -1,0 +1,158 @@
+
+   C O R R E C T O R
+   =================
+
+      Corrector programa informatiko bat da, eta adimen artifiziala (hemendik aurrera, AA)
+   erabiltzeko aukera ematen du hainbat formatutako fitxak ikusteko eta zuzentzeko, bai tokiko
+   ordenagailu batean, bai intranet baten barruan edo Internet bidez.
+
+      Irakasleari eguneroko zuzenketa-lanean laguntzeko eta ordenagailua ikasgelako eguneroko
+   jardueran txertatzeko pentsatuta dago.
+
+      Programa ikasgelan lan-tresna gisa hainbat ikuspegitatik erabil daiteke:
+
+     * Ikasleek eskola-egunean zehar egiten dituzten ariketen erreferentzia-txostenak prestatzeko
+       balio dezake, baita ariketak osatzean izandako zuzentasun- eta asmatze-maila jasotzeko ere.
+       Horretarako, programak ikasleek egindako jarduera guztiaren txosten zehatzak gordetzen ditu:
+       egindako sarrerak, lanean emandako denbora, osatutako fitxak, ariketetan emandako erantzunak
+       eta AAk egindako zuzenketak.
+
+     * Zuzenketa-prozesua automatizatzeko aukera ematen du AAren integrazioari esker. Irakasleak
+       konfiguratu dezake prozesua, eta fitxa bakoitza ebaztean zer zuzenketa-irizpide aplikatu
+       behar diren erabaki.
+
+     * Ikasleei Interneten nabigatzen laguntzen die, irakasleak sarrera-fitxa sortzean aurrez
+       zehaztutako bidetik gidatuz. Horrela, sareko edukietarako sarbide gidatu gisa erabil daiteke.
+
+     * Aurretik eskuragarri dagoen ia edozein material fitxa bihur daiteke, bai lehendik erabiltzen
+       den beste programa informatiko batekin sortutakoa (testu-prozesadorea, marrazketa-programa,
+       etab.), bai eskuz egindakoa, automatikoki zuzendu ahal izateko. Adibidez, aurrez prestatutako
+       paperezko fitxak eskaneatu besterik ez da egin behar PDF fitxategi bat sortzeko. Une honetan,
+       programak HTML, PDF, GIF, JPG eta PNG formatuak irekitzen ditu. Ikasleak formatu horietako
+       edozein fitxategi ireki eta irakur dezake; irakasleak dagozkion zuzenketa-irizpideak sortu
+       besterik ez du egin behar AAk fitxa zuzendu ahal izan dezan.
+
+      Programa bi modulu independentek osatzen dute (Acr-ACorrector eta Pcr-PCorrector), baina
+   koordinatuta funtzionatzen dute. Hasiera batean, bata ikaslearen ordenagailuan (Acr) eta bestea
+   irakaslearenean (Pcr) exekutatzeko pentsatuta dago; hala ere, bi moduluek ordenagailu bera eta
+   karpeta bera parteka ditzakete inolako arazorik gabe.
+
+      ACorrector erabiliz, ikasleak irakasleak adierazitako fitxa ireki dezake, baldin eta fitxa
+   ordenagailuan gordeta badago eta lehen aipatutako formatuetako bat badu. Prozesua honako hau da:
+
+     - Programa lehen aldiz abiaraztean, helbide elektroniko bat eskatuko da. Funtzio hori oraindik
+       ez dago aplikazioan inplementatuta, baina helbideak nahitaez izena@xxxxx.com ohiko formatua
+       izan behar du. Ondoren, hizkuntza lehenetsia hautatu beharko da erabilgarri dauden hizkuntzen
+       zerrendatik (Español, Català, Valencià, Galego, Euskara, Français eta English).
+
+     - Jarraian, ikaslearen izena eskatuko da. Oso garrantzitsua da fitxari erantzuteko, ikaslearen
+       erantzunekin sortutako txostenek sartutako izen hori izango baitute. Horregatik, sistema
+       eragileak onartzen dituen izenak erabili behar dira, eta programak onartzen ez dituen karaktere
+       bereziak saihestu.
+
+     - Hasierako ongietorriaren ondoren, elkarrizketa-koadro bat irekiko da eta onartutako formatuetako
+       fitxa bat irekitzeko eskatuko du.
+
+     - Fitxa hautatu ondoren, programak sistemaren arakatzaile lehenetsian irekiko du. Jarraian,
+       programa bera testu-editore txiki baten moduan irekiko da; erabiltzaileak fitxan eskatutako
+       erantzuna idatzi ahal izango du, eta amaitzean menuko Gorde aukera erabili.
+
+     - Erantzuna gordetzean, programak «IkaslearenIzena.lgx» fitxategia sortuko du aurrez irekitako
+       fitxaren karpeta berean. Fitxategia zifratuta dago eta ikasleak ezin du aldatu; hala ere,
+       erantzun gehiago gehi ditzake izen bera erabiltzen badu. Fitxategi hori irakasleari helarazi
+       behar zaio, eta hark PCorrector modulua erabili beharko du irakurtzeko.
+
+      PCorrector erabiliz, irakasleak ikasleak sortutako *.lgx formatuko txosten-fitxategian dauden
+   erantzunak deszifratu eta irakur ditzake. Horretarako, prozesu hau jarraitu behar du:
+
+   - Lehen aldiz irekitzean, Acr moduluarekin gertatzen den bezala, baliozko helbide elektroniko bat
+     eman eta erabilgarri dauden hizkuntzetako bat hautatu behar da.
+
+   - Ondoren, irakasleak bere izena idatzi behar du. Ongietorriaren ostean, programa zuzenean abiaraziko
+     da, eta 0.0.2 bertsioan honako menu hau erakutsiko du:
+
+      + FITXATEGIA
+           - Ireki
+           - Erantzuna soilik
+           - Hizkuntza
+           - Irten
+      + IRIZPIDEAK
+           - Ireki
+           - Berria
+           - Fitxak:
+               - Gehitu
+               - Aldatu
+               - Ezabatu
+      + LAGUNTZA
+          - Honi buruz
+
+
+   Ikus dezagun aukera bakoitza:
+
+     - IREKI: Aukera honekin, irakasleak ikasleak bidalitako *.lgx formatuko txostena ireki ahal
+       izango du. Hala ere, AAk galderak zuzendu ahal izateko, erantzunak soilik erakutsi beharrean,
+       honako baldintza hauek bete behar dira:
+
+        1. Ikaslearen txosteneko galderetarako baliozko «Zuzenketa-irizpideak» irekita eduki behar
+           dira. Programak horren berri emango du, eta irizpideak geroago azalduko den «Irizpideak»
+           menutik ireki edo sor daitezke.
+
+        2. Interneteko konexio aktiboa behar da. Bestela, ezin izango da AA bidezko zuzenketa erabili;
+           konexioa oso motela bada, gutxieneko erantzun-denborak gaindi daitezke. Nolanahi ere,
+           programak horren berri emango du.
+
+        3. Baliozko API gako bat eduki behar da. Gakoa aplikazioa exekutatzen den karpeta bereko
+           «pai.dt» fitxategian gorde behar da. Formaturik gabeko testu arrunteko fitxategi soil bat
+           da, eta enpresak ordainketa egin ondoren emandako API kodetua gordetzen du. Fitxategia
+           eskuragarri badago eta APIa iraungita ez badago, programak idatzitako erantzunak irakasleak
+           sortutako irizpideen arabera zuzentzeko eskatuko dio AAri. Segundo gutxiren buruan, programak
+           erantzunak, zuzenketak eta erantsitako iruzkinak erakutsiko ditu. 0.0.2 bertsioan, programak
+           OpenAI enpresaren API zerbitzuak erabiltzen ditu, zehazki «5.6-Luna» bertsioa, gaur egun
+           eskatu nahi zaion lanerako nahiko fidagarria, azkarra eta merkea delako. APIa OpenAIren
+           webgunean eskuratu eta ordaintzen da: https://platform.openai.com/home. Orain arte egindako
+           proben arabera, kostua oso txikia da. Euro batekin, gutxi gorabehera 200 hitzeko 2.000 galdera
+           zuzendu ahal izango dira. Etorkizunean kostu txiki hori are gehiago jaistea espero da.
+
+      - ERANTZUNA SOILIK: Menuko aukera honek ikaslearen txostena irekitzen du ikasleak zer idatzi duen
+        ikusteko, AAk esku hartu gabe eta Interneteko konexiorik behar izan gabe. Oso aukera gomendagarria
+        da txosten berri bat jasotzen denean eta lehen aldiz berrikusi nahi denean, AAri bidaltzea merezi
+        duen erabakitzeko. Horrela, zentzurik gabeko erantzunak AAri bidaltzea eta API kreditua alferrik
+        gastatzea saihesten da.
+
+      - HIZKUNTZA: PCorrector programaren hizkuntza aldatzeko aukera ematen du. Aldaketak eragina izan
+        dezan, programa berrabiarazi behar da.
+
+      - IRTEN: PCorrector programa ixten du.
+
+      - IRIZPIDEAK – Ireki: Aukera honek aurrez sortutako «Zuzenketa-irizpideen» multzo bat kargatzen
+        du programan. Elkarrizketa-koadro bat agertuko da «*.cri» fitxategi bat hautatzeko, eta fitxategia
+        hautatutakoan irizpideak pantailan erakutsiko dira.
+
+      - IRIZPIDEAK – Berria: Programa lehen aldiz erabiltzen bada, irakasleak zuzenketa-irizpideen
+        fitxategi berri bat sortu behar du aukera honen bidez. Aukera hautatzean, irizpide-fitxategi
+        berriari izena emateko eskatuko zaio. Izena aukeratzeko muga bakarra ordenagailuaren
+        fitxategi-izenen sistemarekin bateragarria izatea da. «DBH 3 Gizarte Zientziak» gisako izen bat guztiz
+        baliozkoa izan daiteke. Gordetzean, programak «.cri» luzapena gehituko dio eta, lehenespenez,
+        aplikazioa abiarazi den karpeta berean kokatuko du. Geroago, irakasleak izena aldatu, beste
+        karpeta batera mugitu edo kopiatu ahal izango du, baina «.cri» luzapena beti mantendu behar da.
+
+     - IRIZPIDEAK – Fitxak – Gehitu: Aurreko aukerarekin irizpide-fitxategia sortu ondoren, irakasleak
+       ikasleei proposatu nahi dizkien galderen zuzenketa-irizpideak gehitu ahal izango ditu.
+       Elkarrizketa-koadro bat irekiko da, galdera duen eta ikasleak ikusiko duen fitxategia hautatzeko. Gogoratu
+       onartutako luzapenak: HTML, PDF, GIF, JPG eta PNG. Fitxategia hautatzean, arakatzaile lehenetsian
+       irekiko da, ikasleak irekitzean gertatuko den bezala. Ondoren, irekitako fitxategiaren izena
+       izenburu duen testu-leiho bat agertuko da. Programak izen hori erabiliko du fitxa identifikatzeko.
+       Testu-koadroan, irakasleak galdera eta AAk zuzentzeko erabiliko dituen irizpideak idatzi behar ditu.
+       Adibidez: «Azaldu labur Darwinen eboluzioaren teoria (erabili gutxienez 100 hitz)».
+
+      - IRIZPIDEAK – Fitxak – Aldatu: Aukera honek aurrez sortutako edozein irizpide aldatzeko aukera
+        ematen du. AAren zuzenketa-eskakizunak handitzeko edo txikitzeko modu bat izan daiteke. Aurreko
+        adibidean, gutxieneko hitz kopurua handitze hutsarekin, ikaslearen erantzunari zorroztasun handiagoa
+        eskatuko zaio.
+
+      - IRIZPIDEAK – Fitxak – Ezabatu: Aurrez gordetako fitxa baten irizpideak erabat ezabatzeko aukera
+        ematen du. Fitxa horri buruzko erantzunak dituzten txostenak ezin izango ditu AAk zuzendu.
+
+      - HONI BURUZ: Programaren bertsioa erakusten du.
+
+   Fitxategi hau AAk itzuli du.
