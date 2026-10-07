@@ -1,0 +1,12 @@
+N O T A S
+=========
+
+Version 0.0.2 (6.10.2026)
+-------------------------
+- Primera versión operativa del programa. Incluye los módulos ACorrector y PCorrector.
+- Se trata de una versión destinada a dar a conocer el programa y sus posibilidades pero 
+  no está pensada aún como una versión plenamente utilizable pues algunas características
+  están aún sin desarrollar. Así el archivo de Criterios de Corrección que se genera en 
+  con la aplicación no está encriptado y en la próxima versión del programa si lo estará.
+- Los Criterios de Corrección que se generen con esta versión NO SERAN COMPATIBLES con la 
+  nueva versión que saldrá próximamente. 
