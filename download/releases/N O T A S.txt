@@ -7,6 +7,6 @@ Version 0.0.2 (6.10.2026)
 - Se trata de una versión destinada a dar a conocer el programa y sus posibilidades pero 
   no ha sido pensada aún como una versión plenamente utilizable, pues algunas características
   están aún sin desarrollar. Así el archivo de Criterios de Corrección que se genera con 
-  la aplicación no se guarda encriptado y en la próxima versión del programa si lo estará.
+  la aplicación no se guarda encriptado y en la próxima versión del programa sí lo estará.
 - Los Criterios de Corrección que se generen con esta versión NO SERAN COMPATIBLES con la 
   nueva versión que saldrá próximamente. 

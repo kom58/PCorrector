@@ -266,19 +266,40 @@ public class BlocDeTexto extends JFrame {
 
         File archivo = selectorCriterios.getSelectedFile();
         try {
-            String contenido = Files.readString(
-                    archivo.toPath(),
-                    StandardCharsets.UTF_8
-            );
             METODOS.cargarFichasCriterio(archivo.toPath());
             new Datos().setFchCriteriosCorrec(
                     archivo.toPath().toAbsolutePath().normalize().toString()
             );
-            texto.setText(contenido);
+            texto.setText(leerContenidoCriteriosVisible(archivo.toPath()));
             texto.setCaretPosition(0);
         } catch (IOException | SecurityException e) {
             mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
         }
+    }
+
+    private static String leerContenidoCriteriosVisible(Path rutaCriterios)
+            throws IOException {
+        java.util.List<String> lineas = Files.readAllLines(
+                rutaCriterios,
+                StandardCharsets.UTF_8
+        );
+        if (lineas.size() < 3) {
+            throw new IOException(
+                    "El archivo de criterios no contiene la cabecera completa."
+            );
+        }
+
+        StringBuilder contenido = new StringBuilder();
+        for (int indice = 0; indice < lineas.size(); indice++) {
+            if (indice == 1 || indice == 2) {
+                continue;
+            }
+            if (!contenido.isEmpty()) {
+                contenido.append(System.lineSeparator());
+            }
+            contenido.append(lineas.get(indice));
+        }
+        return contenido.toString();
     }
 
     private void anadirFichaCriterio() {
@@ -478,7 +499,7 @@ public class BlocDeTexto extends JFrame {
 
         try {
             METODOS.eliminarFichaCriterio(indice);
-            texto.setText(Files.readString(rutaCriterios, StandardCharsets.UTF_8));
+            texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
             texto.setCaretPosition(0);
         } catch (IOException | SecurityException e) {
             mostrarError(

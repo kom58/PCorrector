@@ -282,20 +282,12 @@ public class ChatGPT {
         String respuesta =
                 preguntar(
                         "Actúa como profesor.\n" +
-                                "\n" +
-                                "        Evalúa de 0 a 10 la respuesta.\n" +
-                                "\n" +
-                                "        Explica brevemente los errores encontrados.\n" +
-                                "\n" +
-                                "        La explicación no debe superar las 200 palabras.\n" +
-                                " PREGUNTA : Explica la teoría de Darwin\n" +
-                                "\n" +
-                                "        RESPUESTA: La teoría de Darwin intenta explicar el origen de " +
-                                "las expecias a partir de la selección natural señalando que en la evolución " +
-                                "van generándose alteraciones que hacen que unos individuos tengan más ventajas " +
-                                "que otros frente al medio y que esas modificaciones van transmitiendose entre " +
-                                "generaciones generando una selección natural"
-                );
+                        "Evalúa de 0 a 10 la respuesta.\n" +
+                        "Explica brevemente los errores encontrados.\n" +
+                        "La explicación no debe superar las 200 palabras.\n" +
+                        "PREGUNTA : Explica la teoría de Darwin\n" +
+                        "RESPUESTA: La teoría de Darwin intenta explicar el origen de ..."
+                      );
 
         System.out.println(respuesta);
     }

@@ -27,10 +27,13 @@ public class MetodosLb {
     );
     private static final String PREFIJO_CRITERIO_ESCAPADO =
             "[PCorrector:CriterioEscapado]";
+    private static final String VERSION_FORMATO_CRITERIOS = "Versión 1.0";
+    private static final int POSICION_NUMERO_FICHAS = 3;
+    private static final int POSICION_PRIMERA_FICHA = 6;
 
 
     public String versionPCrr() {
-        return "0.0.2";
+        return "0.0.9";
     }
 
     public Path rutaArchivoPcrIni() {
@@ -38,6 +41,19 @@ public class MetodosLb {
     }
 
     private Path rutaArchivoJuntoAplicacion(String nombreArchivo) {
+        String carpetaConfigurada = System.getProperty("pcorrector.app.dir");
+        if (carpetaConfigurada != null && !carpetaConfigurada.isBlank()) {
+            try {
+                return Path.of(carpetaConfigurada)
+                        .toAbsolutePath()
+                        .normalize()
+                        .resolve(nombreArchivo);
+            } catch (InvalidPathException | SecurityException e) {
+                // Si la ruta indicada por el lanzador no es válida, se usa
+                // la ubicación habitual de la aplicación.
+            }
+        }
+
         try {
             Path ubicacionAplicacion = Path.of(
                     MetodosLb.class.getProtectionDomain()
@@ -261,106 +277,16 @@ public class MetodosLb {
         }
     }
 
-
-    public Path escribirInforme() throws IOException {
-
-        Datos d = new Datos();
-
-        if (d.getCarpetaFch() == null || d.getCarpetaFch().isBlank()) {
-            throw new IOException(
-                    mensajeSeguro(
-                            "3000",
-                            "No se ha podido determinar la carpeta del informe"
-                    ) + "."
-            );
-        }
-
-        String nombreInforme = nombreArchivoSeguro(d.getUsuarioActual()) + ".lgx";
-        final Path rutaFichero;
-        try {
-            rutaFichero = Path.of(d.getCarpetaFch()).resolve(nombreInforme);
-        } catch (InvalidPathException e) {
-            throw new IOException(
-                    mensajeSeguro("3010", "La ruta del informe no es válida") + ".",
-                    e
-            );
-        }
-
-        int clv = (int) (Math.random() * 8999 + 1000);                      // Clave pública
-        String clave = String.valueOf(clv);
-
-        StringBuilder txt = new StringBuilder();
-        txt.append(clave + "\n");
-                                                                            // Sin encriptar
-        /*
-        txt.append("\n       *********************************\n\n");
-        txt.append("                  ").append(d.getUsuarioActual()).append("\n\n");
-        txt.append("                  ").append(fechaActual()).append("\n");
-        txt.append("                     ").append(horaActual()).append("\n");
-        txt.append("\n            ***********************\n\n");
-        txt.append("FICHA    :    ").append(d.getNombreFch()).append("\n\n");
-        txt.append("Hora de inicio       : ").append(d.getHoraInicio()).append("\n");
-        txt.append("Hora de finalización : ").append(d.getHoraFin()).append("\n\n");
-        txt.append("[[[ R ]]]\n\n");
-        txt.append(d.getRespUsuario()).append("\n\n");
-        txt.append("<=#©#=>\n\n");
-         */
-
-                                                                            // Encriptado
-        EncripDecrip ed = new EncripDecrip();
-        txt.append(ed.encripLin("Versión 1.0", clave)).append("\n");
-        txt.append(ed.encripLin("\n       *********************************\n\n", clave));
-        txt.append(ed.encripLin("                  ", clave));
-        txt.append(ed.encripLin(d.getUsuarioActual(),clave));
-        txt.append(ed.encripLin("\n\n", clave));
-        txt.append(ed.encripLin("                  ", clave));
-        txt.append(ed.encripLin(fechaActual(), clave));
-        txt.append(ed.encripLin("\n", clave));
-        txt.append(ed.encripLin("                     ", clave));
-        txt.append(ed.encripLin(horaActual(), clave));
-        txt.append(ed.encripLin("\n", clave));
-        txt.append(ed.encripLin("\n            ***********************\n\n", clave));
-        //txt.append(ed.encripLin("FICHA    :    ", clave));
-        txt.append(ed.encripLin("FICHA    :    ", clave));
-        txt.append(ed.encripLin(d.getNombreFch(), clave));
-        txt.append(ed.encripLin("\n\n", clave));
-        //txt.append(ed.encripLin("Hora de inicio       : ", clave));
-        txt.append(ed.encripLin("Hora de inicio       : ", clave));
-        txt.append(ed.encripLin(d.getHoraInicio(), clave));
-        txt.append(ed.encripLin("\n", clave));
-        //txt.append(ed.encripLin("Hora de finalización : ", clave));
-        txt.append(ed.encripLin("Hora de finalización : ", clave));
-        txt.append(ed.encripLin(d.getHoraFin(), clave));
-        txt.append(ed.encripLin("\n\n", clave));
-        txt.append(ed.encripLin("[[[ R ]]]", clave));
-        txt.append(ed.encripLin("\n\n", clave));
-        txt.append(ed.encripLin(d.getRespUsuario(),clave));
-        txt.append(ed.encripLin("\n\n", clave));
-        txt.append(ed.encripLin("<=#©#=>", clave));
-        txt.append(ed.encripLin("\n\n", clave));
-
-
-        Files.writeString(
-                rutaFichero,
-                txt.toString(),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.APPEND
-        );
-
-        return rutaFichero;
-    }
-
     /**
      * Lee y desencripta todos los informes almacenados en un fichero .lgx.
      *
-     * <p>El metodo es compatible con el formato generado por
-     * {@link #escribirInforme()}, que puede contener varios informes
+     * El metodo es compatible con el formato generado por ACorrector
+     * escribirInforme, que puede contener varios informes
      * concatenados en un mismo fichero.</p>
      *
-     * @param rutaFichero ruta del fichero .lgx
+     * rutaFichero ruta del fichero .lgx
      * @return el contenido en texto claro de todos los informes
-     * @throws IOException si el fichero no se puede leer o su formato no es valido
+     * IOException si el fichero no se puede leer o su formato no es valido
      */
     public String leerInforme(Path rutaFichero) throws IOException {
         if (rutaFichero == null) {
@@ -794,31 +720,21 @@ public class MetodosLb {
     private void crearArchivoCriterioInicial(Path rutaCriterio)
             throws IOException {
         String usuarioActual = new Datos().getUsuarioActual();
-        Files.writeString(
-                rutaCriterio,
-                (usuarioActual == null ? "" : usuarioActual)
-                        + System.lineSeparator(),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE_NEW,
-                StandardOpenOption.WRITE
-        );
-
         Datos.inicializarNomFchCriterFch();
         new Datos().setNumeroFichas(0);
-        Files.writeString(
-                rutaCriterio,
-                Datos.numeroFichas + System.lineSeparator(),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.APPEND
-        );
         Files.write(
                 rutaCriterio,
                 List.of(
+                        usuarioActual == null ? "" : usuarioActual,
+                        VERSION_FORMATO_CRITERIOS,
+                        "",
+                        String.valueOf(Datos.numeroFichas),
                         Datos.getNombreArchivoFch().get(0),
                         Datos.getCriteriosCorreccionFch().get(0)
                 ),
                 StandardCharsets.UTF_8,
-                StandardOpenOption.APPEND
+                StandardOpenOption.CREATE_NEW,
+                StandardOpenOption.WRITE
         );
     }
 
@@ -827,12 +743,12 @@ public class MetodosLb {
                 rutaCriterio,
                 StandardCharsets.UTF_8
         );
-        if (lineas.size() < 2) {
-            throw new IOException("El archivo de criterios no contiene un índice.");
-        }
+        validarFormatoCriterio(lineas);
 
         try {
-            int numeroFichas = Integer.parseInt(lineas.get(1).trim());
+            int numeroFichas = Integer.parseInt(
+                    lineas.get(POSICION_NUMERO_FICHAS).trim()
+            );
             if (numeroFichas < 0) {
                 throw new NumberFormatException();
             }
@@ -859,9 +775,6 @@ public class MetodosLb {
                 rutaCriterio,
                 StandardCharsets.UTF_8
         );
-        if (lineas.size() < 2) {
-            throw new IOException("El archivo de criterios no contiene un índice.");
-        }
 
         int numeroActual = leerNumeroFichasCriterio(rutaCriterio);
         int nuevoNumero = numeroActual + 1;
@@ -904,7 +817,8 @@ public class MetodosLb {
                 StandardCharsets.UTF_8
         );
         leerFichasCriterio(lineas, numeroFichas);
-        int posicionCriterio = 4 + (indice - 1) * 2 + 1;
+        int posicionCriterio = POSICION_PRIMERA_FICHA
+                + (indice - 1) * 2 + 1;
         lineas.set(
                 posicionCriterio,
                 PREFIJO_CRITERIO_ESCAPADO
@@ -973,12 +887,9 @@ public class MetodosLb {
             List<String> lineas,
             int numeroFichas
     ) throws IOException {
-        if (lineas.size() < 4) {
-            throw new IOException(
-                    "El archivo de criterios no contiene la cabecera completa."
-            );
-        }
-        int lineasEsperadas = 4 + numeroFichas * 2;
+        validarFormatoCriterio(lineas);
+        int lineasEsperadas = POSICION_PRIMERA_FICHA
+                + numeroFichas * 2;
         if (lineas.size() != lineasEsperadas) {
             throw new IOException(
                     "El archivo de criterios no tiene el formato actual."
@@ -987,7 +898,8 @@ public class MetodosLb {
 
         List<FichaCriterio> fichas = new ArrayList<>();
         for (int indice = 0; indice < numeroFichas; indice++) {
-            int posicionNombre = 4 + indice * 2;
+            int posicionNombre = POSICION_PRIMERA_FICHA
+                    + indice * 2;
             String nombre = lineas.get(posicionNombre);
             String criterioGuardado = lineas.get(posicionNombre + 1);
             String criterio = criterioGuardado.startsWith(
@@ -1007,10 +919,14 @@ public class MetodosLb {
             List<String> cabeceraOriginal,
             List<FichaCriterio> fichas
     ) throws IOException {
+        validarFormatoCriterio(cabeceraOriginal);
         List<String> lineas = new ArrayList<>(
-                cabeceraOriginal.subList(0, 4)
+                cabeceraOriginal.subList(0, POSICION_PRIMERA_FICHA)
         );
-        lineas.set(1, String.valueOf(fichas.size()));
+        lineas.set(
+                POSICION_NUMERO_FICHAS,
+                String.valueOf(fichas.size())
+        );
         for (FichaCriterio ficha : fichas) {
             lineas.add(ficha.nombre());
             lineas.add(
@@ -1025,6 +941,20 @@ public class MetodosLb {
                 StandardOpenOption.TRUNCATE_EXISTING,
                 StandardOpenOption.WRITE
         );
+    }
+
+    private void validarFormatoCriterio(List<String> lineas)
+            throws IOException {
+        if (lineas.size() < POSICION_PRIMERA_FICHA) {
+            throw new IOException(
+                    "El archivo de criterios no contiene la cabecera completa."
+            );
+        }
+        if (!VERSION_FORMATO_CRITERIOS.equals(lineas.get(1))) {
+            throw new IOException(
+                    "La versión del archivo de criterios no es compatible."
+            );
+        }
     }
 
     private void cargarFichasEnDatos(List<FichaCriterio> fichas) {
