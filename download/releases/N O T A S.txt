@@ -10,3 +10,25 @@ Version 0.0.2 (6.10.2026)
   la aplicación no se guarda encriptado y en la próxima versión del programa sí lo estará.
 - Los Criterios de Corrección que se generen con esta versión NO SERAN COMPATIBLES con la 
   nueva versión que saldrá próximamente. 
+
+  Instalación en Mac
+  ------------------
+  - La versión Apple-M se instalará en los ordenadores con el chip M de Apple Silicon.
+  - La versión Intel se debe instalar en los ordenadores con chip Intel que tengan instalado 
+    el macOS 13 o superior.
+  - La versión Intel-Legacy se podrá instalar en los ordenadores con chip Intel y el sistema
+    macOS 10.15 Catalina o superior.
+  - Deberemos descomprimirlos en una carpeta del usuario actual con privilegios de lectura y 
+    escritura ya que de lo contrario no se podrán guardar correctamente los archivos de 
+    configuración inicial. Un buen nombre para esa carpeta puede ser Corrector.
+  - En todos los casos en el primer arranque el sistema macOS bloqueará su inicio por problemas
+    de seguridad. Desde los Ajustes del sistema, en su sección de Seguridad, podremos autorizar
+    su primera ejecución.
+  - Tanto ACorrector como PCorrector pueden compartir la misma carpeta sin problemas, aunque
+    en principio está pensado Acr para el ordenador del alumno y Pcr para el del profesor.
+  - Es muy conveniente crear tambien la carpeta de Fichas dentro de la propia carpeta
+    Corrector del programa. De esa manera facilitaremos el acceso a las mismas desde las dos
+    aplicaciones.
+
+
+
