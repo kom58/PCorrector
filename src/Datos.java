@@ -32,7 +32,7 @@ public class Datos {
     public void setUsuarioActual(String usuario){ usuarioActual = usuario;}
     public void setUltimoUsuario(String ultUsuario){ ultimoUsuario = ultUsuario;}
     public void setFchCriteriosCorrec(String criteriosCorrec){ fchCriteriosCorrec = criteriosCorrec;}
-    public void setClvCriteriosCorrec(String clvCriteriosCorrec){}
+    public void setClvCriteriosCorrec(String claveCriteriosCorrec){clvCriteriosCorrec = claveCriteriosCorrec;}
     public void setFchActiva(String fchAct){fchActiva = fchAct;}
     public void setInforme(String infor){informe = infor;}
     public void setNombreFch(String nombreFch){nombreFch = nombreFch;}

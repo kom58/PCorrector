@@ -11,16 +11,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 public class BlocDeTexto extends JFrame {
     private static final long serialVersionUID = 1L;
+    private static final boolean ES_MAC_OS = System.getProperty("os.name", "")
+            .toLowerCase(Locale.ROOT)
+            .contains("mac");
     private static final MetodosLb METODOS = new MetodosLb();
     private final JTextArea texto = new JTextArea();
     private final JFileChooser selector = new JFileChooser();
     private final JFileChooser selectorCriterios = new JFileChooser();
     private final JFileChooser selectorFichas = new JFileChooser();
+    private File ultimoDirectorio = obtenerDirectorioPersonal();
     private final JLabel contador = new JLabel();
     private final JMenuItem abrir = new JMenuItem();
     private final JMenuItem sinCorregir = new JMenuItem();
@@ -155,12 +161,33 @@ public class BlocDeTexto extends JFrame {
         JMenuItem eliminarCriterio = new JMenuItem(
                 mensajeSeguro("1065", "Eliminar")
         );
+        JMenu configuracion = new JMenu(
+                mensajeSeguro("1110", "Configuración")
+        );
+        JMenuItem copiarApi = new JMenuItem(
+                mensajeSeguro("1111", "Copiar API")
+        );
+        JMenu contrasena = new JMenu(
+                mensajeSeguro("1112", "Contraseña")
+        );
+        JMenuItem crearContrasena = new JMenuItem(
+                mensajeSeguro("1113", "Crear")
+        );
+        JMenuItem modificarContrasena = new JMenuItem(
+                mensajeSeguro("1062", "Modificar")
+        );
+        JMenuItem eliminarContrasena = new JMenuItem(
+                mensajeSeguro("1065", "Eliminar")
+        );
 
         nuevoCriterio.addActionListener(e -> METODOS.crearNuevoCriterio());
         abrirCriterio.addActionListener(e -> abrirArchivoCriterios());
         anadirCriterio.addActionListener(e -> anadirFichaCriterio());
         modificarCriterio.addActionListener(e -> seleccionarFichaParaModificar());
         eliminarCriterio.addActionListener(e -> seleccionarFichaParaEliminar());
+        crearContrasena.addActionListener(e -> crearContrasenaCriterios());
+        modificarContrasena.addActionListener(e -> modificarContrasenaCriterios());
+        eliminarContrasena.addActionListener(e -> eliminarContrasenaCriterios());
 
         criterios.add(abrirCriterio);
         criterios.add(nuevoCriterio);
@@ -168,6 +195,12 @@ public class BlocDeTexto extends JFrame {
         fichas.add(modificarCriterio);
         fichas.add(eliminarCriterio);
         criterios.add(fichas);
+        configuracion.add(copiarApi);
+        contrasena.add(crearContrasena);
+        contrasena.add(modificarContrasena);
+        contrasena.add(eliminarContrasena);
+        configuracion.add(contrasena);
+        criterios.add(configuracion);
 
         JMenuItem acercaDe = new JMenuItem(
                 mensajeSeguro("1101", "Acerca de")
@@ -179,6 +212,308 @@ public class BlocDeTexto extends JFrame {
         barra.add(criterios);
         barra.add(ayuda);
         setJMenuBar(barra);
+    }
+
+    private void crearContrasenaCriterios() {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        try {
+            rutaCriterios = Path.of(datos.getFchCriteriosCorrec());
+            String claveActual = METODOS.leerClaveCriterios(rutaCriterios);
+            if (!claveActual.isEmpty()) {
+                mostrarAvisoContrasenaExistente();
+                return;
+            }
+        } catch (IOException | InvalidPathException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+            return;
+        }
+
+        char[] primeraClave = pedirContrasena(
+                mensajeSeguro("1121", "Introduce la contraseña")
+        );
+        if (primeraClave == null) {
+            return;
+        }
+        if (primeraClave.length == 0) {
+            Arrays.fill(primeraClave, '\0');
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro("1124", "La contraseña no puede estar vacía."),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        char[] segundaClave = pedirContrasena(
+                mensajeSeguro("1122", "Repite la contraseña")
+        );
+        if (segundaClave == null) {
+            Arrays.fill(primeraClave, '\0');
+            return;
+        }
+        if (!Arrays.equals(primeraClave, segundaClave)) {
+            Arrays.fill(primeraClave, '\0');
+            Arrays.fill(segundaClave, '\0');
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro("1123", "Las contraseñas no coinciden."),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        String clave = new String(primeraClave);
+        Arrays.fill(primeraClave, '\0');
+        Arrays.fill(segundaClave, '\0');
+        try {
+            if (!METODOS.crearClaveCriterios(rutaCriterios, clave)) {
+                mostrarAvisoContrasenaExistente();
+                return;
+            }
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro("1125", "Contraseña creada correctamente."),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1085",
+                            "No se pudo guardar el archivo de criterios"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private void modificarContrasenaCriterios() {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        final String claveGuardada;
+        try {
+            rutaCriterios = Path.of(datos.getFchCriteriosCorrec());
+            claveGuardada = METODOS.leerClaveCriterios(rutaCriterios);
+            if (claveGuardada.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        mensajeSeguro(
+                                "1128",
+                                "El archivo de criterios no tiene contraseña. "
+                                        + "Usa la opción Crear."
+                        ),
+                        mensajeSeguro("1112", "Contraseña"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+        } catch (IOException | InvalidPathException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+            return;
+        }
+
+        char[] claveActual = pedirContrasena(
+                mensajeSeguro("1129", "Introduce la contraseña actual")
+        );
+        if (claveActual == null) {
+            return;
+        }
+        char[] claveEsperada = claveGuardada.toCharArray();
+        boolean claveActualValida = Arrays.equals(claveActual, claveEsperada);
+        Arrays.fill(claveActual, '\0');
+        Arrays.fill(claveEsperada, '\0');
+        if (!claveActualValida) {
+            mostrarAvisoContrasenaIncorrecta();
+            return;
+        }
+
+        char[] nuevaClave = pedirContrasena(
+                mensajeSeguro("1130", "Introduce la nueva contraseña")
+        );
+        if (nuevaClave == null) {
+            return;
+        }
+        if (nuevaClave.length == 0) {
+            Arrays.fill(nuevaClave, '\0');
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro("1124", "La contraseña no puede estar vacía."),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        char[] confirmacion = pedirContrasena(
+                mensajeSeguro("1131", "Repite la nueva contraseña")
+        );
+        if (confirmacion == null) {
+            Arrays.fill(nuevaClave, '\0');
+            return;
+        }
+        if (!Arrays.equals(nuevaClave, confirmacion)) {
+            Arrays.fill(nuevaClave, '\0');
+            Arrays.fill(confirmacion, '\0');
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro("1123", "Las contraseñas no coinciden."),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        String nuevaClaveValidada = new String(nuevaClave);
+        Arrays.fill(nuevaClave, '\0');
+        Arrays.fill(confirmacion, '\0');
+        try {
+            if (!METODOS.modificarClaveCriterios(
+                    rutaCriterios,
+                    claveGuardada,
+                    nuevaClaveValidada
+            )) {
+                mostrarAvisoContrasenaIncorrecta();
+                return;
+            }
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1132",
+                            "Contraseña modificada correctamente."
+                    ),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1085",
+                            "No se pudo guardar el archivo de criterios"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private void eliminarContrasenaCriterios() {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        final String claveGuardada;
+        try {
+            rutaCriterios = Path.of(datos.getFchCriteriosCorrec());
+            claveGuardada = METODOS.leerClaveCriterios(rutaCriterios);
+            if (claveGuardada.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        mensajeSeguro(
+                                "1133",
+                                "El archivo de criterios no tiene contraseña."
+                        ),
+                        mensajeSeguro("1112", "Contraseña"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+        } catch (IOException | InvalidPathException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+            return;
+        }
+
+        char[] claveActual = pedirContrasena(
+                mensajeSeguro("1129", "Introduce la contraseña actual")
+        );
+        if (claveActual == null) {
+            return;
+        }
+        char[] claveEsperada = claveGuardada.toCharArray();
+        boolean claveActualValida = Arrays.equals(claveActual, claveEsperada);
+        Arrays.fill(claveActual, '\0');
+        Arrays.fill(claveEsperada, '\0');
+        if (!claveActualValida) {
+            mostrarAvisoContrasenaIncorrecta();
+            return;
+        }
+
+        try {
+            if (!METODOS.eliminarClaveCriterios(
+                    rutaCriterios,
+                    claveGuardada
+            )) {
+                mostrarAvisoContrasenaIncorrecta();
+                return;
+            }
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1134",
+                            "Contraseña eliminada correctamente."
+                    ),
+                    mensajeSeguro("1112", "Contraseña"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1085",
+                            "No se pudo guardar el archivo de criterios"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private char[] pedirContrasena(String mensaje) {
+        JPasswordField campoContrasena = new JPasswordField(24);
+        int resultado = JOptionPane.showConfirmDialog(
+                this,
+                new Object[]{new JLabel(mensaje), campoContrasena},
+                mensajeSeguro("1112", "Contraseña"),
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+        return resultado == JOptionPane.OK_OPTION
+                ? campoContrasena.getPassword()
+                : null;
+    }
+
+    private void mostrarAvisoContrasenaExistente() {
+        JOptionPane.showMessageDialog(
+                this,
+                mensajeSeguro(
+                        "1120",
+                        "El archivo de criterios ya tiene una contraseña. "
+                                + "Usa la opción Modificar."
+                ),
+                mensajeSeguro("1112", "Contraseña"),
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private void mostrarAvisoContrasenaIncorrecta() {
+        JOptionPane.showMessageDialog(
+                this,
+                mensajeSeguro("1127", "La contraseña es incorrecta."),
+                mensajeSeguro("1112", "Contraseña"),
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
     private void mostrarAcercaDe() {
@@ -260,21 +595,52 @@ public class BlocDeTexto extends JFrame {
     }
 
     private void abrirArchivoCriterios() {
-        if (selectorCriterios.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+        File archivo = seleccionarArchivo(selectorCriterios, "cri");
+        if (archivo == null) {
             return;
         }
 
-        File archivo = selectorCriterios.getSelectedFile();
+        Path rutaCriterios = archivo.toPath();
         try {
-            METODOS.cargarFichasCriterio(archivo.toPath());
+            if (!autorizarAperturaCriterios(rutaCriterios)) {
+                return;
+            }
+            METODOS.cargarFichasCriterio(rutaCriterios);
             new Datos().setFchCriteriosCorrec(
-                    archivo.toPath().toAbsolutePath().normalize().toString()
+                    rutaCriterios.toAbsolutePath().normalize().toString()
             );
-            texto.setText(leerContenidoCriteriosVisible(archivo.toPath()));
+            texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
             texto.setCaretPosition(0);
         } catch (IOException | SecurityException e) {
             mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
         }
+    }
+
+    private boolean autorizarAperturaCriterios(Path rutaCriterios)
+            throws IOException {
+        String claveGuardada = METODOS.leerClaveCriterios(rutaCriterios);
+        if (claveGuardada.isEmpty()) {
+            return true;
+        }
+
+        char[] claveIntroducida = pedirContrasena(
+                mensajeSeguro(
+                        "1126",
+                        "Introduce la contraseña del archivo de criterios"
+                )
+        );
+        if (claveIntroducida == null) {
+            return false;
+        }
+
+        char[] claveEsperada = claveGuardada.toCharArray();
+        boolean coincide = Arrays.equals(claveIntroducida, claveEsperada);
+        Arrays.fill(claveIntroducida, '\0');
+        Arrays.fill(claveEsperada, '\0');
+        if (!coincide) {
+            mostrarAvisoContrasenaIncorrecta();
+        }
+        return coincide;
     }
 
     private static String leerContenidoCriteriosVisible(Path rutaCriterios)
@@ -318,11 +684,19 @@ public class BlocDeTexto extends JFrame {
             return;
         }
 
-        if (selectorFichas.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+        File archivo = seleccionarArchivo(
+                selectorFichas,
+                "html",
+                "htm",
+                "pdf",
+                "jpg",
+                "gif",
+                "png"
+        );
+        if (archivo == null) {
             return;
         }
 
-        File archivo = selectorFichas.getSelectedFile();
         if (!abrirEnNavegador(archivo)) {
             return;
         }
@@ -673,9 +1047,91 @@ public class BlocDeTexto extends JFrame {
 
     private void abrirArchivo(boolean omitirCorreccion) {
         Datos.sinCorreccion = omitirCorreccion;
-        if (selector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            cargarInforme(selector.getSelectedFile());
+        File archivo = seleccionarArchivo(selector, "lgx");
+        if (archivo != null) {
+            cargarInforme(archivo);
         }
+    }
+
+    private File seleccionarArchivo(
+            JFileChooser selectorSwing,
+            String... extensiones
+    ) {
+        File archivo;
+        if (ES_MAC_OS) {
+            archivo = seleccionarArchivoNativo(
+                    selectorSwing.getDialogTitle(),
+                    extensiones
+            );
+        } else {
+            if (ultimoDirectorio.isDirectory()) {
+                selectorSwing.setCurrentDirectory(ultimoDirectorio);
+            }
+            if (selectorSwing.showOpenDialog(this)
+                    != JFileChooser.APPROVE_OPTION) {
+                return null;
+            }
+            archivo = selectorSwing.getSelectedFile();
+        }
+
+        if (archivo != null) {
+            File directorio = archivo.getParentFile();
+            if (directorio != null && directorio.isDirectory()) {
+                ultimoDirectorio = directorio;
+            }
+        }
+        return archivo;
+    }
+
+    private File seleccionarArchivoNativo(
+            String titulo,
+            String... extensiones
+    ) {
+        FileDialog dialogo = new FileDialog(this, titulo, FileDialog.LOAD);
+        dialogo.setMultipleMode(false);
+        if (ultimoDirectorio.isDirectory()) {
+            dialogo.setDirectory(ultimoDirectorio.getAbsolutePath());
+        }
+        dialogo.setFilenameFilter(
+                (directorio, nombre) -> tieneExtensionPermitida(
+                        nombre,
+                        extensiones
+                )
+        );
+        dialogo.setVisible(true);
+
+        String nombre = dialogo.getFile();
+        String directorio = dialogo.getDirectory();
+        dialogo.dispose();
+        if (nombre == null) {
+            return null;
+        }
+        return directorio == null
+                ? new File(nombre)
+                : new File(directorio, nombre);
+    }
+
+    private static boolean tieneExtensionPermitida(
+            String nombre,
+            String... extensiones
+    ) {
+        String nombreMinusculas = nombre.toLowerCase(Locale.ROOT);
+        for (String extension : extensiones) {
+            if (nombreMinusculas.endsWith(
+                    "." + extension.toLowerCase(Locale.ROOT)
+            )) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static File obtenerDirectorioPersonal() {
+        String rutaPersonal = System.getProperty("user.home", ".");
+        File directorioPersonal = new File(rutaPersonal);
+        return directorioPersonal.isDirectory()
+                ? directorioPersonal
+                : new File(".").getAbsoluteFile();
     }
 
     public void cargarInforme(File archivo) {

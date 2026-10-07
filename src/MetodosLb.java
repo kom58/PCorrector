@@ -33,7 +33,7 @@ public class MetodosLb {
 
 
     public String versionPCrr() {
-        return "0.0.9";
+        return "0.0.11";
     }
 
     public Path rutaArchivoPcrIni() {
@@ -721,7 +721,9 @@ public class MetodosLb {
             throws IOException {
         String usuarioActual = new Datos().getUsuarioActual();
         Datos.inicializarNomFchCriterFch();
-        new Datos().setNumeroFichas(0);
+        Datos datos = new Datos();
+        datos.setNumeroFichas(0);
+        datos.setClvCriteriosCorrec("");
         Files.write(
                 rutaCriterio,
                 List.of(
@@ -873,6 +875,7 @@ public class MetodosLb {
                 lineas,
                 numeroFichas
         );
+        new Datos().setClvCriteriosCorrec(lineas.get(2));
 
         cargarFichasEnDatos(fichas);
         List<String> nombres = new ArrayList<>();
@@ -881,6 +884,103 @@ public class MetodosLb {
         }
         new Datos().setNumeroFichas(numeroFichas);
         return nombres;
+    }
+
+    public String leerClaveCriterios(Path rutaCriterio) throws IOException {
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        return lineas.get(2);
+    }
+
+    public boolean crearClaveCriterios(Path rutaCriterio, String clave)
+            throws IOException {
+        if (clave == null || clave.isEmpty()) {
+            throw new IOException("La contraseña no puede estar vacía.");
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        String claveActual = lineas.get(2);
+        if (!claveActual.isEmpty()) {
+            new Datos().setClvCriteriosCorrec(claveActual);
+            return false;
+        }
+
+        lineas.set(2, clave);
+        Files.write(
+                rutaCriterio,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+        new Datos().setClvCriteriosCorrec(clave);
+        return true;
+    }
+
+    public boolean modificarClaveCriterios(
+            Path rutaCriterio,
+            String claveActual,
+            String claveNueva
+    ) throws IOException {
+        if (claveNueva == null || claveNueva.isEmpty()) {
+            throw new IOException("La contraseña no puede estar vacía.");
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        String claveGuardada = lineas.get(2);
+        if (claveGuardada.isEmpty() || !claveGuardada.equals(claveActual)) {
+            new Datos().setClvCriteriosCorrec(claveGuardada);
+            return false;
+        }
+
+        lineas.set(2, claveNueva);
+        Files.write(
+                rutaCriterio,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+        new Datos().setClvCriteriosCorrec(claveNueva);
+        return true;
+    }
+
+    public boolean eliminarClaveCriterios(
+            Path rutaCriterio,
+            String claveActual
+    ) throws IOException {
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        String claveGuardada = lineas.get(2);
+        if (claveGuardada.isEmpty() || !claveGuardada.equals(claveActual)) {
+            new Datos().setClvCriteriosCorrec(claveGuardada);
+            return false;
+        }
+
+        lineas.set(2, "");
+        Files.write(
+                rutaCriterio,
+                lineas,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+        new Datos().setClvCriteriosCorrec("");
+        return true;
     }
 
     private List<FichaCriterio> leerFichasCriterio(
