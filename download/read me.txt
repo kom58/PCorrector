@@ -71,7 +71,7 @@
      provided and one of the available languages selected.
 
    - The teacher must then enter their name. After a greeting, the program starts directly and
-     displays the following menu in version 0.0.2:
+     displays the following menu in version 1.0:
 
       + FILE
            - Open
@@ -91,6 +91,9 @@
                   - Create
                   - Modify
                   - Delete
+               . Encryption:
+                  - Encrypt criteria
+                  - Decrypt criteria
 
       + HELP
           - About
@@ -121,7 +124,7 @@
            is available and the API has not expired, the program asks the AI to correct the
            written answers using the criteria created by the teacher. After a few seconds, the
            program displays the answers, their corrections, and accompanying comments. In
-           version 0.0.2, the program uses OpenAI's API services, specifically the “5.6-Luna”
+           version 1.0, the program uses OpenAI's API services, specifically the “5.6-Luna”
            version, because it is currently reliable, fast, and economical for the intended
            task. The API can be purchased and paid for on the OpenAI website:
            https://platform.openai.com/home. Based on the tests carried out so far, its cost is
@@ -141,7 +144,8 @@
 
       - CRITERIA – Open: Loads a previously created set of “Correction Criteria” into the program.
         A dialog box is displayed where a “*.cri” file must be selected. Its criteria are shown
-        on screen once the file has been selected.
+        on screen once the file has been selected, provided that it is not encrypted. If it is
+        encrypted, the program displays a notification instead.
 
       - CRITERIA – New: When using the program for the first time, the teacher must use this option
         to create a new correction criteria file. After selecting it, the teacher is asked to name
@@ -179,12 +183,22 @@
 
       - CRITERIA - Configuration - Password - Create: When a new correction criteria file is created using
         Criteria > New, it is created without a password. A password can be added here. Passwords must be
-        handled carefully because, if the password is forgotten, there will be no way to open the encrypted file.
+        handled carefully because, if the file is encrypted and the password is forgotten, there will be no
+        way to open it.
 
-      - CRITERIA - Configuration - Password - Modify: This option changes the file password.
+      - CRITERIA - Configuration - Password - Modify: This option changes the file password while the file
+        is still unencrypted.
 
       - CRITERIA - Configuration - Password - Delete: This option removes the password so that the file
-        no longer has one.
+        no longer has one, provided that it has not yet been encrypted.
+
+      - CRITERIA - Configuration - Encryption - Encrypt criteria: This option encrypts an unencrypted
+        criteria file. The file must have a password; otherwise, the program asks the user to create one.
+        Encrypting a correction criteria file is especially useful on a shared or public computer because
+        its contents remain protected by the password.
+
+      - CRITERIA - Configuration - Encryption - Decrypt criteria: This option decrypts an encrypted file.
+        Its password must be known.
 
       - ABOUT: Displays the program version.
 

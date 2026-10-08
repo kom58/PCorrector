@@ -31,6 +31,10 @@ public class BlocDeTexto extends JFrame {
     private final JLabel contador = new JLabel();
     private final JMenuItem abrir = new JMenuItem();
     private final JMenuItem sinCorregir = new JMenuItem();
+    private final JMenu menuContrasena = new JMenu();
+    private final JMenuItem opcionCifrarCriterios = new JMenuItem();
+    private final JMenuItem opcionDescifrarCriterios = new JMenuItem();
+    private boolean archivoCriteriosCifrado;
 
     private final String etiquetaPalabras;
     private final String tituloError;
@@ -183,9 +187,7 @@ public class BlocDeTexto extends JFrame {
         JMenuItem copiarApi = new JMenuItem(
                 mensajeSeguro("1111", "Copiar API")
         );
-        JMenu contrasena = new JMenu(
-                mensajeSeguro("1112", "Contraseña")
-        );
+        menuContrasena.setText(mensajeSeguro("1112", "Contraseña"));
         JMenuItem crearContrasena = new JMenuItem(
                 mensajeSeguro("1113", "Crear")
         );
@@ -195,8 +197,22 @@ public class BlocDeTexto extends JFrame {
         JMenuItem eliminarContrasena = new JMenuItem(
                 mensajeSeguro("1065", "Eliminar")
         );
+        JMenu cifrado = new JMenu(
+                mensajeSeguro("1155", "Cifrado")
+        );
+        opcionCifrarCriterios.setText(
+                mensajeSeguro("1150", "Cifrar criterios")
+        );
+        opcionDescifrarCriterios.setText(
+                mensajeSeguro("1151", "Descifrar criterios")
+        );
 
-        nuevoCriterio.addActionListener(e -> METODOS.crearNuevoCriterio());
+        nuevoCriterio.addActionListener(e -> {
+            String rutaCreada = METODOS.crearNuevoCriterio();
+            if (!rutaCreada.isBlank()) {
+                actualizarMenusSegunCifrado(false);
+            }
+        });
         abrirCriterio.addActionListener(e -> abrirArchivoCriterios());
         anadirCriterio.addActionListener(e -> anadirFichaCriterio());
         modificarCriterio.addActionListener(e -> seleccionarFichaParaModificar());
@@ -205,6 +221,8 @@ public class BlocDeTexto extends JFrame {
         crearContrasena.addActionListener(e -> crearContrasenaCriterios());
         modificarContrasena.addActionListener(e -> modificarContrasenaCriterios());
         eliminarContrasena.addActionListener(e -> eliminarContrasenaCriterios());
+        opcionCifrarCriterios.addActionListener(e -> cifrarCriterios());
+        opcionDescifrarCriterios.addActionListener(e -> descifrarCriterios());
 
         criterios.add(abrirCriterio);
         criterios.add(nuevoCriterio);
@@ -213,11 +231,15 @@ public class BlocDeTexto extends JFrame {
         fichas.add(eliminarCriterio);
         criterios.add(fichas);
         configuracion.add(copiarApi);
-        contrasena.add(crearContrasena);
-        contrasena.add(modificarContrasena);
-        contrasena.add(eliminarContrasena);
-        configuracion.add(contrasena);
+        menuContrasena.add(crearContrasena);
+        menuContrasena.add(modificarContrasena);
+        menuContrasena.add(eliminarContrasena);
+        configuracion.add(menuContrasena);
+        cifrado.add(opcionCifrarCriterios);
+        cifrado.add(opcionDescifrarCriterios);
+        configuracion.add(cifrado);
         criterios.add(configuracion);
+        actualizarMenusSegunCifrado(false);
 
         JMenuItem acercaDe = new JMenuItem(
                 mensajeSeguro("1101", "Acerca de")
@@ -431,6 +453,169 @@ public class BlocDeTexto extends JFrame {
                     mensajeSeguro(
                             "1085",
                             "No se pudo guardar el archivo de criterios"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private void cifrarCriterios() {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        final String claveGuardada;
+        try {
+            rutaCriterios = Path.of(datos.getFchCriteriosCorrec());
+            claveGuardada = METODOS.leerClaveCriterios(rutaCriterios);
+            if (claveGuardada.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        mensajeSeguro(
+                                "1152",
+                                "Para cifrar el archivo de criterios primero debes crear una contraseña."
+                        ),
+                        mensajeSeguro("1112", "Contraseña"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+        } catch (IOException | InvalidPathException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+            return;
+        }
+
+        char[] claveIntroducida = pedirContrasena(
+                mensajeSeguro("1129", "Introduce la contraseña actual")
+        );
+        if (claveIntroducida == null) {
+            return;
+        }
+
+        char[] claveEsperada = claveGuardada.toCharArray();
+        boolean coincide = Arrays.equals(claveIntroducida, claveEsperada);
+        Arrays.fill(claveIntroducida, '\0');
+        Arrays.fill(claveEsperada, '\0');
+        if (!coincide) {
+            mostrarAvisoContrasenaIncorrecta();
+            return;
+        }
+
+        try {
+            if (!METODOS.cifrarArchivoCriterios(
+                    rutaCriterios,
+                    claveGuardada
+            )) {
+                mostrarAvisoContrasenaIncorrecta();
+                return;
+            }
+            texto.setText( "\n\n       " +
+                    mensajeSeguro(
+                            "1159",
+                            "Criterios de corrección ENCRIPTADOS"
+                    )
+            );
+            texto.setCaretPosition(0);
+            actualizarMenusSegunCifrado(true);
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1153",
+                            "Archivo de criterios cifrado correctamente."
+                    ),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1154",
+                            "No se pudo cifrar el archivo de criterios"
+                    ) + ":\n" + e.getMessage()
+            );
+        }
+    }
+
+    private void descifrarCriterios() {
+        Datos datos = new Datos();
+        if (datos.getFchCriteriosCorrec() == null
+                || datos.getFchCriteriosCorrec().isBlank()) {
+            mostrarAvisoSinArchivoCriterios();
+            return;
+        }
+
+        final Path rutaCriterios;
+        final String claveGuardada;
+        try {
+            rutaCriterios = Path.of(datos.getFchCriteriosCorrec());
+            claveGuardada = METODOS.leerClaveCriteriosCifrado(rutaCriterios);
+            if (claveGuardada == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        mensajeSeguro(
+                                "1156",
+                                "El archivo de criterios abierto no está cifrado."
+                        ),
+                        mensajeSeguro("1155", "Cifrado"),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+        } catch (IOException | InvalidPathException | SecurityException e) {
+            mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
+            return;
+        }
+
+        if (!claveGuardada.isEmpty()) {
+            char[] claveIntroducida = pedirContrasena(
+                    mensajeSeguro(
+                            "1126",
+                            "Introduce la contraseña del archivo de criterios"
+                    )
+            );
+            if (claveIntroducida == null) {
+                return;
+            }
+
+            char[] claveEsperada = claveGuardada.toCharArray();
+            boolean coincide = Arrays.equals(claveIntroducida, claveEsperada);
+            Arrays.fill(claveIntroducida, '\0');
+            Arrays.fill(claveEsperada, '\0');
+            if (!coincide) {
+                mostrarAvisoContrasenaIncorrecta();
+                return;
+            }
+        }
+
+        try {
+            if (!METODOS.descifrarArchivoCriterios(
+                    rutaCriterios,
+                    claveGuardada
+            )) {
+                mostrarAvisoContrasenaIncorrecta();
+                return;
+            }
+            METODOS.cargarFichasCriterio(rutaCriterios);
+            texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
+            texto.setCaretPosition(0);
+            actualizarMenusSegunCifrado(false);
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1157",
+                            "Archivo de criterios descifrado correctamente."
+                    ),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (IOException | SecurityException e) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1158",
+                            "No se pudo descifrar el archivo de criterios"
                     ) + ":\n" + e.getMessage()
             );
         }
@@ -743,14 +928,36 @@ public class BlocDeTexto extends JFrame {
 
         Path rutaCriterios = archivo.toPath();
         try {
-            if (!autorizarAperturaCriterios(rutaCriterios)) {
-                return;
+            String claveCifrada = METODOS.leerClaveCriteriosCifrado(
+                    rutaCriterios
+            );
+            boolean archivoCifrado = claveCifrada != null;
+            if (archivoCifrado) {
+                if (!autorizarClaveCriterios(claveCifrada)
+                        || !METODOS.cargarFichasCriterioCifrado(
+                                rutaCriterios,
+                                claveCifrada
+                        )) {
+                    return;
+                }
+            } else {
+                if (!autorizarAperturaCriterios(rutaCriterios)) {
+                    return;
+                }
+                METODOS.cargarFichasCriterio(rutaCriterios);
             }
-            METODOS.cargarFichasCriterio(rutaCriterios);
             new Datos().setFchCriteriosCorrec(
                     rutaCriterios.toAbsolutePath().normalize().toString()
             );
-            texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
+            actualizarMenusSegunCifrado(archivoCifrado);
+            texto.setText(
+                    archivoCifrado
+                            ? mensajeSeguro(
+                                    "1159",
+                                    "Criterios de corrección ENCRIPTADOS"
+                            )
+                            : leerContenidoCriteriosVisible(rutaCriterios)
+            );
             texto.setCaretPosition(0);
         } catch (IOException | SecurityException e) {
             mostrarError(errorAbrirArchivo + ":\n" + e.getMessage());
@@ -759,7 +966,19 @@ public class BlocDeTexto extends JFrame {
 
     private boolean autorizarAperturaCriterios(Path rutaCriterios)
             throws IOException {
-        String claveGuardada = METODOS.leerClaveCriterios(rutaCriterios);
+        return autorizarClaveCriterios(
+                METODOS.leerClaveCriterios(rutaCriterios)
+        );
+    }
+
+    private void actualizarMenusSegunCifrado(boolean archivoCifrado) {
+        archivoCriteriosCifrado = archivoCifrado;
+        menuContrasena.setEnabled(!archivoCifrado);
+        opcionCifrarCriterios.setEnabled(!archivoCifrado);
+        opcionDescifrarCriterios.setEnabled(archivoCifrado);
+    }
+
+    private boolean autorizarClaveCriterios(String claveGuardada) {
         if (claveGuardada.isEmpty()) {
             return true;
         }
@@ -1014,8 +1233,12 @@ public class BlocDeTexto extends JFrame {
 
         try {
             METODOS.eliminarFichaCriterio(indice);
-            texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
-            texto.setCaretPosition(0);
+            if (archivoCriteriosCifrado) {
+                mostrarAvisoCriteriosCifrados();
+            } else {
+                texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
+                texto.setCaretPosition(0);
+            }
         } catch (IOException | SecurityException e) {
             mostrarError(
                     mensajeSeguro(
@@ -1101,7 +1324,11 @@ public class BlocDeTexto extends JFrame {
             );
             try {
                 METODOS.guardarFichaCriterio(indice);
-                mostrarFichaCriterio(indice);
+                if (archivoCriteriosCifrado) {
+                    mostrarAvisoCriteriosCifrados();
+                } else {
+                    mostrarFichaCriterio(indice);
+                }
             } catch (IOException | SecurityException e) {
                 mostrarError(
                         mensajeSeguro(
@@ -1157,7 +1384,11 @@ public class BlocDeTexto extends JFrame {
             );
             try {
                 METODOS.modificarFichaCriterio(indice);
-                mostrarFichaCriterio(indice);
+                if (archivoCriteriosCifrado) {
+                    mostrarAvisoCriteriosCifrados();
+                } else {
+                    mostrarFichaCriterio(indice);
+                }
             } catch (IOException | SecurityException e) {
                 Datos.getCriteriosCorreccionFch().set(
                         indice,
@@ -1182,6 +1413,16 @@ public class BlocDeTexto extends JFrame {
                         + mensajeSeguro("1084", "Criterios de corrección")
                         + ":\n"
                         + Datos.getCriteriosCorreccionFch().get(indice)
+        );
+        texto.setCaretPosition(0);
+    }
+
+    private void mostrarAvisoCriteriosCifrados() {
+        texto.setText(
+                mensajeSeguro(
+                        "1159",
+                        "Criterios de corrección ENCRIPTADOS"
+                )
         );
         texto.setCaretPosition(0);
     }

@@ -69,7 +69,7 @@
      eman eta erabilgarri dauden hizkuntzetako bat hautatu behar da.
 
    - Ondoren, irakasleak bere izena idatzi behar du. Ongietorriaren ostean, programa zuzenean abiaraziko
-     da, eta 0.0.2 bertsioan honako menu hau erakutsiko du:
+     da, eta 1.0 bertsioan honako menu hau erakutsiko du:
 
       + FITXATEGIA
            - Ireki
@@ -89,6 +89,9 @@
                   - Sortu
                   - Aldatu
                   - Ezabatu
+               . Zifratzea:
+                  - Irizpideak zifratu
+                  - Irizpideak deszifratu
 
       + LAGUNTZA
           - Honi buruz
@@ -119,7 +122,7 @@
            da, eta enpresak ordainketa egin ondoren emandako API kodetua gordetzen du. Fitxategia
            eskuragarri badago eta APIa iraungita ez badago, programak idatzitako erantzunak irakasleak
            sortutako irizpideen arabera zuzentzeko eskatuko dio AAri. Segundo gutxiren buruan, programak
-           erantzunak, zuzenketak eta erantsitako iruzkinak erakutsiko ditu. 0.0.2 bertsioan, programak
+           erantzunak, zuzenketak eta erantsitako iruzkinak erakutsiko ditu. 1.0 bertsioan, programak
            OpenAI enpresaren API zerbitzuak erabiltzen ditu, zehazki «5.6-Luna» bertsioa, gaur egun
            eskatu nahi zaion lanerako nahiko fidagarria, azkarra eta merkea delako. APIa OpenAIren
            webgunean eskuratu eta ordaintzen da: https://platform.openai.com/home. Orain arte egindako
@@ -139,7 +142,8 @@
 
       - IRIZPIDEAK – Ireki: Aukera honek aurrez sortutako «Zuzenketa-irizpideen» multzo bat kargatzen
         du programan. Elkarrizketa-koadro bat agertuko da «*.cri» fitxategi bat hautatzeko, eta fitxategia
-        hautatutakoan irizpideak pantailan erakutsiko dira.
+        hautatutakoan irizpideak pantailan erakutsiko dira, zifratuta ez badago. Zifratuta badago,
+        programak horren berri emango du.
 
       - IRIZPIDEAK – Berria: Programa lehen aldiz erabiltzen bada, irakasleak zuzenketa-irizpideen
         fitxategi berri bat sortu behar du aukera honen bidez. Aukera hautatzean, irizpide-fitxategi
@@ -177,14 +181,22 @@
 
       - IRIZPIDEAK - Konfigurazioa - Pasahitza - Sortu: Irizpideak > Berria aukera erabiliz zuzenketa-
         irizpideen fitxategi berria sortzen dugunean, pasahitzik gabe sortzen da. Hemen pasahitz bat jar
-        diezaiokegu. Kontuz ibili behar da pasahitzekin; ahazten badugu, ezingo da fitxategia ireki,
-        zifratuta baitago.
+        diezaiokegu. Kontuz ibili behar da pasahitzekin; fitxategia zifratu eta pasahitza ahazten badugu,
+        ezingo da fitxategia ireki.
 
       - IRIZPIDEAK - Konfigurazioa - Pasahitza - Aldatu: Aukera honen bidez fitxategiaren pasahitza
-        alda dezakegu.
+        alda dezakegu, fitxategia oraindik zifratu gabe badago.
 
-      - IRIZPIDEAK - Konfigurazioa - Pasahitza - Ezabatu: Fitxategia berriro pasahitzik gabe eduki nahi
-        badugu, aukera hau erabili behar da.
+      - IRIZPIDEAK - Konfigurazioa - Pasahitza - Ezabatu: Fitxategia oraindik zifratu gabe badago eta
+        berriro pasahitzik gabe eduki nahi badugu, aukera hau erabili behar da.
+
+      - IRIZPIDEAK - Konfigurazioa - Zifratzea - Irizpideak zifratu: Aukera honek zifratu gabeko
+        irizpide-fitxategi bat zifratzeko aukera ematen du. Fitxategiak pasahitz bat izan behar du;
+        bestela, programak bat sortzeko eskatuko digu. Zifratzea bereziki erabilgarria da partekatutako
+        edo erabilera publikoko ordenagailuetan, edukia pasahitzaren bidez babestuta geratzen baita.
+
+      - IRIZPIDEAK - Konfigurazioa - Zifratzea - Irizpideak deszifratu: Aukera honek zifratutako
+        fitxategi bat deszifratzeko aukera ematen du. Ezinbestekoa da pasahitza ezagutzea.
 
       - HONI BURUZ: Programaren bertsioa erakusten du.
 

@@ -77,6 +77,16 @@
 1144=L'API seleccionada no és vàlida.
 1145=No s'ha pogut copiar el fitxer pai.dt.
 1146=El fitxer seleccionat s'ha d'anomenar pai.dt.
+1150=Xifrar criteris
+1151=Desxifrar criteris
+1152=Per xifrar el fitxer de criteris primer has de crear una contrasenya.
+1153=El fitxer de criteris s'ha xifrat correctament.
+1154=No s'ha pogut xifrar el fitxer de criteris
+1155=Xifrat
+1156=El fitxer de criteris obert no està xifrat.
+1157=El fitxer de criteris s'ha desxifrat correctament.
+1158=No s'ha pogut desxifrar el fitxer de criteris
+1159=Criteris de correcció XIFRATS
 2001=Paraules
 2010=Responent a
 2020=No es va poder obrir l'arxiu

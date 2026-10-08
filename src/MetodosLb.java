@@ -11,6 +11,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,14 +28,24 @@ public class MetodosLb {
     private static final Pattern PATRON_NOMBRE_RESERVADO_WINDOWS = Pattern.compile(
             "(?i)^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?$"
     );
+    private static final Pattern PATRON_CLAVE_PUBLICA = Pattern.compile(
+            "[A-Za-z0-9]{4}"
+    );
+    private static final Pattern PATRON_LINEA_CIFRADA = Pattern.compile(
+            "[A-Za-z0-9+/]+={0,2}"
+    );
     private static final String PREFIJO_CRITERIO_ESCAPADO =
             "[PCorrector:CriterioEscapado]";
     private static final String VERSION_FORMATO_CRITERIOS = "Versión 1.0";
+    private static final String CARACTERES_CLAVE_PUBLICA =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int LONGITUD_CLAVE_PUBLICA = 4;
+    private static final SecureRandom GENERADOR_ALEATORIO = new SecureRandom();
     private static final int POSICION_NUMERO_FICHAS = 3;
     private static final int POSICION_PRIMERA_FICHA = 6;
 
 
-    public String versionPCrr() {return "0.0.12";}
+    public String versionPCrr() {return "1.0.16";}
 
     public Path rutaArchivoPcrIni() {
         return rutaDirectorioConfiguracion().resolve(
@@ -844,6 +855,11 @@ public class MetodosLb {
                 rutaCriterio,
                 StandardCharsets.UTF_8
         );
+        return leerNumeroFichasCriterio(lineas);
+    }
+
+    private int leerNumeroFichasCriterio(List<String> lineas)
+            throws IOException {
         validarFormatoCriterio(lineas);
 
         try {
@@ -872,12 +888,12 @@ public class MetodosLb {
         }
 
         Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
-        List<String> lineas = Files.readAllLines(
-                rutaCriterio,
-                StandardCharsets.UTF_8
+        ArchivoCriteriosEdicion archivo = leerArchivoCriteriosParaEdicion(
+                rutaCriterio
         );
+        List<String> lineas = archivo.lineas();
 
-        int numeroActual = leerNumeroFichasCriterio(rutaCriterio);
+        int numeroActual = leerNumeroFichasCriterio(lineas);
         int nuevoNumero = numeroActual + 1;
         if (indice != nuevoNumero) {
             throw new IOException("El índice de la ficha no es consecutivo.");
@@ -891,7 +907,12 @@ public class MetodosLb {
                 Datos.getNombreArchivoFch().get(indice),
                 Datos.getCriteriosCorreccionFch().get(indice)
         ));
-        escribirFichasCriterio(rutaCriterio, lineas, fichas);
+        escribirFichasCriterio(
+                rutaCriterio,
+                lineas,
+                fichas,
+                archivo.clavePublica()
+        );
         cargarFichasEnDatos(fichas);
         datos.setNumeroFichas(nuevoNumero);
     }
@@ -908,15 +929,15 @@ public class MetodosLb {
         }
 
         Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
-        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
+        ArchivoCriteriosEdicion archivo = leerArchivoCriteriosParaEdicion(
+                rutaCriterio
+        );
+        List<String> lineas = archivo.lineas();
+        int numeroFichas = leerNumeroFichasCriterio(lineas);
         if (indice > numeroFichas) {
             throw new IOException("El índice de la ficha no es válido.");
         }
 
-        List<String> lineas = Files.readAllLines(
-                rutaCriterio,
-                StandardCharsets.UTF_8
-        );
         leerFichasCriterio(lineas, numeroFichas);
         int posicionCriterio = POSICION_PRIMERA_FICHA
                 + (indice - 1) * 2 + 1;
@@ -927,12 +948,10 @@ public class MetodosLb {
                                 Datos.getCriteriosCorreccionFch().get(indice)
                         )
         );
-        Files.write(
+        escribirArchivoCriteriosEditado(
                 rutaCriterio,
                 lineas,
-                StandardCharsets.UTF_8,
-                StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.WRITE
+                archivo.clavePublica()
         );
     }
 
@@ -944,32 +963,37 @@ public class MetodosLb {
         }
 
         Path rutaCriterio = Path.of(datos.getFchCriteriosCorrec());
-        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
+        ArchivoCriteriosEdicion archivo = leerArchivoCriteriosParaEdicion(
+                rutaCriterio
+        );
+        List<String> lineas = archivo.lineas();
+        int numeroFichas = leerNumeroFichasCriterio(lineas);
         if (indice <= 0 || indice > numeroFichas) {
             throw new IOException("El índice de la ficha no es válido.");
         }
 
-        List<String> lineas = Files.readAllLines(
-                rutaCriterio,
-                StandardCharsets.UTF_8
-        );
         List<FichaCriterio> fichas = leerFichasCriterio(
                 lineas,
                 numeroFichas
         );
         fichas.remove(indice - 1);
-        escribirFichasCriterio(rutaCriterio, lineas, fichas);
+        escribirFichasCriterio(
+                rutaCriterio,
+                lineas,
+                fichas,
+                archivo.clavePublica()
+        );
         cargarFichasEnDatos(fichas);
         datos.setNumeroFichas(fichas.size());
     }
 
     public List<String> cargarFichasCriterio(Path rutaCriterio)
             throws IOException {
-        int numeroFichas = leerNumeroFichasCriterio(rutaCriterio);
-        List<String> lineas = Files.readAllLines(
-                rutaCriterio,
-                StandardCharsets.UTF_8
+        ArchivoCriteriosEdicion archivo = leerArchivoCriteriosParaEdicion(
+                rutaCriterio
         );
+        List<String> lineas = archivo.lineas();
+        int numeroFichas = leerNumeroFichasCriterio(lineas);
         List<FichaCriterio> fichas = leerFichasCriterio(
                 lineas,
                 numeroFichas
@@ -992,6 +1016,223 @@ public class MetodosLb {
         );
         validarFormatoCriterio(lineas);
         return lineas.get(2);
+    }
+
+    public boolean cifrarArchivoCriterios(
+            Path rutaCriterio,
+            String claveActual
+    ) throws IOException {
+        if (rutaCriterio == null) {
+            throw new IOException("No hay un archivo de criterios seleccionado.");
+        }
+
+        Path rutaNormalizada = rutaCriterio.toAbsolutePath().normalize();
+        String nombreArchivo = rutaNormalizada.getFileName() == null
+                ? ""
+                : rutaNormalizada.getFileName().toString();
+        if (!nombreArchivo.toLowerCase(Locale.ROOT).endsWith(".cri")
+                || !Files.isRegularFile(rutaNormalizada)) {
+            throw new IOException("El archivo de criterios seleccionado no es válido.");
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaNormalizada,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        String claveGuardada = lineas.get(2);
+        if (claveGuardada.isEmpty() || !claveGuardada.equals(claveActual)) {
+            new Datos().setClvCriteriosCorrec(claveGuardada);
+            return false;
+        }
+
+        String clavePublica = crearClavePublica();
+        EncripDecrip encriptador = new EncripDecrip();
+        List<String> lineasCifradas = new ArrayList<>(lineas.size() + 1);
+        lineasCifradas.add(clavePublica);
+        for (String linea : lineas) {
+            String lineaCifrada = encriptador.encripLin(linea, clavePublica);
+            if (lineaCifrada == null) {
+                throw new IOException(
+                        "No se pudo cifrar el contenido del archivo de criterios."
+                );
+            }
+            lineasCifradas.add(lineaCifrada);
+        }
+
+        escribirArchivoAtomico(rutaNormalizada, lineasCifradas);
+        return true;
+    }
+
+    public String leerClaveCriteriosCifrado(Path rutaCriterio)
+            throws IOException {
+        List<String> lineasDescifradas = leerLineasCriteriosDescifradas(
+                rutaCriterio
+        );
+        return lineasDescifradas == null
+                ? null
+                : lineasDescifradas.get(2);
+    }
+
+    public boolean cargarFichasCriterioCifrado(
+            Path rutaCriterio,
+            String claveActual
+    ) throws IOException {
+        List<String> lineasDescifradas = leerLineasCriteriosDescifradas(
+                rutaCriterio
+        );
+        if (lineasDescifradas == null) {
+            throw new IOException("El archivo de criterios no está cifrado.");
+        }
+
+        String claveGuardada = lineasDescifradas.get(2);
+        if (!claveGuardada.isEmpty() && !claveGuardada.equals(claveActual)) {
+            return false;
+        }
+
+        int numeroFichas = Integer.parseInt(
+                lineasDescifradas.get(POSICION_NUMERO_FICHAS).trim()
+        );
+        List<FichaCriterio> fichas = leerFichasCriterio(
+                lineasDescifradas,
+                numeroFichas
+        );
+        cargarFichasEnDatos(fichas);
+        Datos datos = new Datos();
+        datos.setClvCriteriosCorrec(claveGuardada);
+        datos.setNumeroFichas(numeroFichas);
+        return true;
+    }
+
+    public boolean descifrarArchivoCriterios(
+            Path rutaCriterio,
+            String claveActual
+    ) throws IOException {
+        List<String> lineasDescifradas = leerLineasCriteriosDescifradas(
+                rutaCriterio
+        );
+        if (lineasDescifradas == null) {
+            throw new IOException("El archivo de criterios no está cifrado.");
+        }
+
+        String claveGuardada = lineasDescifradas.get(2);
+        if (!claveGuardada.isEmpty() && !claveGuardada.equals(claveActual)) {
+            return false;
+        }
+
+        Path rutaNormalizada = rutaCriterio.toAbsolutePath().normalize();
+        escribirArchivoAtomico(rutaNormalizada, lineasDescifradas);
+        new Datos().setClvCriteriosCorrec(claveGuardada);
+        return true;
+    }
+
+    private List<String> leerLineasCriteriosDescifradas(Path rutaCriterio)
+            throws IOException {
+        if (rutaCriterio == null) {
+            throw new IOException("No hay un archivo de criterios seleccionado.");
+        }
+
+        Path rutaNormalizada = rutaCriterio.toAbsolutePath().normalize();
+        String nombreArchivo = rutaNormalizada.getFileName() == null
+                ? ""
+                : rutaNormalizada.getFileName().toString();
+        if (!nombreArchivo.toLowerCase(Locale.ROOT).endsWith(".cri")
+                || !Files.isRegularFile(rutaNormalizada)) {
+            throw new IOException("El archivo de criterios seleccionado no es válido.");
+        }
+
+        List<String> lineasCifradas = Files.readAllLines(
+                rutaNormalizada,
+                StandardCharsets.UTF_8
+        );
+        if (lineasCifradas.size() < 2
+                || !PATRON_CLAVE_PUBLICA.matcher(lineasCifradas.get(0)).matches()) {
+            return null;
+        }
+
+        String clavePublica = lineasCifradas.get(0);
+        EncripDecrip encriptador = new EncripDecrip();
+        List<String> lineasDescifradas = new ArrayList<>(
+                lineasCifradas.size() - 1
+        );
+        for (int indice = 1; indice < lineasCifradas.size(); indice++) {
+            String lineaCifrada = lineasCifradas.get(indice);
+            if (lineaCifrada.length() < 24
+                    || !PATRON_LINEA_CIFRADA.matcher(lineaCifrada).matches()) {
+                return null;
+            }
+            String lineaDescifrada = encriptador.desencripLin(
+                    lineaCifrada,
+                    clavePublica
+            );
+            if (lineaDescifrada == null) {
+                return null;
+            }
+            lineasDescifradas.add(lineaDescifrada);
+        }
+
+        try {
+            validarFormatoCriterio(lineasDescifradas);
+            int numeroFichas = Integer.parseInt(
+                    lineasDescifradas.get(POSICION_NUMERO_FICHAS).trim()
+            );
+            if (numeroFichas < 0) {
+                return null;
+            }
+            leerFichasCriterio(lineasDescifradas, numeroFichas);
+        } catch (IOException | NumberFormatException e) {
+            return null;
+        }
+        return lineasDescifradas;
+    }
+
+    private String crearClavePublica() {
+        StringBuilder clave = new StringBuilder(LONGITUD_CLAVE_PUBLICA);
+        for (int indice = 0; indice < LONGITUD_CLAVE_PUBLICA; indice++) {
+            clave.append(CARACTERES_CLAVE_PUBLICA.charAt(
+                    GENERADOR_ALEATORIO.nextInt(CARACTERES_CLAVE_PUBLICA.length())
+            ));
+        }
+        return clave.toString();
+    }
+
+    private void escribirArchivoAtomico(
+            Path destino,
+            List<String> lineas
+    ) throws IOException {
+        Path directorio = destino.getParent();
+        if (directorio == null) {
+            throw new IOException(
+                    "No se pudo determinar la carpeta del archivo de criterios."
+            );
+        }
+
+        Path temporal = Files.createTempFile(directorio, "criterios-", ".tmp");
+        try {
+            Files.write(
+                    temporal,
+                    lineas,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE
+            );
+            try {
+                Files.move(
+                        temporal,
+                        destino,
+                        StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
+                        temporal,
+                        destino,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+        } finally {
+            Files.deleteIfExists(temporal);
+        }
     }
 
     public boolean crearClaveCriterios(Path rutaCriterio, String clave)
@@ -1116,7 +1357,8 @@ public class MetodosLb {
     private void escribirFichasCriterio(
             Path rutaCriterio,
             List<String> cabeceraOriginal,
-            List<FichaCriterio> fichas
+            List<FichaCriterio> fichas,
+            String clavePublica
     ) throws IOException {
         validarFormatoCriterio(cabeceraOriginal);
         List<String> lineas = new ArrayList<>(
@@ -1133,13 +1375,75 @@ public class MetodosLb {
                             + escaparCriterio(ficha.criterio())
             );
         }
-        Files.write(
+        escribirArchivoCriteriosEditado(
                 rutaCriterio,
                 lineas,
-                StandardCharsets.UTF_8,
-                StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.WRITE
+                clavePublica
         );
+    }
+
+    private ArchivoCriteriosEdicion leerArchivoCriteriosParaEdicion(
+            Path rutaCriterio
+    ) throws IOException {
+        List<String> lineasDescifradas = leerLineasCriteriosDescifradas(
+                rutaCriterio
+        );
+        if (lineasDescifradas != null) {
+            String claveGuardada = lineasDescifradas.get(2);
+            String claveEnMemoria = new Datos().getClvCriteriosCorrec();
+            if (!claveGuardada.isEmpty()
+                    && !claveGuardada.equals(claveEnMemoria)) {
+                throw new IOException(
+                        "La contraseña del archivo de criterios no es válida."
+                );
+            }
+            List<String> lineasCifradas = Files.readAllLines(
+                    rutaCriterio,
+                    StandardCharsets.UTF_8
+            );
+            return new ArchivoCriteriosEdicion(
+                    lineasDescifradas,
+                    lineasCifradas.get(0)
+            );
+        }
+
+        List<String> lineas = Files.readAllLines(
+                rutaCriterio,
+                StandardCharsets.UTF_8
+        );
+        validarFormatoCriterio(lineas);
+        return new ArchivoCriteriosEdicion(lineas, null);
+    }
+
+    private void escribirArchivoCriteriosEditado(
+            Path rutaCriterio,
+            List<String> lineas,
+            String clavePublica
+    ) throws IOException {
+        if (clavePublica == null) {
+            Files.write(
+                    rutaCriterio,
+                    lineas,
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE
+            );
+            return;
+        }
+
+        EncripDecrip encriptador = new EncripDecrip();
+        List<String> lineasCifradas = new ArrayList<>(lineas.size() + 1);
+        lineasCifradas.add(clavePublica);
+        for (String linea : lineas) {
+            String lineaCifrada = encriptador.encripLin(linea, clavePublica);
+            if (lineaCifrada == null) {
+                throw new IOException(
+                        "No se pudo cifrar el contenido del archivo de criterios."
+                );
+            }
+            lineasCifradas.add(lineaCifrada);
+        }
+        escribirArchivoAtomico(rutaCriterio, lineasCifradas);
     }
 
     private void validarFormatoCriterio(List<String> lineas)
@@ -1202,6 +1506,12 @@ public class MetodosLb {
     }
 
     private record FichaCriterio(String nombre, String criterio) {
+    }
+
+    private record ArchivoCriteriosEdicion(
+            List<String> lineas,
+            String clavePublica
+    ) {
     }
 
     private boolean esNombreArchivoCompatible(

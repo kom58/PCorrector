@@ -77,6 +77,16 @@
 1144=A API seleccionada non é válida.
 1145=Non se puido copiar o ficheiro pai.dt.
 1146=O ficheiro seleccionado debe chamarse pai.dt.
+1150=Cifrar criterios
+1151=Descifrar criterios
+1152=Para cifrar o ficheiro de criterios primeiro debes crear un contrasinal.
+1153=O ficheiro de criterios cifrouse correctamente.
+1154=Non se puido cifrar o ficheiro de criterios
+1155=Cifrado
+1156=O ficheiro de criterios aberto non está cifrado.
+1157=O ficheiro de criterios descifrouse correctamente.
+1158=Non se puido descifrar o ficheiro de criterios
+1159=Criterios de corrección CIFRADOS
 2001=Palabras
 2010=Respondendo a
 2020=Non se puido abrir o ficheiro

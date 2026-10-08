@@ -77,6 +77,16 @@
 1144=La API seleccionada no es válida.
 1145=No se pudo copiar el archivo pai.dt.
 1146=El archivo seleccionado debe llamarse pai.dt.
+1150=Cifrar criterios
+1151=Descifrar criterios
+1152=Para cifrar el archivo de criterios primero debes crear una contraseña.
+1153=Archivo de criterios cifrado correctamente.
+1154=No se pudo cifrar el archivo de criterios
+1155=Cifrado
+1156=El archivo de criterios abierto no está cifrado.
+1157=Archivo de criterios descifrado correctamente.
+1158=No se pudo descifrar el archivo de criterios
+1159=Criterios de corrección ENCRIPTADOS
 2001=Palabras
 2010=Respondiendo a
 2020=No se pudo abrir el archivo

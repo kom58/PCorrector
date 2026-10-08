@@ -76,7 +76,7 @@
      vàlida i seleccionar un dels idiomes disponibles.
 
    - A continuació, haurà d'escriure el seu nom i, després d'una salutació, el programa s'iniciarà
-     directament i mostrarà un menú que, en la versió 0.0.2, és el següent:
+     directament i mostrarà un menú que, en la versió 1.0, és el següent:
 
       + ARXIU
            - Obrir
@@ -96,6 +96,9 @@
                   - Crear
                   - Modificar
                   - Eliminar
+               . Xifrat:
+                  - Xifrar criteris
+                  - Desxifrar criteris
 
       + AJUDA
           - Quant a
@@ -126,7 +129,7 @@
            l'empresa, previ pagament. Si en disposem i l'API no ha caducat, el programa demanarà
            a la IA que corregeixi les respostes escrites aplicant els criteris creats pel
            professor. Al cap d'uns segons, el programa mostrarà les respostes, la correcció i
-           els comentaris adjunts. En la versió 0.0.2, el programa utilitza els serveis API de
+           els comentaris adjunts. En la versió 1.0, el programa utilitza els serveis API de
            l'empresa OpenAI; concretament, la versió «5.6-Luna», perquè actualment és força
            fiable, ràpida i econòmica per a la tasca que li demanarem. L'adquisició i el pagament
            de l'API es fan des del web d'OpenAI: https://platform.openai.com/home. Segons les
@@ -147,7 +150,8 @@
 
       - CRITERIS – Obrir: Amb aquesta opció carregarem al programa un conjunt de «Criteris de
         correcció» creat prèviament. Es mostrarà un quadre de diàleg on haurem de seleccionar
-        un arxiu «*.cri» i, un cop seleccionat, els criteris es mostraran a la pantalla.
+        un arxiu «*.cri» i, un cop seleccionat, els criteris es mostraran a la pantalla sempre
+        que no estigui xifrat. Si està xifrat, el programa ens n’avisarà.
 
       - CRITERIS – Nou: Si és la primera vegada que utilitzem el programa, el professor haurà
         de crear un arxiu nou de criteris de correcció mitjançant aquesta opció. En seleccionar-la,
@@ -189,13 +193,22 @@
 
       - CRITERIS - Configuració - Contrasenya - Crear: Quan creem un arxiu nou de criteris de correcció
         mitjançant l'opció Criteris > Nou, es crea sense cap contrasenya. Aquí podrem afegir-n'hi una.
-        Cal anar amb compte amb les contrasenyes, ja que, si l'oblidem, no hi haurà manera d'obrir l'arxiu
-        perquè està encriptat.
+        Cal anar amb compte amb les contrasenyes, ja que, si xifrem l'arxiu i oblidem la contrasenya,
+        no hi haurà manera d'obrir-lo.
 
       - CRITERIS - Configuració - Contrasenya - Modificar: Aquesta opció permet canviar la contrasenya
-        de l'arxiu.
+        de l'arxiu sempre que encara no estigui xifrat.
 
-      - CRITERIS - Configuració - Contrasenya - Eliminar: Si volem tornar a tenir l'arxiu sense
-        contrasenya, aquesta és l'opció.
+      - CRITERIS - Configuració - Contrasenya - Eliminar: Si l'arxiu encara no està xifrat i el volem
+        tornar a tenir sense contrasenya, aquesta és l'opció.
+
+      - CRITERIS - Configuració - Xifrat - Xifrar criteris: Aquesta opció permet xifrar un arxiu de
+        criteris sense xifrar. Cal que l'arxiu tingui una contrasenya; en cas contrari, el programa ens
+        demanarà que en creem una. El xifrat és especialment útil en un ordinador compartit o d'ús
+        públic, perquè el contingut de l'arxiu queda protegit per la contrasenya.
+
+      - CRITERIS - Configuració - Xifrat - Desxifrar criteris: Aquesta opció permet desxifrar un arxiu
+        xifrat. És imprescindible conèixer-ne la contrasenya.
 
       - QUANT A: Mostra la versió del programa.
+

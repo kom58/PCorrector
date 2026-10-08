@@ -77,6 +77,16 @@
 1144=The selected API is not valid.
 1145=Could not copy the pai.dt file.
 1146=The selected file must be named pai.dt.
+1150=Encrypt criteria
+1151=Decrypt criteria
+1152=You must create a password before encrypting the criteria file.
+1153=The criteria file was encrypted successfully.
+1154=Could not encrypt the criteria file
+1155=Encryption
+1156=The open criteria file is not encrypted.
+1157=The criteria file was decrypted successfully.
+1158=Could not decrypt the criteria file
+1159=ENCRYPTED correction criteria
 2001=Words
 2010=Replying to
 2020=Could not open the file

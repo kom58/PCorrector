@@ -74,7 +74,7 @@
      válido e seleccionar un dos idiomas dispoñibles.
 
    - A continuación, deberá escribir o seu nome e, tras un saúdo, o programa iniciarase directamente
-     mostrando un menú que, na versión 0.0.2, é o seguinte:
+     mostrando un menú que, na versión 1.0, é o seguinte:
 
       + FICHEIRO
            - Abrir
@@ -94,6 +94,9 @@
                   - Crear
                   - Modificar
                   - Eliminar
+               . Cifrado:
+                  - Cifrar criterios
+                  - Descifrar criterios
 
       + AXUDA
           - Acerca de
@@ -124,7 +127,7 @@
            logo do pagamento. Se dispoñemos dela e a API non está caducada, o programa pediralle á IA
            que corrixa as respostas escritas aplicando os criterios creados polo profesor. Veremos que,
            tras uns breves segundos, o programa mostra as respostas e a súa corrección con comentarios
-           anexos. Na versión 0.0.2, o programa utiliza os servizos API da empresa OpenAI; en concreto,
+           anexos. Na versión 1.0, o programa utiliza os servizos API da empresa OpenAI; en concreto,
            usa a súa versión «5.6-Luna» por ser, hoxe en día, unha versión bastante fiable, rápida e
            económica para o que lle imos pedir. A adquisición e o pagamento da API realízanse desde
            o sitio web de OpenAI: https://platform.openai.com/home. Segundo as probas realizadas ata
@@ -145,7 +148,8 @@
 
       - CRITERIOS – Abrir: Con esta opción cargaremos no programa un conxunto de «Criterios de
         corrección» creados previamente. Mostrarase un cadro de diálogo onde teremos que seleccionar
-        un ficheiro «*.cri» e, tras seleccionalo, os criterios mostraranse na pantalla.
+        un ficheiro «*.cri» e, tras seleccionalo, os criterios mostraranse na pantalla sempre que non
+        estea cifrado. Se está cifrado, o programa avisaranos.
 
       - CRITERIOS – Novo: Se é a primeira vez que utilizamos o programa, o profesor deberá crear un
         novo ficheiro de criterios de corrección mediante esta opción. Ao seleccionala, pediráselle
@@ -184,14 +188,22 @@
 
       - CRITERIOS - Configuración - Contrasinal - Crear: Cando creamos un novo ficheiro de criterios de
         corrección mediante a opción Criterios > Novo, créase sen ningún contrasinal. Aquí poderemos poñerlle
-        un. Cómpre ter coidado cos contrasinais, xa que, se o esquecemos, non haberá forma de abrir o ficheiro
-        porque está encriptado.
+        un. Cómpre ter coidado cos contrasinais, xa que, se ciframos o ficheiro e esquecemos o contrasinal,
+        non haberá forma de abrilo.
 
       - CRITERIOS - Configuración - Contrasinal - Modificar: Esta opción permite cambiar o contrasinal
-        do ficheiro.
+        do ficheiro sempre que aínda non estea cifrado.
 
-      - CRITERIOS - Configuración - Contrasinal - Eliminar: Se queremos volver ter o ficheiro sen
-        contrasinal, esta é a opción.
+      - CRITERIOS - Configuración - Contrasinal - Eliminar: Se o ficheiro aínda non está cifrado e queremos
+        volver telo sen contrasinal, esta é a opción.
+
+      - CRITERIOS - Configuración - Cifrado - Cifrar criterios: Esta opción permite cifrar un ficheiro de
+        criterios sen cifrar. O ficheiro debe ter un contrasinal; en caso contrario, o programa pediranos
+        que creemos un. O cifrado é especialmente útil nun ordenador compartido ou de uso público, pois o
+        contido do ficheiro queda protexido polo seu contrasinal.
+
+      - CRITERIOS - Configuración - Cifrado - Descifrar criterios: Esta opción permite descifrar un ficheiro
+        cifrado. É imprescindible coñecer o seu contrasinal.
 
       - ACERCA DE: Mostra a versión do programa.
 

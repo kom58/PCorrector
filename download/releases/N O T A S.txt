@@ -9,7 +9,7 @@ Version 0.0.2 (6.10.2026)
   están aún sin desarrollar. Así el archivo de Criterios de Corrección que se genera con 
   la aplicación no se guarda encriptado y en la próxima versión del programa sí lo estará.
 - Los Criterios de Corrección que se generen con esta versión NO SERAN COMPATIBLES con la 
-  nueva versión que saldrá próximamente. 
+  nueva versión 1.0. 
 
   Instalación en Mac
   ------------------
