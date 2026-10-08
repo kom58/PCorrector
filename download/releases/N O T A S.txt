@@ -1,15 +1,15 @@
 N O T A S
 =========
 
-Version 0.0.2 (6.10.2026)
--------------------------
+Version 1.0 (8.10.2026)
+-----------------------
 - Primera versión operativa del programa. Incluye los módulos ACorrector y PCorrector.
-- Se trata de una versión destinada a dar a conocer el programa y sus posibilidades pero 
-  no ha sido pensada aún como una versión plenamente utilizable, pues algunas características
-  están aún sin desarrollar. Así el archivo de Criterios de Corrección que se genera con 
-  la aplicación no se guarda encriptado y en la próxima versión del programa sí lo estará.
-- Los Criterios de Corrección que se generen con esta versión NO SERAN COMPATIBLES con la 
-  nueva versión 1.0. 
+- Se trata de una versión destinada a dar a conocer el programa y sus posibilidades. Es
+  una versión plenamente utilizable ya que todas sus opciones se encuentran operativas.
+  Tanto los archivos de Criterios de Corrección como los de Informes se guardan encriptados.
+  En el caso de los Criterios es el usuario el que decide su encriptación o no ya que en su
+  creación por defecto se crea sin encriptar y sin contraseña, pero el usuario pude después
+  optar por su cifrado.
 
   Instalación en Mac
   ------------------
@@ -18,9 +18,8 @@ Version 0.0.2 (6.10.2026)
     el macOS 13 o superior.
   - La versión Intel-Legacy se podrá instalar en los ordenadores con chip Intel y el sistema
     macOS 10.15 Catalina o superior.
-  - Deberemos descomprimirlos en una carpeta del usuario actual con privilegios de lectura y 
-    escritura ya que de lo contrario no se podrán guardar correctamente los archivos de 
-    configuración inicial. Un buen nombre para esa carpeta puede ser Corrector.
+  - Podemos descomprimir los archivos en una carpeta dentro del usuario actual. Un buen nombre 
+    para esa carpeta puede ser Corrector. 
   - En todos los casos en el primer arranque el sistema macOS bloqueará su inicio por problemas
     de seguridad. Desde los Ajustes del sistema, en su sección de Seguridad, podremos autorizar
     su primera ejecución.
