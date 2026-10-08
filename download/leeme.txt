@@ -86,9 +86,16 @@
            - Abrir
            - Nuevo
            - Fichas:
-               - Añadir
-               - Modificar
-               - Eliminar
+               . Añadir
+               . Modificar
+               . Eliminar
+           - Configuración:
+               . Copiar API
+               . Contraseña:
+                  - Crear
+                  - Modificar
+                  - Eliminar
+
       + AYUDA
           - Acerca de
 
@@ -107,13 +114,18 @@
            corrección por IA, o si es muy lenta, puede que se superen los tiempos mínimos de respuesta. En todo 
            caso el programa nos avisará.
 
-        3. Hay que disponer de una clave API válida que debe estar almacenada en el archivo “pai.dt” que se debe 
-           encontrar en la misma carpeta donde se ejecuta la aplicación. Este archivo es un simple archivo de 
+        3. Hay que disponer de una clave API válida que debe estar almacenada en el archivo “pai.dt”, dentro de la
+           carpeta de configuración de PCorrector del usuario:
+              “~/Library/Application Support/PCorrector” en macOS.
+              “%APPDATA%\PCorrector” en Windows.
+              “$XDG_CONFIG_HOME/PCorrector” o “~/.config/PCorrector” en Linux.
+           La opción del menú “Criterios > Configuración > Copiar API” permite seleccionar el archivo "pai.dt",
+           comprobar si funciona y copiarlo automáticamente a estas carpetas. Este archivo es un simple archivo de
            texto plano sin formato donde se almacena codificada la API que nos proporciona la empresa, previo 
            pago. Si disponemos de él, y no se encuentra la API caducada, el programa pedirá a la IA que corrija 
            las respuestas escritas aplicando los criterios que el Profesor tiene creados. Veremos que tras unos 
            breves segundos el programa nos muestra las respuestas y su corrección con comentarios anexos. 
-           En la versión 0.0.2 el programa utiliza los servicios API de la empresa OpenAi, en concreto usa su 
+           En la versión 0.0.2 el programa utiliza los servicios API de la empresa OpenAI, en concreto usa su
            versión “5.6-Luna” por ser, a día de hoy, una versión bastante fiable, rápida y económica para lo que 
            le vamos a pedir. La adquisición y el pago de la API se realiza desde la web de OpenAI: 
            https://platform.openai.com/home y, tras las pruebas que hemos estado realizando hasta la fecha, 
@@ -141,7 +153,8 @@
         de nombres de archivo que utilice su ordenador. Un nombre del estilo “3 ESO Sociales” podría ser perfectamente 
         válido. Al guardarlo el programa le añadirá la extensión ”.cri” y por defecto lo colocará en la misma carpeta 
         donde se lanzó la aplicación. Posteriormente el profesor podrá cambiarle el nombre, desplazarlo o copiarlo a 
-        otra carpeta pero siempre conservando la extensión “.cri”
+        otra carpeta pero siempre conservando la extensión “.cri”. También podrá crear una contraseña utilizando la
+        opción correspondiente del menú.
 
      -  CRITERIOS – Fichas – Añadir: Una vez creado el archivo de Criterios con la opción anterior, aquí podrá ir 
         añadiendo los Criterios de Corrección de las diferentes preguntas que quiera pasar a los alumnos. Para ello 
@@ -160,6 +173,20 @@
       - CRITERIOS – Fichas – Eliminar: Nos permite eliminar completamente los criterios de una ficha previamente almacenada. 
         Aquellos informes que contengan respuestas sobre esa ficha ya no podrán ser corregidos por la IA.
 
+      - CRITERIOS - Configuración - Copiar API: Mediante esta opción vamos a poder instalar en nuestro ordenador una copia
+        del archivo "pai.dt" que contiene codificada la API de OpenAI. Se trata de un archivo de texto plano sin formato
+        y por sus características puede ser compartido por varios usuarios, siendo posible incluso difundirlo entre todo el
+        profesorado de un centro educativo. Algún usuario avanzado puede encargarse de su adquisición y descarga así como
+        de su caducidad. Es muy recomendable programar un periodo de caducidad a la clave para evitar una difusión
+        descontrolada. Una duración entre uno y tres meses puede ser razonable.
+
+      - CRITERIOS - Configuración - Contraseña - Crear: Cuando creamos un nuevo archivo de Criterios de Corrección usando la
+        opción Criterios > Nuevo, éste se crea sin ningún tipo de contraseña. Aquí podremos colocarle una. Hay que ir con
+        cuidado con las contraseñas ya que, si la olvidamos, no habrá forma de abrir el archivo al estar encriptado.
+
+      - CRITERIOS - Configuración - Contraseña - Modificar: Por aquí podremos cambiarle la contraseña al archivo.
+
+      - CRITERIOS - Configuración - Contraseña - Eliminar: Y si queremos volver a tener el archivo sin contraseña, ésta
+        es la opción.
+
       - ACERCA DE: Nos muestra la versión del programa.
-
-

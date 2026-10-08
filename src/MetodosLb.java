@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,12 +34,77 @@ public class MetodosLb {
     private static final int POSICION_PRIMERA_FICHA = 6;
 
 
-    public String versionPCrr() {
-        return "0.0.11";
-    }
+    public String versionPCrr() {return "0.0.12";}
 
     public Path rutaArchivoPcrIni() {
-        return rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_CONFIGURACION);
+        return rutaDirectorioConfiguracion().resolve(
+                NOMBRE_ARCHIVO_CONFIGURACION
+        );
+    }
+
+    public Path rutaArchivoPaiDt() {
+        return rutaDirectorioConfiguracion().resolve(NOMBRE_ARCHIVO_API);
+    }
+
+    private Path rutaDirectorioConfiguracion() {
+        Path directorioUsuario = rutaDirectorioUsuario();
+        String sistemaOperativo = System.getProperty("os.name", "")
+                .toLowerCase(Locale.ROOT);
+
+        if (sistemaOperativo.contains("mac")) {
+            return directorioUsuario
+                    .resolve("Library")
+                    .resolve("Application Support")
+                    .resolve("PCorrector");
+        }
+
+        if (sistemaOperativo.contains("win")) {
+            Path appData = rutaVariableEntorno("APPDATA");
+            if (appData == null) {
+                appData = directorioUsuario
+                        .resolve("AppData")
+                        .resolve("Roaming");
+            }
+            return appData.resolve("PCorrector");
+        }
+
+        Path xdgConfigHome = rutaVariableEntorno("XDG_CONFIG_HOME");
+        if (xdgConfigHome == null) {
+            xdgConfigHome = directorioUsuario.resolve(".config");
+        }
+        return xdgConfigHome.resolve("PCorrector");
+    }
+
+    private Path rutaDirectorioUsuario() {
+        try {
+            String directorioUsuario = System.getProperty("user.home", "");
+            if (!directorioUsuario.isBlank()) {
+                return Path.of(directorioUsuario)
+                        .toAbsolutePath()
+                        .normalize();
+            }
+        } catch (InvalidPathException | SecurityException e) {
+            // Si user.home no está disponible, se usa el directorio actual.
+        }
+
+        return Path.of(System.getProperty("user.dir", "."))
+                .toAbsolutePath()
+                .normalize();
+    }
+
+    private Path rutaVariableEntorno(String variable) {
+        try {
+            String valor = System.getenv(variable);
+            if (valor != null && !valor.isBlank()) {
+                Path ruta = Path.of(valor);
+                if (ruta.isAbsolute()) {
+                    return ruta.normalize();
+                }
+            }
+        } catch (InvalidPathException | SecurityException e) {
+            // Si la variable no contiene una ruta válida, se usa el fallback.
+        }
+        return null;
     }
 
     private Path rutaArchivoJuntoAplicacion(String nombreArchivo) {
@@ -115,6 +182,7 @@ public class MetodosLb {
                 + "ultimo=" + System.lineSeparator();
 
         Path archivoPcrIni = rutaArchivoPcrIni();
+        Files.createDirectories(archivoPcrIni.getParent());
         Files.writeString(
                 archivoPcrIni,
                 contenido,
@@ -604,24 +672,21 @@ public class MetodosLb {
     }
 
     public String leerPcrIni() throws IOException {
-        Path rutaPcrIni = rutaArchivoJuntoAplicacion(NOMBRE_ARCHIVO_API);
+        Path rutaPaiDt = rutaArchivoPaiDt();
+        String claveApi = leerClaveApi(rutaPaiDt);
 
-        // Durante la ejecucion desde el IDE se admite tambien src/pai.dt.
-        // Al ejecutar el JAR, el archivo debe estar junto a PCorrector.jar.
-        if (!Files.isRegularFile(rutaPcrIni)) {
-            Path rutaDesarrollo = Path.of(System.getProperty("user.dir"))
-                    .toAbsolutePath()
-                    .normalize()
-                    .resolve("src")
-                    .resolve(NOMBRE_ARCHIVO_API);
-            if (Files.isRegularFile(rutaDesarrollo)) {
-                rutaPcrIni = rutaDesarrollo;
-            }
+        new Datos().setChatGptAPI(claveApi);
+        return claveApi;
+    }
+
+    public String leerClaveApi(Path rutaPaiDt) throws IOException {
+        if (rutaPaiDt == null) {
+            throw new IOException("La ruta de pai.dt no puede ser nula");
         }
 
         String claveApi;
         try (BufferedReader lector = Files.newBufferedReader(
-                rutaPcrIni,
+                rutaPaiDt,
                 StandardCharsets.UTF_8
         )) {
             claveApi = lector.readLine();
@@ -640,8 +705,42 @@ public class MetodosLb {
             );
         }
 
-        new Datos().setChatGptAPI(claveApi);
         return claveApi;
+    }
+
+    public void copiarArchivoPaiDt(Path origen) throws IOException {
+        if (origen == null || !Files.isRegularFile(origen)) {
+            throw new IOException("El archivo pai.dt seleccionado no es válido");
+        }
+
+        Path destino = rutaArchivoPaiDt();
+        Path directorio = destino.getParent();
+        Files.createDirectories(directorio);
+        Path temporal = Files.createTempFile(directorio, "pai-", ".tmp");
+
+        try {
+            Files.copy(
+                    origen,
+                    temporal,
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+            try {
+                Files.move(
+                        temporal,
+                        destino,
+                        StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(
+                        temporal,
+                        destino,
+                        StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+        } finally {
+            Files.deleteIfExists(temporal);
+        }
     }
 
     private String mensajeSeguro(String codigo, String mensajePredeterminado) {

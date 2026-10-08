@@ -70,6 +70,13 @@
 1132=Contrasenya modificada correctament.
 1133=El fitxer de criteris no té contrasenya.
 1134=Contrasenya eliminada correctament.
+1140=Selecciona el fitxer pai.dt
+1141=Fitxer de configuració de l'API
+1142=S'està comprovant l'API...
+1143=L'API és vàlida i el fitxer pai.dt s'ha copiat correctament.
+1144=L'API seleccionada no és vàlida.
+1145=No s'ha pogut copiar el fitxer pai.dt.
+1146=El fitxer seleccionat s'ha d'anomenar pai.dt.
 2001=Paraules
 2010=Responent a
 2020=No es va poder obrir l'arxiu

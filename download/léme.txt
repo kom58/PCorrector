@@ -85,9 +85,16 @@
            - Abrir
            - Novo
            - Fichas:
-               - Engadir
-               - Modificar
-               - Eliminar
+               . Engadir
+               . Modificar
+               . Eliminar
+           - Configuración:
+               . Copiar API
+               . Contrasinal:
+                  - Crear
+                  - Modificar
+                  - Eliminar
+
       + AXUDA
           - Acerca de
 
@@ -106,8 +113,13 @@
            a corrección mediante IA ou, se é moi lenta, pode que se superen os tempos mínimos de
            resposta. En calquera caso, o programa avisaranos.
 
-        3. Hai que dispoñer dunha clave API válida, que debe estar almacenada no ficheiro «pai.dt»
-           situado no mesmo cartafol desde o que se executa a aplicación. Este é un simple ficheiro
+        3. Hai que dispoñer dunha clave API válida, que debe estar almacenada no ficheiro «pai.dt», dentro do
+           cartafol de configuración de PCorrector do usuario:
+              «~/Library/Application Support/PCorrector» en macOS.
+              «%APPDATA%\PCorrector» en Windows.
+              «$XDG_CONFIG_HOME/PCorrector» ou «~/.config/PCorrector» en Linux.
+           A opción do menú «Criterios > Configuración > Copiar API» permite seleccionar o ficheiro «pai.dt»,
+           comprobar se funciona e copialo automaticamente nestes cartafoles. Este é un simple ficheiro
            de texto plano sen formato onde se almacena codificada a API que nos proporciona a empresa,
            logo do pagamento. Se dispoñemos dela e a API non está caducada, o programa pediralle á IA
            que corrixa as respostas escritas aplicando os criterios creados polo profesor. Veremos que,
@@ -142,7 +154,7 @@
         podería ser perfectamente válido. Ao gardalo, o programa engadirá a extensión «.cri» e, de xeito
         predeterminado, colocarao no mesmo cartafol desde o que se iniciou a aplicación. Posteriormente,
         o profesor poderá cambiarlle o nome, movelo ou copialo noutro cartafol, pero sempre conservando
-        a extensión «.cri».
+        a extensión «.cri». Tamén poderá crear un contrasinal mediante a opción correspondente do menú.
 
      - CRITERIOS – Fichas – Engadir: Unha vez creado o ficheiro de criterios coa opción anterior,
        aquí poderá ir engadindo os criterios de corrección das diferentes preguntas que queira propoñer
@@ -161,6 +173,25 @@
 
       - CRITERIOS – Fichas – Eliminar: Permite eliminar completamente os criterios dunha ficha almacenada
         previamente. Os informes que conteñan respostas sobre esa ficha xa non poderán ser corrixidos pola IA.
+
+      - CRITERIOS - Configuración - Copiar API: Mediante esta opción poderemos instalar no noso ordenador
+        unha copia do ficheiro «pai.dt», que contén codificada a API de OpenAI. É un ficheiro de texto plano
+        sen formato e, polas súas características, pode ser compartido por varios usuarios; mesmo é posible
+        distribuílo entre todo o profesorado dun centro educativo. Un usuario avanzado pode encargarse da
+        súa adquisición e descarga, así como da súa caducidade. É moi recomendable programar un período de
+        caducidade para a clave co fin de evitar unha difusión descontrolada. Unha duración de entre un e
+        tres meses pode ser razoable.
+
+      - CRITERIOS - Configuración - Contrasinal - Crear: Cando creamos un novo ficheiro de criterios de
+        corrección mediante a opción Criterios > Novo, créase sen ningún contrasinal. Aquí poderemos poñerlle
+        un. Cómpre ter coidado cos contrasinais, xa que, se o esquecemos, non haberá forma de abrir o ficheiro
+        porque está encriptado.
+
+      - CRITERIOS - Configuración - Contrasinal - Modificar: Esta opción permite cambiar o contrasinal
+        do ficheiro.
+
+      - CRITERIOS - Configuración - Contrasinal - Eliminar: Se queremos volver ter o ficheiro sen
+        contrasinal, esta é a opción.
 
       - ACERCA DE: Mostra a versión do programa.
 

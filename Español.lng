@@ -70,6 +70,13 @@
 1132=Contraseña modificada correctamente.
 1133=El archivo de criterios no tiene contraseña.
 1134=Contraseña eliminada correctamente.
+1140=Selecciona el archivo pai.dt
+1141=Archivo de configuración de la API
+1142=Comprobando la API...
+1143=La API es válida y el archivo pai.dt se ha copiado correctamente.
+1144=La API seleccionada no es válida.
+1145=No se pudo copiar el archivo pai.dt.
+1146=El archivo seleccionado debe llamarse pai.dt.
 2001=Palabras
 2010=Respondiendo a
 2020=No se pudo abrir el archivo

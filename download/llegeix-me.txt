@@ -87,9 +87,16 @@
            - Obrir
            - Nou
            - Fitxes:
-               - Afegir
-               - Modificar
-               - Eliminar
+               . Afegir
+               . Modificar
+               . Eliminar
+           - Configuració:
+               . Copiar API
+               . Contrasenya:
+                  - Crear
+                  - Modificar
+                  - Eliminar
+
       + AJUDA
           - Quant a
 
@@ -108,8 +115,13 @@
            correcció per IA o, si és molt lenta, es poden superar els temps màxims de resposta.
            En qualsevol cas, el programa ens n'avisarà.
 
-        3. Cal disposar d'una clau API vàlida, que ha d'estar emmagatzemada a l'arxiu «pai.dt»,
-           situat a la mateixa carpeta des d'on s'executa l'aplicació. Es tracta d'un simple
+        3. Cal disposar d'una clau API vàlida, que ha d'estar emmagatzemada a l'arxiu «pai.dt», dins de la
+           carpeta de configuració de PCorrector de l'usuari:
+              «~/Library/Application Support/PCorrector» a macOS.
+              «%APPDATA%\PCorrector» a Windows.
+              «$XDG_CONFIG_HOME/PCorrector» o «~/.config/PCorrector» a Linux.
+           L'opció del menú «Criteris > Configuració > Copiar API» permet seleccionar l'arxiu «pai.dt»,
+           comprovar si funciona i copiar-lo automàticament a aquestes carpetes. Aquest arxiu és un simple
            arxiu de text sense format on s'emmagatzema codificada l'API que ens proporciona
            l'empresa, previ pagament. Si en disposem i l'API no ha caducat, el programa demanarà
            a la IA que corregeixi les respostes escrites aplicant els criteris creats pel
@@ -144,7 +156,8 @@
         ara «3r ESO Socials» podria ser perfectament vàlid. En desar-lo, el programa hi afegirà
         l'extensió «.cri» i, de manera predeterminada, el col·locarà a la mateixa carpeta des d'on
         s'ha iniciat l'aplicació. Posteriorment, el professor podrà canviar-ne el nom, moure'l o
-        copiar-lo a una altra carpeta, però sempre conservant l'extensió «.cri».
+        copiar-lo a una altra carpeta, però sempre conservant l'extensió «.cri». També podrà crear
+        una contrasenya mitjançant l'opció corresponent del menú.
 
      - CRITERIS – Fitxes – Afegir: Un cop creat l'arxiu de criteris amb l'opció anterior, aquí
        es podran anar afegint els criteris de correcció de les diferents preguntes que es vulguin
@@ -165,5 +178,24 @@
       - CRITERIS – Fitxes – Eliminar: Permet eliminar completament els criteris d'una fitxa
         emmagatzemada prèviament. Els informes que continguin respostes sobre aquesta fitxa ja
         no podran ser corregits per la IA.
+
+      - CRITERIS - Configuració - Copiar API: Mitjançant aquesta opció podrem instal·lar al nostre ordinador
+        una còpia de l'arxiu «pai.dt», que conté codificada l'API d'OpenAI. És un arxiu de text pla sense
+        format i, per les seves característiques, diversos usuaris el poden compartir; fins i tot es pot
+        distribuir entre tot el professorat d'un centre educatiu. Un usuari avançat es pot encarregar de
+        la seva adquisició i descàrrega, així com de la seva caducitat. És molt recomanable programar un
+        període de caducitat per a la clau per evitar-ne una difusió descontrolada. Una durada d'entre un
+        i tres mesos pot ser raonable.
+
+      - CRITERIS - Configuració - Contrasenya - Crear: Quan creem un arxiu nou de criteris de correcció
+        mitjançant l'opció Criteris > Nou, es crea sense cap contrasenya. Aquí podrem afegir-n'hi una.
+        Cal anar amb compte amb les contrasenyes, ja que, si l'oblidem, no hi haurà manera d'obrir l'arxiu
+        perquè està encriptat.
+
+      - CRITERIS - Configuració - Contrasenya - Modificar: Aquesta opció permet canviar la contrasenya
+        de l'arxiu.
+
+      - CRITERIS - Configuració - Contrasenya - Eliminar: Si volem tornar a tenir l'arxiu sense
+        contrasenya, aquesta és l'opció.
 
       - QUANT A: Mostra la versió del programa.

@@ -14,6 +14,8 @@ public class ChatGPT {
     // Dirección de la API
     private static final String API_URL =
             "https://api.openai.com/v1/responses";
+    private static final URI API_MODELOS_URL =
+            URI.create("https://api.openai.com/v1/models");
 
     // Modelo que queremos utilizar
     private static final String MODELO = "gpt-5.6-luna";
@@ -23,6 +25,59 @@ public class ChatGPT {
     // ---------------------------------------------------------
     // PREGUNTAR A CHATGPT
     // ---------------------------------------------------------
+
+    public record ResultadoValidacionApi(
+            boolean valida,
+            String detalle
+    ) {
+    }
+
+    public static ResultadoValidacionApi validarApi(String apiKey) {
+        return validarApi(apiKey, API_MODELOS_URL);
+    }
+
+    static ResultadoValidacionApi validarApi(String apiKey, URI uri) {
+        if (apiKey == null || apiKey.isBlank()) {
+            return new ResultadoValidacionApi(false, "API vacía");
+        }
+
+        try {
+            HttpClient cliente = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(10))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .timeout(Duration.ofSeconds(30))
+                    .header("Authorization", "Bearer " + apiKey.trim())
+                    .GET()
+                    .build();
+            HttpResponse<String> response = cliente.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)
+            );
+
+            if (response.statusCode() == 200) {
+                return new ResultadoValidacionApi(true, "");
+            }
+            return new ResultadoValidacionApi(
+                    false,
+                    "HTTP " + response.statusCode()
+            );
+        } catch (HttpTimeoutException e) {
+            return new ResultadoValidacionApi(false, "Timeout");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return new ResultadoValidacionApi(false, "Interrumpido");
+        } catch (IOException | IllegalArgumentException | SecurityException e) {
+            String detalle = e.getMessage();
+            return new ResultadoValidacionApi(
+                    false,
+                    detalle == null || detalle.isBlank()
+                            ? e.getClass().getSimpleName()
+                            : detalle
+            );
+        }
+    }
 
     public static String preguntar(String pregunta) {
 

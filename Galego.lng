@@ -70,6 +70,13 @@
 1132=Contrasinal modificado correctamente.
 1133=O ficheiro de criterios non ten contrasinal.
 1134=Contrasinal eliminado correctamente.
+1140=Selecciona o ficheiro pai.dt
+1141=Ficheiro de configuración da API
+1142=Comprobando a API...
+1143=A API é válida e o ficheiro pai.dt copiouse correctamente.
+1144=A API seleccionada non é válida.
+1145=Non se puido copiar o ficheiro pai.dt.
+1146=O ficheiro seleccionado debe chamarse pai.dt.
 2001=Palabras
 2010=Respondendo a
 2020=Non se puido abrir o ficheiro

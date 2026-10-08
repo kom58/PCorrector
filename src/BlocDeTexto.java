@@ -26,6 +26,7 @@ public class BlocDeTexto extends JFrame {
     private final JFileChooser selector = new JFileChooser();
     private final JFileChooser selectorCriterios = new JFileChooser();
     private final JFileChooser selectorFichas = new JFileChooser();
+    private final JFileChooser selectorApi = new JFileChooser();
     private File ultimoDirectorio = obtenerDirectorioPersonal();
     private final JLabel contador = new JLabel();
     private final JMenuItem abrir = new JMenuItem();
@@ -96,6 +97,21 @@ public class BlocDeTexto extends JFrame {
                         "jpg",
                         "gif",
                         "png"
+                )
+        );
+
+        selectorApi.setDialogTitle(
+                mensajeSeguro("1140", "Selecciona el archivo pai.dt")
+        );
+        selectorApi.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selectorApi.setAcceptAllFileFilterUsed(false);
+        selectorApi.setFileFilter(
+                new FileNameExtensionFilter(
+                        mensajeSeguro(
+                                "1141",
+                                "Archivo de configuración de la API"
+                        ) + " (pai.dt)",
+                        "dt"
                 )
         );
 
@@ -185,6 +201,7 @@ public class BlocDeTexto extends JFrame {
         anadirCriterio.addActionListener(e -> anadirFichaCriterio());
         modificarCriterio.addActionListener(e -> seleccionarFichaParaModificar());
         eliminarCriterio.addActionListener(e -> seleccionarFichaParaEliminar());
+        copiarApi.addActionListener(e -> copiarArchivoApi(copiarApi));
         crearContrasena.addActionListener(e -> crearContrasenaCriterios());
         modificarContrasena.addActionListener(e -> modificarContrasenaCriterios());
         eliminarContrasena.addActionListener(e -> eliminarContrasenaCriterios());
@@ -212,6 +229,130 @@ public class BlocDeTexto extends JFrame {
         barra.add(criterios);
         barra.add(ayuda);
         setJMenuBar(barra);
+    }
+
+    private void copiarArchivoApi(JMenuItem opcionCopiarApi) {
+        File archivo = seleccionarArchivo(selectorApi, "dt");
+        if (archivo == null) {
+            return;
+        }
+        if (!archivo.getName().equalsIgnoreCase("pai.dt")) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1146",
+                            "El archivo seleccionado debe llamarse pai.dt."
+                    ),
+                    mensajeSeguro("4030", "Configuración de la API"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        JDialog progreso = crearDialogoProgresoApi();
+        opcionCopiarApi.setEnabled(false);
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        SwingWorker<ChatGPT.ResultadoValidacionApi, Void> tarea =
+                new SwingWorker<>() {
+                    private String claveApi;
+
+                    @Override
+                    protected ChatGPT.ResultadoValidacionApi doInBackground()
+                            throws Exception {
+                        claveApi = METODOS.leerClaveApi(archivo.toPath());
+                        ChatGPT.ResultadoValidacionApi resultado =
+                                ChatGPT.validarApi(claveApi);
+                        if (resultado.valida()) {
+                            METODOS.copiarArchivoPaiDt(archivo.toPath());
+                            new Datos().setChatGptAPI(claveApi);
+                        }
+                        return resultado;
+                    }
+
+                    @Override
+                    protected void done() {
+                        progreso.dispose();
+                        opcionCopiarApi.setEnabled(true);
+                        setCursor(Cursor.getDefaultCursor());
+
+                        try {
+                            ChatGPT.ResultadoValidacionApi resultado = get();
+                            if (!resultado.valida()) {
+                                String detalle = resultado.detalle();
+                                mostrarError(
+                                        mensajeSeguro(
+                                                "1144",
+                                                "La API seleccionada no es válida."
+                                        )
+                                                + (detalle == null
+                                                || detalle.isBlank()
+                                                ? ""
+                                                : "\n" + detalle)
+                                );
+                                return;
+                            }
+
+                            JOptionPane.showMessageDialog(
+                                    BlocDeTexto.this,
+                                    mensajeSeguro(
+                                            "1143",
+                                            "La API es válida y el archivo pai.dt "
+                                                    + "se ha copiado correctamente."
+                                    ),
+                                    mensajeSeguro(
+                                            "4030",
+                                            "Configuración de la API"
+                                    ),
+                                    JOptionPane.INFORMATION_MESSAGE
+                            );
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            mostrarError(
+                                    mensajeSeguro(
+                                            "1145",
+                                            "No se pudo copiar el archivo pai.dt."
+                                    )
+                            );
+                        } catch (ExecutionException e) {
+                            Throwable causa = e.getCause();
+                            String detalle = causa == null
+                                    ? e.getMessage()
+                                    : causa.getMessage();
+                            mostrarError(
+                                    mensajeSeguro(
+                                            "1145",
+                                            "No se pudo copiar el archivo pai.dt."
+                                    )
+                                            + (detalle == null
+                                            || detalle.isBlank()
+                                            ? ""
+                                            : "\n" + detalle)
+                            );
+                        }
+                    }
+                };
+
+        progreso.setVisible(true);
+        tarea.execute();
+    }
+
+    private JDialog crearDialogoProgresoApi() {
+        JDialog dialogo = new JDialog(
+                this,
+                mensajeSeguro("4030", "Configuración de la API"),
+                Dialog.ModalityType.MODELESS
+        );
+        JLabel mensaje = new JLabel(
+                mensajeSeguro("1142", "Comprobando la API...")
+        );
+        mensaje.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        dialogo.add(mensaje);
+        dialogo.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dialogo.pack();
+        dialogo.setResizable(false);
+        dialogo.setLocationRelativeTo(this);
+        return dialogo;
     }
 
     private void crearContrasenaCriterios() {

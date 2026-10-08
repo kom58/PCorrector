@@ -70,6 +70,13 @@
 1132=Password modified successfully.
 1133=The criteria file does not have a password.
 1134=Password deleted successfully.
+1140=Select the pai.dt file
+1141=API configuration file
+1142=Checking the API...
+1143=The API is valid and the pai.dt file was copied successfully.
+1144=The selected API is not valid.
+1145=Could not copy the pai.dt file.
+1146=The selected file must be named pai.dt.
 2001=Words
 2010=Replying to
 2020=Could not open the file

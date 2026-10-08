@@ -84,9 +84,16 @@
            - Ouvrir
            - Nouveau
            - Fiches :
-               - Ajouter
-               - Modifier
-               - Supprimer
+               . Ajouter
+               . Modifier
+               . Supprimer
+           - Configuration :
+               . Copier l’API
+               . Mot de passe :
+                  - Créer
+                  - Modifier
+                  - Supprimer
+
       + AIDE
           - À propos
 
@@ -105,8 +112,13 @@
            l’IA ne sera pas disponible ou, si la connexion est très lente, les délais minimaux de
            réponse risquent d’être dépassés. Dans tous les cas, le programme en avertira l’utilisateur.
 
-        3. Il faut disposer d’une clé API valide, stockée dans le fichier « pai.dt » situé dans le
-           même dossier que celui depuis lequel l’application est exécutée. Il s’agit d’un simple
+        3. Il faut disposer d’une clé API valide, stockée dans le fichier « pai.dt », dans le dossier de
+           configuration PCorrector de l’utilisateur :
+              « ~/Library/Application Support/PCorrector » sous macOS.
+              « %APPDATA%\PCorrector » sous Windows.
+              « $XDG_CONFIG_HOME/PCorrector » ou « ~/.config/PCorrector » sous Linux.
+           L’option du menu « Critères > Configuration > Copier l’API » permet de sélectionner le fichier « pai.dt »,
+           de vérifier son fonctionnement et de le copier automatiquement dans ces dossiers. Il s’agit d’un simple
            fichier texte brut, sans mise en forme, dans lequel est enregistrée l’API encodée fournie
            par l’entreprise après paiement. Si ce fichier est disponible et que l’API n’a pas expiré,
            le programme demande à l’IA de corriger les réponses en appliquant les critères créés par
@@ -140,7 +152,8 @@
         sociales » conviendrait parfaitement. Lors de l’enregistrement, le programme ajoute l’extension
         « .cri » et place par défaut le fichier dans le dossier depuis lequel l’application a été lancée.
         L’enseignant peut ensuite le renommer, le déplacer ou le copier dans un autre dossier, mais il doit
-        toujours conserver l’extension « .cri ».
+        toujours conserver l’extension « .cri ». Il peut également créer un mot de passe à l’aide de
+        l’option correspondante du menu.
 
      - CRITÈRES – Fiches – Ajouter : Une fois le fichier de critères créé à l’aide de l’option précédente,
        l’enseignant peut ajouter les critères de correction des différentes questions qu’il souhaite proposer
@@ -158,6 +171,25 @@
 
       - CRITÈRES – Fiches – Supprimer : Permet de supprimer entièrement les critères d’une fiche précédemment
         enregistrée. Les rapports contenant des réponses à cette fiche ne pourront plus être corrigés par l’IA.
+
+      - CRITÈRES - Configuration - Copier l’API : Cette option permet d’installer sur notre ordinateur une
+        copie du fichier « pai.dt », qui contient l’API d’OpenAI sous forme encodée. Il s’agit d’un fichier
+        texte brut sans mise en forme qui, du fait de ses caractéristiques, peut être partagé par plusieurs
+        utilisateurs et même diffusé auprès de tout le personnel enseignant d’un établissement scolaire.
+        Un utilisateur expérimenté peut se charger de son acquisition, de son téléchargement et de son
+        expiration. Il est vivement recommandé de définir une période d’expiration pour la clé afin d’éviter
+        une diffusion incontrôlée. Une durée comprise entre un et trois mois peut être raisonnable.
+
+      - CRITÈRES - Configuration - Mot de passe - Créer : Lorsque nous créons un nouveau fichier de critères
+        de correction à l’aide de l’option Critères > Nouveau, celui-ci est créé sans mot de passe. Cette option
+        permet d’en ajouter un. Il faut manipuler les mots de passe avec précaution : en cas d’oubli, il sera
+        impossible d’ouvrir le fichier, car celui-ci est chiffré.
+
+      - CRITÈRES - Configuration - Mot de passe - Modifier : Cette option permet de modifier le mot de passe
+        du fichier.
+
+      - CRITÈRES - Configuration - Mot de passe - Supprimer : Cette option permet de supprimer le mot de passe
+        afin que le fichier n’en possède plus.
 
       - À PROPOS : Affiche la version du programme.
 

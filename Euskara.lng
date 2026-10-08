@@ -70,6 +70,13 @@
 1132=Pasahitza behar bezala aldatu da.
 1133=Irizpide-fitxategiak ez du pasahitzik.
 1134=Pasahitza behar bezala ezabatu da.
+1140=Hautatu pai.dt fitxategia
+1141=APIaren konfigurazio-fitxategia
+1142=APIa egiaztatzen...
+1143=APIa baliozkoa da eta pai.dt fitxategia behar bezala kopiatu da.
+1144=Hautatutako APIa ez da baliozkoa.
+1145=Ezin izan da pai.dt fitxategia kopiatu.
+1146=Hautatutako fitxategiak pai.dt izena izan behar du.
 2001=Hitzak
 2010=Honi erantzuten
 2020=Ezin izan da fitxategia ireki

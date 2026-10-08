@@ -80,9 +80,16 @@
            - Ireki
            - Berria
            - Fitxak:
-               - Gehitu
-               - Aldatu
-               - Ezabatu
+               . Gehitu
+               . Aldatu
+               . Ezabatu
+           - Konfigurazioa:
+               . Kopiatu APIa
+               . Pasahitza:
+                  - Sortu
+                  - Aldatu
+                  - Ezabatu
+
       + LAGUNTZA
           - Honi buruz
 
@@ -101,8 +108,14 @@
            konexioa oso motela bada, gutxieneko erantzun-denborak gaindi daitezke. Nolanahi ere,
            programak horren berri emango du.
 
-        3. Baliozko API gako bat eduki behar da. Gakoa aplikazioa exekutatzen den karpeta bereko
-           «pai.dt» fitxategian gorde behar da. Formaturik gabeko testu arrunteko fitxategi soil bat
+        3. Baliozko API gako bat eduki behar da. Gakoa erabiltzailearen PCorrector konfigurazio-karpetako
+           «pai.dt» fitxategian gorde behar da:
+              «~/Library/Application Support/PCorrector» macOSen.
+              «%APPDATA%\PCorrector» Windowsen.
+              «$XDG_CONFIG_HOME/PCorrector» edo «~/.config/PCorrector» Linuxen.
+           «Irizpideak > Konfigurazioa > Kopiatu APIa» menu-aukerak «pai.dt» fitxategia hautatzeko,
+           ondo dabilen egiaztatzeko eta karpeta horietara automatikoki kopiatzeko aukera ematen du.
+           Formaturik gabeko testu arrunteko fitxategi soil bat
            da, eta enpresak ordainketa egin ondoren emandako API kodetua gordetzen du. Fitxategia
            eskuragarri badago eta APIa iraungita ez badago, programak idatzitako erantzunak irakasleak
            sortutako irizpideen arabera zuzentzeko eskatuko dio AAri. Segundo gutxiren buruan, programak
@@ -135,6 +148,7 @@
         baliozkoa izan daiteke. Gordetzean, programak «.cri» luzapena gehituko dio eta, lehenespenez,
         aplikazioa abiarazi den karpeta berean kokatuko du. Geroago, irakasleak izena aldatu, beste
         karpeta batera mugitu edo kopiatu ahal izango du, baina «.cri» luzapena beti mantendu behar da.
+        Menuko dagokion aukera erabiliz pasahitz bat ere sor diezaioke.
 
      - IRIZPIDEAK – Fitxak – Gehitu: Aurreko aukerarekin irizpide-fitxategia sortu ondoren, irakasleak
        ikasleei proposatu nahi dizkien galderen zuzenketa-irizpideak gehitu ahal izango ditu.
@@ -152,6 +166,25 @@
 
       - IRIZPIDEAK – Fitxak – Ezabatu: Aurrez gordetako fitxa baten irizpideak erabat ezabatzeko aukera
         ematen du. Fitxa horri buruzko erantzunak dituzten txostenak ezin izango ditu AAk zuzendu.
+
+      - IRIZPIDEAK - Konfigurazioa - Kopiatu APIa: Aukera honen bidez, OpenAIren API kodetua duen «pai.dt»
+        fitxategiaren kopia instalatu ahal izango dugu gure ordenagailuan. Formaturik gabeko testu arrunteko
+        fitxategia da, eta bere ezaugarriengatik hainbat erabiltzailek parteka dezakete; ikastetxe bateko
+        irakasle guztien artean ere bana daiteke. Erabiltzaile aurreratu batek fitxategia eskuratu eta
+        deskargatzeaz eta haren iraungitzeaz arduratu daiteke. Oso gomendagarria da gakoari iraungitze-epe
+        bat ezartzea, kontrolik gabe zabal ez dadin. Hilabete bat eta hiru hilabete arteko iraupena
+        arrazoizkoa izan daiteke.
+
+      - IRIZPIDEAK - Konfigurazioa - Pasahitza - Sortu: Irizpideak > Berria aukera erabiliz zuzenketa-
+        irizpideen fitxategi berria sortzen dugunean, pasahitzik gabe sortzen da. Hemen pasahitz bat jar
+        diezaiokegu. Kontuz ibili behar da pasahitzekin; ahazten badugu, ezingo da fitxategia ireki,
+        zifratuta baitago.
+
+      - IRIZPIDEAK - Konfigurazioa - Pasahitza - Aldatu: Aukera honen bidez fitxategiaren pasahitza
+        alda dezakegu.
+
+      - IRIZPIDEAK - Konfigurazioa - Pasahitza - Ezabatu: Fitxategia berriro pasahitzik gabe eduki nahi
+        badugu, aukera hau erabili behar da.
 
       - HONI BURUZ: Programaren bertsioa erakusten du.
 

@@ -82,9 +82,16 @@
            - Open
            - New
            - Worksheets:
-               - Add
-               - Modify
-               - Delete
+               . Add
+               . Modify
+               . Delete
+           - Configuration:
+               . Copy API
+               . Password:
+                  - Create
+                  - Modify
+                  - Delete
+
       + HELP
           - About
 
@@ -103,8 +110,13 @@
            available or, if the connection is very slow, the minimum response times may be
            exceeded. The program will display a notification in either case.
 
-        3. A valid API key is required. It must be stored in the “pai.dt” file located in the
-           same folder from which the application is run. This is a simple unformatted plain-text
+        3. A valid API key is required. It must be stored in the “pai.dt” file inside the user's
+           PCorrector configuration folder:
+              “~/Library/Application Support/PCorrector” on macOS.
+              “%APPDATA%\PCorrector” on Windows.
+              “$XDG_CONFIG_HOME/PCorrector” or “~/.config/PCorrector” on Linux.
+           The “Criteria > Configuration > Copy API” menu option lets the user select the “pai.dt” file,
+           check whether it works, and copy it automatically into these folders. This is a simple unformatted plain-text
            file containing the encoded API supplied by the company after payment. If this file
            is available and the API has not expired, the program asks the AI to correct the
            written answers using the criteria created by the teacher. After a few seconds, the
@@ -137,7 +149,8 @@
         rules. A name such as “Year 9 Social Studies” would be perfectly valid. When the file is saved,
         the program adds the “.cri” extension and places it by default in the same folder from which
         the application was launched. The teacher can later rename, move, or copy it to another folder,
-        but the “.cri” extension must always be retained.
+        but the “.cri” extension must always be retained. A password can also be created using the
+        corresponding menu option.
 
      - CRITERIA – Worksheets – Add: Once the criteria file has been created with the previous option,
        the teacher can add correction criteria for the different questions to be given to students.
@@ -156,6 +169,22 @@
 
       - CRITERIA – Worksheets – Delete: Completely removes the criteria for a previously stored
         worksheet. Reports containing answers for that worksheet can no longer be corrected by the AI.
+
+      - CRITERIA - Configuration - Copy API: This option installs a copy of the “pai.dt” file containing
+        the encoded OpenAI API on the computer. It is an unformatted plain-text file and, because of its
+        characteristics, it can be shared by several users or even distributed among all the teaching staff
+        at a school. An advanced user can handle its acquisition and download, as well as its expiration.
+        Setting an expiration period for the key is highly recommended to prevent uncontrolled distribution.
+        A duration of between one and three months may be reasonable.
+
+      - CRITERIA - Configuration - Password - Create: When a new correction criteria file is created using
+        Criteria > New, it is created without a password. A password can be added here. Passwords must be
+        handled carefully because, if the password is forgotten, there will be no way to open the encrypted file.
+
+      - CRITERIA - Configuration - Password - Modify: This option changes the file password.
+
+      - CRITERIA - Configuration - Password - Delete: This option removes the password so that the file
+        no longer has one.
 
       - ABOUT: Displays the program version.
 
