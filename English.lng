@@ -14,9 +14,9 @@
 1013=Could not update
 1020=Could not load the language messages
 1021=Language error
-1030=Could not open the default browser
+1030=Could not open the default application
 1031=Error
-1040=Could not open the file in the browser
+1040=Could not open the file
 1050=Select a file
 1051=Files
 1052=File
