@@ -34,20 +34,27 @@ Version 1.0 (8.10.2026)
   - Es muy conveniente crear también la carpeta de Fichas dentro de la propia carpeta
     Corrector del programa. De esa manera facilitaremos el acceso a las mismas desde las dos
     aplicaciones.
+  - Para el completo funcionamiento de PCorrector será imprescindible contar con una clave
+    API, que deberemos descargar de OpenAI y que guardaremos en un archivo de texto sin formato
+    al que llamaremos "pai.dt", usando la opción del menú Configuración: Copiar API, para 
+    introducirla en el programa. Al utilizar esta opciónn del menú el programa realizará primero
+    un test para comprobar que la clave es válida y no está caducada antes de copiarla.
 
 
   Instalación en Windows
   ----------------------
   - Los archivos zip Acr-win y Pcr-win contienen las aplicaciones ACorrector y PCorrector 
     respectivamente. La primera está pensada para ser instalada en el ordenador del alumno
-    y la segunda en el del profesor.
-  - Los dos archivos los descomprimiremos en dos carpetas diferentes. No se deben mezclar 
-    los archivos de las dos aplicaciones aunque parezca que no se repiten porque provocará
-    mensajes de error. Podemos usar, por ejemplo, PCorrector y ACorrector como nombres de
-    sus respectivas carpetas. Dentro del usuario actual, o incluso en el escritorio pueden
-    alojarse las dos carpetas. Es conveniente acompañarlas con una carpeta Fichas que
-    contendrá los ejercicios que se vayan realizando.
+    y la segunda en el del profesor, aunque pueden también compartir el mismo equipo.
+  - Podemos descomprimir los archivos en una carpeta dentro del usuario actual. Podemos usar, 
+    por ejemplo, Corrector como nombre de la carpeta. Dentro del usuario actual, o incluso en 
+    el escritorio. Es conveniente acompañarla con una carpeta Fichas que contendrá los ejercicios 
+    que se vayan realizando.
   - Si Windows bloquea el primer arranque del programa, comprobar en Configuración>Aplicaciones 
     la opción Configuración avanzada de apliaciones. Una vez en ella se debe seleccionar 
     "De cualquier lugar" como forma de obtener la aplicación.
-
+  - Para el completo funcionamiento de PCorrector será imprescindible contar con una clave
+    API, que deberemos descargar de OpenAI y que guardaremos en un archivo de texto sin formato
+    al que llamaremos "pai.dt", usando la opción del menú Configuración: Copiar API, para 
+    introducirla en el programa. Al utilizar esta opciónn del menú el programa realizará primero
+    un test para comprobar que la clave es válida y no está caducada antes de copiarla.
