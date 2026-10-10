@@ -135,7 +135,6 @@ public class ChatGPT {
                         + response.body();
             }
 
-
             // Extraemos solamente el texto de la respuesta
             return extraerRespuesta(response.body());
 
@@ -328,7 +327,6 @@ public class ChatGPT {
     // ---------------------------------------------------------
     // PRUEBA
     // ---------------------------------------------------------
-
     /*
     public static void main(String[] args) {
 

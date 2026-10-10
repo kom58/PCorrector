@@ -75,7 +75,6 @@ public class Datos {
     public static List<String> getNombreArchivoFch() {return nombreArchivoFch;}
     public static List<String> getCriteriosCorreccionFch() {return criteriosCorreccionFch;}
 
-
     public static void inicializar() {
         usuarioActual = "";
         ultimoUsuario = "";

@@ -45,7 +45,7 @@ public class MetodosLb {
     private static final int POSICION_PRIMERA_FICHA = 6;
 
 
-    public String versionPCrr() {return "1.0.20";}
+    public String versionPCrr() {return "1.0.21";}
 
     public Path rutaArchivoPcrIni() {
         return rutaDirectorioConfiguracion().resolve(

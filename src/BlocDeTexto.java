@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileView;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +63,11 @@ public class BlocDeTexto extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         //setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);         // No deja cerrar !!!!
         setLocationRelativeTo(null);
+
+        normalizarNombresSelector(selector);
+        normalizarNombresSelector(selectorCriterios);
+        normalizarNombresSelector(selectorFichas);
+        normalizarNombresSelector(selectorApi);
 
         selector.setDialogTitle(
                 mensajeSeguro("4040", "Selecciona el informe que quieres abrir")
@@ -1556,6 +1562,20 @@ public class BlocDeTexto extends JFrame {
             }
         }
         return archivo;
+    }
+
+    private static void normalizarNombresSelector(JFileChooser selectorSwing) {
+        selectorSwing.setFileView(new FileView() {
+            @Override
+            public String getName(File archivo) {
+                String nombre = selectorSwing.getFileSystemView()
+                        .getSystemDisplayName(archivo);
+                if (nombre == null || nombre.isBlank()) {
+                    return null;
+                }
+                return Normalizer.normalize(nombre, Normalizer.Form.NFC);
+            }
+        });
     }
 
     private File seleccionarArchivoNativo(

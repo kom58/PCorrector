@@ -27,7 +27,6 @@ public class Main {
             );
             return;
         }
-
         try {
             metodos.leerArchivoPcrIni();
         } catch (IOException | SecurityException e) {
@@ -44,7 +43,6 @@ public class Main {
         if (!pedirNombreUsuario(metodos)) {
             return;
         }
-
         try {
             metodos.leerPcrIni();
         } catch (IOException e) {
@@ -62,7 +60,6 @@ public class Main {
                     JOptionPane.WARNING_MESSAGE
             );
         }
-
         BlocDeTexto blocDeTexto = new BlocDeTexto(1, 1);
         blocDeTexto.setVisible(true);
     }
