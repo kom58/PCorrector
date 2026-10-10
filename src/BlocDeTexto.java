@@ -11,13 +11,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
 public class BlocDeTexto extends JFrame {
     private static final long serialVersionUID = 1L;
+    private static final int RETRASO_EDITOR_FICHA_MS = 2000;
     private static final boolean ES_MAC_OS = System.getProperty("os.name", "")
             .toLowerCase(Locale.ROOT)
             .contains("mac");
@@ -35,6 +38,7 @@ public class BlocDeTexto extends JFrame {
     private final JMenuItem opcionCifrarCriterios = new JMenuItem();
     private final JMenuItem opcionDescifrarCriterios = new JMenuItem();
     private boolean archivoCriteriosCifrado;
+    private boolean preparandoNuevaFicha;
 
     private final String etiquetaPalabras;
     private final String tituloError;
@@ -1029,6 +1033,10 @@ public class BlocDeTexto extends JFrame {
     }
 
     private void anadirFichaCriterio() {
+        if (preparandoNuevaFicha) {
+            return;
+        }
+
         if (Datos.fchCriteriosCorrec == null
                 || Datos.fchCriteriosCorrec.isBlank()) {
             JOptionPane.showMessageDialog(
@@ -1057,7 +1065,35 @@ public class BlocDeTexto extends JFrame {
             return;
         }
 
-        if (!abrirEnNavegador(archivo)) {
+        if (existeFichaConNombre(archivo.getName())) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1091",
+                            "Ya existe una ficha para el archivo seleccionado."
+                    ) + "\n" + archivo.getName(),
+                    mensajeSeguro("1060", "Criterios"),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (!abrirArchivoFicha(archivo)) {
+            return;
+        }
+
+        preparandoNuevaFicha = true;
+        Timer temporizador = new Timer(
+                RETRASO_EDITOR_FICHA_MS,
+                e -> mostrarEditorNuevaFicha(archivo)
+        );
+        temporizador.setRepeats(false);
+        temporizador.start();
+    }
+
+    private void mostrarEditorNuevaFicha(File archivo) {
+        if (!isDisplayable()) {
+            preparandoNuevaFicha = false;
             return;
         }
 
@@ -1071,7 +1107,48 @@ public class BlocDeTexto extends JFrame {
 
         Datos.getNombreArchivoFch().set(indice, archivo.getName());
         Datos.getCriteriosCorreccionFch().set(indice, "");
-        mostrarEditorCriterios(indice);
+
+        boolean siempreEncimaAnterior = isAlwaysOnTop();
+        setAlwaysOnTop(true);
+        toFront();
+        requestFocus();
+
+        Timer restaurarPrimerPlano = new Timer(
+                1000,
+                e -> setAlwaysOnTop(siempreEncimaAnterior)
+        );
+        restaurarPrimerPlano.setRepeats(false);
+        restaurarPrimerPlano.start();
+
+        try {
+            mostrarEditorCriterios(indice);
+        } finally {
+            preparandoNuevaFicha = false;
+        }
+    }
+
+    private boolean existeFichaConNombre(String nombreSeleccionado) {
+        String nombreNormalizado = Normalizer.normalize(
+                nombreSeleccionado,
+                Normalizer.Form.NFC
+        );
+        List<String> nombres = Datos.getNombreArchivoFch();
+        int ultimaFicha = Math.min(
+                Math.max(new Datos().getNumeroFichas(), 0),
+                nombres.size() - 1
+        );
+
+        for (int indice = 1; indice <= ultimaFicha; indice++) {
+            String nombreExistente = nombres.get(indice);
+            if (nombreExistente != null
+                    && Normalizer.normalize(
+                            nombreExistente,
+                            Normalizer.Form.NFC
+                    ).equalsIgnoreCase(nombreNormalizado)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void seleccionarFichaParaModificar() {
@@ -1262,27 +1339,43 @@ public class BlocDeTexto extends JFrame {
         );
     }
 
-    private boolean abrirEnNavegador(File archivo) {
+    private boolean abrirArchivoFicha(File archivo) {
+        if (!archivo.isFile()) {
+            mostrarError(
+                    mensajeSeguro(
+                            "1040",
+                            "No se pudo abrir el archivo"
+                    ) + ":\n" + archivo.getAbsolutePath()
+            );
+            return false;
+        }
+
         if (!Desktop.isDesktopSupported()
-                || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                || !Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             mostrarError(
                     mensajeSeguro(
                             "1030",
-                            "No se puede abrir el navegador predeterminado"
+                            "No se puede abrir la aplicación predeterminada"
                     )
             );
             return false;
         }
 
         try {
-            Desktop.getDesktop().browse(archivo.toURI());
+            Desktop.getDesktop().open(archivo);
             return true;
         } catch (IOException | SecurityException e) {
+            String detalle = e.getMessage();
             mostrarError(
                     mensajeSeguro(
                             "1040",
-                            "No se pudo abrir el archivo en el navegador"
-                    ) + ":\n" + e.getMessage()
+                            "No se pudo abrir el archivo"
+                    )
+                            + ":\n"
+                            + archivo.getAbsolutePath()
+                            + (detalle == null || detalle.isBlank()
+                            ? ""
+                            : "\n" + detalle)
             );
             return false;
         }

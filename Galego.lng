@@ -1,4 +1,5 @@
-0000=Corrector
+0000=1.0.18
+0010=Corrector
 0100=Galego
 1001=Inicio de sesión
 1002=Introduce o teu nome
@@ -48,6 +49,7 @@
 1088=Confirmas a eliminación desta ficha?
 1089=Confirmar
 1090=Non se puido eliminar a ficha
+1091=Xa existe unha ficha para o ficheiro seleccionado.
 1100=Axuda
 1101=Acerca de
 1102=Versión

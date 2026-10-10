@@ -1,4 +1,5 @@
-0000=Corrector
+0000=1.0.18
+0010=Corrector
 0100=English
 1001=Sign in
 1002=Enter your name
@@ -48,6 +49,7 @@
 1088=Do you confirm the deletion of this worksheet?
 1089=Confirm
 1090=Could not delete the worksheet
+1091=A worksheet already exists for the selected file.
 1100=Help
 1101=About
 1102=Version

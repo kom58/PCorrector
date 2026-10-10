@@ -1,4 +1,5 @@
-0000=Corrector
+0000=1.0.18
+0010=Corrector
 0100=Français
 1001=Connexion
 1002=Saisissez votre nom
@@ -48,6 +49,7 @@
 1088=Confirmez-vous la suppression de cette fiche ?
 1089=Confirmer
 1090=Impossible de supprimer la fiche
+1091=Une fiche existe déjà pour le fichier sélectionné.
 1100=Aide
 1101=À propos
 1102=Version

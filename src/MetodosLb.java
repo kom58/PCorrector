@@ -45,7 +45,7 @@ public class MetodosLb {
     private static final int POSICION_PRIMERA_FICHA = 6;
 
 
-    public String versionPCrr() {return "1.0.16";}
+    public String versionPCrr() {return "1.0.20";}
 
     public Path rutaArchivoPcrIni() {
         return rutaDirectorioConfiguracion().resolve(
@@ -436,9 +436,6 @@ public class MetodosLb {
                     contenidoDesencriptado);
             posicion = agregarBloqueFijo(contenidoCifrado, posicion,
                     "FICHA    :    ", clave, ed, contenidoDesencriptado);
-            //posicion = agregarCampo(contenidoCifrado, posicion,
-            //        "\n\n", clave, ed, contenidoDesencriptado);
-
             StringBuilder nombreFichaDesencriptado = new StringBuilder();
             posicion = agregarCampo(contenidoCifrado, posicion,
                     "\n\n", clave, ed, nombreFichaDesencriptado);

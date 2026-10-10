@@ -1,4 +1,5 @@
-0000=Corrector
+0000=1.0.18
+0010=Corrector
 0100=Català
 1001=Inici de sessió
 1002=introdueix el teu nom
@@ -48,6 +49,7 @@
 1088=Confirmes l'eliminació d'aquesta fitxa?
 1089=Confirmar
 1090=No s'ha pogut eliminar la fitxa
+1091=Ja existeix una fitxa per al fitxer seleccionat.
 1100=Ajuda
 1101=Quant a
 1102=Versió
