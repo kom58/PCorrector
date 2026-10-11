@@ -75,28 +75,38 @@
      displays the following menu in version 1.0:
 
       + FILE
+        
            - Open
            - Answer only
            - Language
            - Exit
+             
       + CRITERIA
+        
            - Open
            - New
            - Worksheets:
+             
                . Add
                . Modify
                . Delete
+             
            - Configuration:
+             
                . Copy API
                . Password:
+             
                   - Create
                   - Modify
                   - Delete
+             
                . Encryption:
+             
                   - Encrypt criteria
                   - Decrypt criteria
 
       + HELP
+        
           - About
 
 
