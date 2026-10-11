@@ -22,7 +22,7 @@ Version 1.0 (8.10.2026)
   - Podemos descomprimir los archivos en una carpeta dentro del usuario actual. Un buen nombre 
     para esa carpeta puede ser Corrector. Si macOS no nos autoriza a guardar los Criterios en
     esa carpeta de usuario dándonos un error "AppTranslocation", siempre la podemos trasladar 
-    a Usuarios>Compartido o incluso dejarla en el mismo Escritorio, dáldole los correspondientes 
+    a Usuarios>Compartido o incluso dejarla en el mismo Escritorio, dándole los correspondientes 
     permisos en el primer arranque del programa. Esto se debe a que, al no ser PCorrector un 
     programa certificado por Apple, el sistema macOS sólo da permisos de lectura en algunas
     carpetas para evitar aplicaciones peligrosas.
