@@ -50,6 +50,7 @@
 1089=Confirm
 1090=Could not delete the worksheet
 1091=A worksheet already exists for the selected file.
+1092=The selected file format is not allowed.
 1100=Help
 1101=About
 1102=Version
