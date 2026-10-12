@@ -22,9 +22,13 @@ import java.util.concurrent.ExecutionException;
 public class BlocDeTexto extends JFrame {
     private static final long serialVersionUID = 1L;
     private static final int RETRASO_EDITOR_FICHA_MS = 2000;
-    private static final boolean ES_MAC_OS = System.getProperty("os.name", "")
-            .toLowerCase(Locale.ROOT)
-            .contains("mac");
+    private static final String SISTEMA_OPERATIVO = System.getProperty(
+            "os.name",
+            ""
+    ).toLowerCase(Locale.ROOT);
+    private static final boolean USA_SELECTOR_NATIVO =
+            SISTEMA_OPERATIVO.contains("mac")
+                    || SISTEMA_OPERATIVO.contains("win");
     private static final MetodosLb METODOS = new MetodosLb();
     private final JTextArea texto = new JTextArea();
     private final JFileChooser selector = new JFileChooser();
@@ -35,7 +39,14 @@ public class BlocDeTexto extends JFrame {
     private final JLabel contador = new JLabel();
     private final JMenuItem abrir = new JMenuItem();
     private final JMenuItem sinCorregir = new JMenuItem();
+    private final JMenu menuFichas = new JMenu();
+    private final JMenuItem opcionAnadirFicha = new JMenuItem();
+    private final JMenuItem opcionModificarFicha = new JMenuItem();
+    private final JMenuItem opcionEliminarFicha = new JMenuItem();
     private final JMenu menuContrasena = new JMenu();
+    private final JMenuItem opcionCrearContrasena = new JMenuItem();
+    private final JMenuItem opcionModificarContrasena = new JMenuItem();
+    private final JMenuItem opcionEliminarContrasena = new JMenuItem();
     private final JMenuItem opcionCifrarCriterios = new JMenuItem();
     private final JMenuItem opcionDescifrarCriterios = new JMenuItem();
     private boolean archivoCriteriosCifrado;
@@ -183,12 +194,12 @@ public class BlocDeTexto extends JFrame {
 
         JMenuItem abrirCriterio = new JMenuItem(mensajeSeguro("1054", "Abrir"));
         JMenuItem nuevoCriterio = new JMenuItem(mensajeSeguro("1061", "Nuevo"));
-        JMenu fichas = new JMenu(mensajeSeguro("1064", "Fichas"));
-        JMenuItem anadirCriterio = new JMenuItem(mensajeSeguro("1063", "Añadir"));
-        JMenuItem modificarCriterio = new JMenuItem(
+        menuFichas.setText(mensajeSeguro("1064", "Fichas"));
+        opcionAnadirFicha.setText(mensajeSeguro("1063", "Añadir"));
+        opcionModificarFicha.setText(
                 mensajeSeguro("1062", "Modificar")
         );
-        JMenuItem eliminarCriterio = new JMenuItem(
+        opcionEliminarFicha.setText(
                 mensajeSeguro("1065", "Eliminar")
         );
         JMenu configuracion = new JMenu(
@@ -198,13 +209,13 @@ public class BlocDeTexto extends JFrame {
                 mensajeSeguro("1111", "Copiar API")
         );
         menuContrasena.setText(mensajeSeguro("1112", "Contraseña"));
-        JMenuItem crearContrasena = new JMenuItem(
+        opcionCrearContrasena.setText(
                 mensajeSeguro("1113", "Crear")
         );
-        JMenuItem modificarContrasena = new JMenuItem(
+        opcionModificarContrasena.setText(
                 mensajeSeguro("1062", "Modificar")
         );
-        JMenuItem eliminarContrasena = new JMenuItem(
+        opcionEliminarContrasena.setText(
                 mensajeSeguro("1065", "Eliminar")
         );
         JMenu cifrado = new JMenu(
@@ -221,35 +232,47 @@ public class BlocDeTexto extends JFrame {
             String rutaCreada = METODOS.crearNuevoCriterio();
             if (!rutaCreada.isBlank()) {
                 actualizarMenusSegunCifrado(false);
+                actualizarOpcionesContrasena(false);
+                actualizarOpcionesFichas(true, 0);
             }
         });
         abrirCriterio.addActionListener(e -> abrirArchivoCriterios());
-        anadirCriterio.addActionListener(e -> anadirFichaCriterio());
-        modificarCriterio.addActionListener(e -> seleccionarFichaParaModificar());
-        eliminarCriterio.addActionListener(e -> seleccionarFichaParaEliminar());
+        opcionAnadirFicha.addActionListener(e -> anadirFichaCriterio());
+        opcionModificarFicha.addActionListener(
+                e -> seleccionarFichaParaModificar()
+        );
+        opcionEliminarFicha.addActionListener(
+                e -> seleccionarFichaParaEliminar()
+        );
         copiarApi.addActionListener(e -> copiarArchivoApi(copiarApi));
-        crearContrasena.addActionListener(e -> crearContrasenaCriterios());
-        modificarContrasena.addActionListener(e -> modificarContrasenaCriterios());
-        eliminarContrasena.addActionListener(e -> eliminarContrasenaCriterios());
+        opcionCrearContrasena.addActionListener(e -> crearContrasenaCriterios());
+        opcionModificarContrasena.addActionListener(
+                e -> modificarContrasenaCriterios()
+        );
+        opcionEliminarContrasena.addActionListener(
+                e -> eliminarContrasenaCriterios()
+        );
         opcionCifrarCriterios.addActionListener(e -> cifrarCriterios());
         opcionDescifrarCriterios.addActionListener(e -> descifrarCriterios());
 
         criterios.add(abrirCriterio);
         criterios.add(nuevoCriterio);
-        fichas.add(anadirCriterio);
-        fichas.add(modificarCriterio);
-        fichas.add(eliminarCriterio);
-        criterios.add(fichas);
+        menuFichas.add(opcionAnadirFicha);
+        menuFichas.add(opcionModificarFicha);
+        menuFichas.add(opcionEliminarFicha);
+        criterios.add(menuFichas);
         configuracion.add(copiarApi);
-        menuContrasena.add(crearContrasena);
-        menuContrasena.add(modificarContrasena);
-        menuContrasena.add(eliminarContrasena);
+        menuContrasena.add(opcionCrearContrasena);
+        menuContrasena.add(opcionModificarContrasena);
+        menuContrasena.add(opcionEliminarContrasena);
         configuracion.add(menuContrasena);
         cifrado.add(opcionCifrarCriterios);
         cifrado.add(opcionDescifrarCriterios);
         configuracion.add(cifrado);
         criterios.add(configuracion);
         actualizarMenusSegunCifrado(false);
+        actualizarOpcionesContrasena(false);
+        actualizarOpcionesFichas(false, 0);
 
         JMenuItem acercaDe = new JMenuItem(
                 mensajeSeguro("1101", "Acerca de")
@@ -452,6 +475,7 @@ public class BlocDeTexto extends JFrame {
                 mostrarAvisoContrasenaExistente();
                 return;
             }
+            actualizarOpcionesContrasena(true);
             JOptionPane.showMessageDialog(
                     this,
                     mensajeSeguro("1125", "Contraseña creada correctamente."),
@@ -529,6 +553,7 @@ public class BlocDeTexto extends JFrame {
                     )
             );
             texto.setCaretPosition(0);
+            actualizarOpcionesContrasena(true);
             actualizarMenusSegunCifrado(true);
             JOptionPane.showMessageDialog(
                     this,
@@ -611,6 +636,7 @@ public class BlocDeTexto extends JFrame {
             METODOS.cargarFichasCriterio(rutaCriterios);
             texto.setText(leerContenidoCriteriosVisible(rutaCriterios));
             texto.setCaretPosition(0);
+            actualizarOpcionesContrasena(!claveGuardada.isEmpty());
             actualizarMenusSegunCifrado(false);
             JOptionPane.showMessageDialog(
                     this,
@@ -725,6 +751,7 @@ public class BlocDeTexto extends JFrame {
                 mostrarAvisoContrasenaIncorrecta();
                 return;
             }
+            actualizarOpcionesContrasena(true);
             JOptionPane.showMessageDialog(
                     this,
                     mensajeSeguro(
@@ -797,6 +824,7 @@ public class BlocDeTexto extends JFrame {
                 mostrarAvisoContrasenaIncorrecta();
                 return;
             }
+            actualizarOpcionesContrasena(false);
             JOptionPane.showMessageDialog(
                     this,
                     mensajeSeguro(
@@ -959,7 +987,14 @@ public class BlocDeTexto extends JFrame {
             new Datos().setFchCriteriosCorrec(
                     rutaCriterios.toAbsolutePath().normalize().toString()
             );
+            actualizarOpcionesContrasena(
+                    !new Datos().getClvCriteriosCorrec().isEmpty()
+            );
             actualizarMenusSegunCifrado(archivoCifrado);
+            actualizarOpcionesFichas(
+                    true,
+                    new Datos().getNumeroFichas()
+            );
             texto.setText(
                     archivoCifrado
                             ? mensajeSeguro(
@@ -986,6 +1021,23 @@ public class BlocDeTexto extends JFrame {
         menuContrasena.setEnabled(!archivoCifrado);
         opcionCifrarCriterios.setEnabled(!archivoCifrado);
         opcionDescifrarCriterios.setEnabled(archivoCifrado);
+    }
+
+    private void actualizarOpcionesContrasena(boolean tieneContrasena) {
+        opcionCrearContrasena.setEnabled(!tieneContrasena);
+        opcionModificarContrasena.setEnabled(tieneContrasena);
+        opcionEliminarContrasena.setEnabled(tieneContrasena);
+    }
+
+    private void actualizarOpcionesFichas(
+            boolean archivoCriteriosActivo,
+            int numeroFichas
+    ) {
+        menuFichas.setEnabled(archivoCriteriosActivo);
+        opcionAnadirFicha.setEnabled(archivoCriteriosActivo);
+        boolean hayFichas = archivoCriteriosActivo && numeroFichas > 0;
+        opcionModificarFicha.setEnabled(hayFichas);
+        opcionEliminarFicha.setEnabled(hayFichas);
     }
 
     private boolean autorizarClaveCriterios(String claveGuardada) {
@@ -1316,6 +1368,10 @@ public class BlocDeTexto extends JFrame {
 
         try {
             METODOS.eliminarFichaCriterio(indice);
+            actualizarOpcionesFichas(
+                    true,
+                    new Datos().getNumeroFichas()
+            );
             if (archivoCriteriosCifrado) {
                 mostrarAvisoCriteriosCifrados();
             } else {
@@ -1423,6 +1479,10 @@ public class BlocDeTexto extends JFrame {
             );
             try {
                 METODOS.guardarFichaCriterio(indice);
+                actualizarOpcionesFichas(
+                        true,
+                        new Datos().getNumeroFichas()
+                );
                 if (archivoCriteriosCifrado) {
                     mostrarAvisoCriteriosCifrados();
                 } else {
@@ -1539,7 +1599,7 @@ public class BlocDeTexto extends JFrame {
             String... extensiones
     ) {
         File archivo;
-        if (ES_MAC_OS) {
+        if (USA_SELECTOR_NATIVO) {
             archivo = seleccionarArchivoNativo(
                     selectorSwing.getDialogTitle(),
                     extensiones
@@ -1555,11 +1615,25 @@ public class BlocDeTexto extends JFrame {
             archivo = selectorSwing.getSelectedFile();
         }
 
-        if (archivo != null) {
-            File directorio = archivo.getParentFile();
-            if (directorio != null && directorio.isDirectory()) {
-                ultimoDirectorio = directorio;
-            }
+        if (archivo == null) {
+            return null;
+        }
+        if (!tieneExtensionPermitida(archivo.getName(), extensiones)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    mensajeSeguro(
+                            "1092",
+                            "El formato del archivo seleccionado no está permitido."
+                    ),
+                    selectorSwing.getDialogTitle(),
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return null;
+        }
+
+        File directorio = archivo.getParentFile();
+        if (directorio != null && directorio.isDirectory()) {
+            ultimoDirectorio = directorio;
         }
         return archivo;
     }
