@@ -55,7 +55,7 @@
      - After an initial greeting, a dialog box opens and asks the student to select a worksheet
        in one of the supported formats.
 
-     - After the worksheet is selected, the program opens it in the system's default browser.
+     - After the worksheet is selected, the program opens it in the system's default application.
        The program itself then opens as a small text editor where the user can write the answer
        requested in the worksheet and, when finished, use the Save menu option.
 
@@ -171,7 +171,7 @@
        the teacher can add correction criteria for the different questions to be given to students.
        A dialog box opens and asks the teacher to select the file containing the question that the
        student will see. Remember the supported extensions: HTML, PDF, GIF, JPG, and PNG. After the file
-       is selected, it opens in the default browser, just as it will when the student opens it. A text
+       is selected, it opens in the default application, just as it will when the student opens it. A text
        window then appears with the name of the opened file as its title. The program uses this as the
        worksheet name. The teacher must enter the question and the criteria that the AI will use for
        correction in the text box. For example: “Briefly explain Darwin's theory of evolution (use at
@@ -212,5 +212,7 @@
         Its password must be known.
 
       - ABOUT: Displays the program version.
+
+   
 
    
