@@ -44,9 +44,7 @@
       Con ACorrector el alumno tiene la posibilidad de abrir la ficha indicada por su profesor y que está 
    alojada en el equipo con uno de los formatos indicados anteriormente. El proceso es el siguiente:
 
-     - La primera vez que arranca el programa se le pedirá un email (que actualmente aún no está 
-       implementado en la aplicación, pero que obligatoriamente debe seguir el formato tradicional 
-       nombre@xxxxx.com). Seguidamente tendrá que seleccionar el idioma por defecto de entre la lista 
+     - La primera vez que arranca el programa tendrá que seleccionar el idioma por defecto de entre la lista
        de idiomas disponibles (Español, Català, Valencià, Galego, Euskara, Français y English)
 
      - Seguidamente se le pedirá su nombre. Muy importante para la contestación de la ficha ya que 
@@ -57,7 +55,7 @@
      - Y tras un saludo inicial, se le abrirá un cuadro de diálogo pidiendo que abra una ficha de uno 
        de los formatos aceptados. 
 
-     - Tras seleccionar la ficha, el programa la abrirá en el navegador predeterminado del sistema y 
+     - Tras seleccionar la ficha, el programa la abrirá en la aplicación predeterminada del sistema y
        seguidamente se abrirá el propio programa, en forma de pequeño editor de textos, donde el usuario 
        podrá escribir la respuesta solicitada en la ficha abierta y una vez terminada usar la opción del 
        menú Guardar.
@@ -71,8 +69,7 @@
       Con PCorrector el profesor podrá desencriptar y leer las respuestas que contiene el archivo de informe 
    generado por el alumno y de formato *.lgx para lo cual deberá seguir el siguiente proceso.
 
-   - En la primera apertura, igual que pasa con Acr, se tendrá que dar un email válido y seleccionar un 
-     idioma de los disponibles.
+   - En la primera apertura se tendrá que seleccionar uno de los idiomas disponibles.
 
    - Seguidamente deberá escribir su nombre y, tras un saludo, el programa arrancará directamente mostrando 
      un Menú que en la versión 1.0 es el siguiente:
@@ -155,16 +152,16 @@
         de Criterios de Corrección utilizando esta opción. Al seleccionarla se le pedirá que dé un nombre a este 
         nuevo archivo de Criterios, aquí la libertad de nombres solamente se limita a su compatibilidad con el sistema 
         de nombres de archivo que utilice el ordenador. Un nombre del estilo “3 ESO Sociales” podría ser perfectamente 
-        válido. Al guardarlo, el programa le añadirá la extensión ”.cri” y, por defecto, lo colocará en la misma carpeta 
-        donde se lanzó la aplicación. Posteriormente el profesor podrá cambiarle el nombre, desplazarlo o copiarlo a 
-        otra carpeta pero siempre conservando la extensión “.cri”. También podrá crear una contraseña utilizando la
-        opción correspondiente del menú.
+        válido. Al guardarlo, el programa le añadirá la extensión ”.cri” y lo colocará en el Escritorio del usuario.
+        Posteriormente el profesor podrá cambiarle el nombre, desplazarlo o copiarlo a otra carpeta pero siempre
+        conservando la extensión “.cri”. También podrá crear una contraseña utilizando la opción correspondiente
+        del menú.
 
      -  CRITERIOS – Fichas – Añadir: Una vez creado el archivo de Criterios con la opción anterior, aquí podrá ir 
         añadiendo los Criterios de Corrección de las diferentes preguntas que quiera pasar a los alumnos. Para ello 
         se le abrirá un cuadro de diálogo pidiendo que abra el archivo que contiene la pregunta y que será el que 
         visualizará el alumno. Recuerde las extensiones permitidas (Html, Pdf, Gif, Jpg, Png) Al seleccionar el archivo, 
-        éste se abrirá en el navegador predeterminado, igual que pasará cuando el alumno lo abra. Después se le mostrará 
+        éste se abrirá en la aplicación predeterminada, igual que pasará cuando el alumno lo abra. Después se le mostrará
         una ventana de texto que llevará por nombre el nombre del archivo abierto. Este será el que identificará 
         el programa como nombre de la ficha. En el cuadro de texto deberá escribir la pregunta y los criterios que 
         servirán a la IA para corregir. Un ejemplo podría ser: “Explica brevemente la teoría de la evolución de Darwin 

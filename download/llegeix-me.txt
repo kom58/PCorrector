@@ -44,10 +44,8 @@
       Amb ACorrector, l'alumne té la possibilitat d'obrir la fitxa indicada pel professor i
    allotjada a l'equip en un dels formats indicats anteriorment. El procés és el següent:
 
-     - La primera vegada que s'inicia el programa, es demanarà una adreça electrònica (que
-       actualment encara no està implementada a l'aplicació, però que obligatòriament ha de
-       seguir el format tradicional nom@xxxxx.com). A continuació, caldrà seleccionar l'idioma
-       predeterminat entre la llista d'idiomes disponibles (Español, Català, Valencià, Galego,
+     - La primera vegada que s'inicia el programa, caldrà seleccionar l'idioma predeterminat
+       entre la llista d'idiomes disponibles (Español, Català, Valencià, Galego,
        Euskara, Français i English).
 
      - Tot seguit es demanarà el nom de l'alumne. És molt important per respondre la fitxa,
@@ -58,7 +56,7 @@
      - Després d'una salutació inicial, s'obrirà un quadre de diàleg que demanarà que s'obri
        una fitxa en un dels formats acceptats.
 
-     - Un cop seleccionada la fitxa, el programa l'obrirà al navegador predeterminat del
+     - Un cop seleccionada la fitxa, el programa l'obrirà amb l'aplicació predeterminada del
        sistema i, a continuació, s'obrirà el programa mateix en forma de petit editor de text,
        on l'usuari podrà escriure la resposta sol·licitada a la fitxa oberta i, quan acabi,
        utilitzar l'opció Desa del menú.
@@ -72,8 +70,7 @@
       Amb PCorrector, el professor podrà desencriptar i llegir les respostes que conté l'arxiu
    d'informe generat per l'alumne en format *.lgx. Per fer-ho, haurà de seguir aquest procés:
 
-   - En la primera obertura, igual que passa amb Acr, caldrà proporcionar una adreça electrònica
-     vàlida i seleccionar un dels idiomes disponibles.
+   - En la primera obertura, caldrà seleccionar un dels idiomes disponibles.
 
    - A continuació, haurà d'escriure el seu nom i, després d'una salutació, el programa s'iniciarà
      directament i mostrarà un menú que, en la versió 1.0, és el següent:
@@ -158,21 +155,21 @@
         es demanarà un nom per al nou arxiu de criteris; la llibertat per triar-lo només està
         limitada per la compatibilitat amb el sistema de noms d'arxiu de l'ordinador. Un nom com
         ara «3r ESO Socials» podria ser perfectament vàlid. En desar-lo, el programa hi afegirà
-        l'extensió «.cri» i, de manera predeterminada, el col·locarà a la mateixa carpeta des d'on
-        s'ha iniciat l'aplicació. Posteriorment, el professor podrà canviar-ne el nom, moure'l o
-        copiar-lo a una altra carpeta, però sempre conservant l'extensió «.cri». També podrà crear
-        una contrasenya mitjançant l'opció corresponent del menú.
+        l'extensió «.cri» i el col·locarà a l'Escriptori de l'usuari. Posteriorment, el professor
+        podrà canviar-ne el nom, moure'l o copiar-lo a una altra carpeta, però sempre conservant
+        l'extensió «.cri». També podrà crear una contrasenya mitjançant l'opció corresponent
+        del menú.
 
      - CRITERIS – Fitxes – Afegir: Un cop creat l'arxiu de criteris amb l'opció anterior, aquí
-       es podran anar afegint els criteris de correcció de les diferents preguntes que es vulguin
-       proposar als alumnes. S'obrirà un quadre de diàleg que demanarà obrir l'arxiu que conté la
-       pregunta i que visualitzarà l'alumne. Recordeu les extensions permeses (HTML, PDF, GIF, JPG
-       i PNG). En seleccionar l'arxiu, aquest s'obrirà al navegador predeterminat, tal com passarà
-       quan l'alumne l'obri. Després es mostrarà una finestra de text titulada amb el nom de
-       l'arxiu obert. Aquest serà el nom que el programa identificarà com a nom de la fitxa. Al
-       quadre de text caldrà escriure la pregunta i els criteris que serviran a la IA per corregir.
-       Un exemple podria ser: «Explica breument la teoria de l'evolució de Darwin (utilitza un
-       mínim de 100 paraules)».
+        es podran anar afegint els criteris de correcció de les diferents preguntes que es vulguin
+        proposar als alumnes. S'obrirà un quadre de diàleg que demanarà obrir l'arxiu que conté la
+        pregunta i que visualitzarà l'alumne. Recordeu les extensions permeses (HTML, PDF, GIF, JPG
+        i PNG). En seleccionar l'arxiu, aquest s'obrirà amb l'aplicació predeterminada, tal com passarà
+        quan l'alumne l'obri. Després es mostrarà una finestra de text titulada amb el nom de
+        l'arxiu obert. Aquest serà el nom que el programa identificarà com a nom de la fitxa. Al
+        quadre de text caldrà escriure la pregunta i els criteris que serviran a la IA per corregir.
+        Un exemple podria ser: «Explica breument la teoria de l'evolució de Darwin (utilitza un
+        mínim de 100 paraules)».
 
       - CRITERIS – Fitxes – Modificar: Aquesta opció permet modificar qualsevol dels criteris
         creats prèviament. Pot ser una manera d'augmentar o reduir les exigències de correcció

@@ -42,9 +42,7 @@
       Avec ACorrector, l’élève peut ouvrir la fiche indiquée par son enseignant et stockée sur
    l’ordinateur dans l’un des formats mentionnés précédemment. La procédure est la suivante :
 
-     - Au premier démarrage du programme, une adresse e-mail est demandée. Cette fonctionnalité
-       n’est pas encore implémentée dans l’application, mais l’adresse doit obligatoirement respecter
-       le format classique nom@xxxxx.com. Il faut ensuite sélectionner la langue par défaut dans la
+     - Au premier démarrage du programme, il faut sélectionner la langue par défaut dans la
        liste des langues disponibles (Español, Català, Valencià, Galego, Euskara, Français et English).
 
      - Le programme demande ensuite le nom de l’élève. Cette information est très importante pour
@@ -55,7 +53,7 @@
      - Après un message de bienvenue, une boîte de dialogue s’ouvre et demande de sélectionner une
        fiche dans l’un des formats acceptés.
 
-     - Une fois la fiche sélectionnée, le programme l’ouvre dans le navigateur par défaut du système.
+     - Une fois la fiche sélectionnée, le programme l’ouvre dans l’application par défaut du système.
        Le programme lui-même s’ouvre ensuite sous la forme d’un petit éditeur de texte dans lequel
        l’utilisateur peut rédiger la réponse demandée dans la fiche, puis utiliser l’option Enregistrer
        du menu lorsqu’il a terminé.
@@ -69,8 +67,7 @@
       Avec PCorrector, l’enseignant peut déchiffrer et lire les réponses contenues dans le fichier de
    rapport au format *.lgx généré par l’élève. Pour cela, il doit suivre la procédure ci-dessous :
 
-   - Lors de la première ouverture, comme avec Acr, il faut fournir une adresse e-mail valide et
-     sélectionner l’une des langues disponibles.
+   - Lors de la première ouverture, il faut sélectionner l’une des langues disponibles.
 
    - L’enseignant doit ensuite saisir son nom. Après un message de bienvenue, le programme démarre
      directement et affiche le menu suivant dans la version 1.0 :
@@ -154,20 +151,19 @@
         il doit attribuer un nom au nouveau fichier de critères. La seule contrainte est sa compatibilité
         avec les règles de nommage des fichiers du système d’exploitation. Un nom tel que « 3e ESO Sciences
         sociales » conviendrait parfaitement. Lors de l’enregistrement, le programme ajoute l’extension
-        « .cri » et place par défaut le fichier dans le dossier depuis lequel l’application a été lancée.
-        L’enseignant peut ensuite le renommer, le déplacer ou le copier dans un autre dossier, mais il doit
-        toujours conserver l’extension « .cri ». Il peut également créer un mot de passe à l’aide de
-        l’option correspondante du menu.
+        « .cri » et place le fichier sur le Bureau de l’utilisateur. L’enseignant peut ensuite le renommer,
+        le déplacer ou le copier dans un autre dossier, mais il doit toujours conserver l’extension « .cri ».
+        Il peut également créer un mot de passe à l’aide de l’option correspondante du menu.
 
      - CRITÈRES – Fiches – Ajouter : Une fois le fichier de critères créé à l’aide de l’option précédente,
-       l’enseignant peut ajouter les critères de correction des différentes questions qu’il souhaite proposer
-       aux élèves. Une boîte de dialogue s’ouvre et lui demande de sélectionner le fichier contenant la question
-       que l’élève verra. Les extensions autorisées sont HTML, PDF, GIF, JPG et PNG. Une fois le fichier sélectionné,
-       il s’ouvre dans le navigateur par défaut, comme lorsque l’élève l’ouvrira. Une fenêtre de texte apparaît
-       ensuite avec le nom du fichier ouvert comme titre. Le programme utilise ce nom pour identifier la fiche.
-       Dans la zone de texte, l’enseignant doit saisir la question et les critères qui permettront à l’IA de la
-       corriger. Par exemple : « Expliquez brièvement la théorie de l’évolution de Darwin (utilisez au moins
-       100 mots). »
+        l’enseignant peut ajouter les critères de correction des différentes questions qu’il souhaite proposer
+        aux élèves. Une boîte de dialogue s’ouvre et lui demande de sélectionner le fichier contenant la question
+        que l’élève verra. Les extensions autorisées sont HTML, PDF, GIF, JPG et PNG. Une fois le fichier sélectionné,
+        il s’ouvre dans l’application par défaut, comme lorsque l’élève l’ouvrira. Une fenêtre de texte apparaît
+        ensuite avec le nom du fichier ouvert comme titre. Le programme utilise ce nom pour identifier la fiche.
+        Dans la zone de texte, l’enseignant doit saisir la question et les critères qui permettront à l’IA de la
+        corriger. Par exemple : « Expliquez brièvement la théorie de l’évolution de Darwin (utilisez au moins
+        100 mots). »
 
       - CRITÈRES – Fiches – Modifier : Cette option permet de modifier n’importe quel critère créé précédemment.
         Elle permet d’augmenter ou de réduire les exigences de correction imposées à l’IA. Dans l’exemple précédent,

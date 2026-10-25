@@ -20,20 +20,19 @@ Version 1.0 (8.10.2026)
   - La versión Intel-Legacy se podrá instalar en los ordenadores con chip Intel y el sistema
     macOS 10.15 Catalina o superior.
   - Podemos descomprimir los archivos en una carpeta dentro del usuario actual. Un buen nombre 
-    para esa carpeta puede ser Corrector. Si macOS no nos autoriza a guardar los Criterios en
-    esa carpeta de usuario dándonos un error "AppTranslocation", siempre la podemos trasladar 
-    a Usuarios>Compartido o incluso dejarla en el mismo Escritorio, dándole los correspondientes 
-    permisos en el primer arranque del programa. Esto se debe a que, al no ser PCorrector un 
-    programa certificado por Apple, el sistema macOS sólo da permisos de lectura en algunas
-    carpetas para evitar aplicaciones peligrosas.
+    para esa carpeta puede ser Corrector. También podemos arrastrar la aplicación a la carpeta
+    de Aplicaciones del sistema ya que los archivos de Criterios que se creen se guardarán en 
+    el escritorio. Si lo preferimos la podemos trasladar a Usuarios>Compartido o incluso dejarla 
+    en el mismo Escritorio, dándole los correspondientes permisos en el primer arranque del 
+    programa. Es conveniente crear también una carpeta Fichas que contendrá los ejercicios que 
+    se vayan realizando.
   - En todos los casos en el primer arranque el sistema macOS bloqueará su inicio por problemas
     de seguridad. Desde los Ajustes del sistema, en su sección de Seguridad, podremos autorizar
     su primera ejecución.
   - Tanto ACorrector como PCorrector pueden compartir la misma carpeta sin problemas, aunque
     en principio está pensado Acr para el ordenador del alumno y Pcr para el del profesor.
-  - Es muy conveniente crear también la carpeta de Fichas dentro de la propia carpeta
-    Corrector del programa. De esa manera facilitaremos el acceso a las mismas desde las dos
-    aplicaciones.
+  - Es muy conveniente crear también la carpeta de Fichas. De esa manera facilitaremos el acceso 
+    a las mismas desde las dos aplicaciones.
   - Para el completo funcionamiento de PCorrector será imprescindible contar con una clave
     API, que deberemos descargar de OpenAI y que guardaremos en un archivo de texto sin formato
     al que llamaremos "pai.dt", usando la opción del menú Configuración: Copiar API, para 
@@ -48,7 +47,7 @@ Version 1.0 (8.10.2026)
     y la segunda en el del profesor, aunque pueden también compartir el mismo equipo.
   - Podemos descomprimir los archivos en una carpeta dentro del usuario actual. Podemos usar, 
     por ejemplo, Corrector como nombre de la carpeta. Dentro del usuario actual, o incluso en 
-    el escritorio. Es conveniente acompañarla con una carpeta Fichas que contendrá los ejercicios 
+    el escritorio. Es conveniente crear también una carpeta Fichas que contendrá los ejercicios 
     que se vayan realizando.
   - Si Windows bloquea el primer arranque del programa, comprobar en Configuración>Aplicaciones 
     la opción Configuración avanzada de apliaciones. Una vez en ella se debe seleccionar 

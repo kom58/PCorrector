@@ -43,9 +43,7 @@
       Con ACorrector, o alumno ten a posibilidade de abrir a ficha indicada polo seu profesor e
    aloxada no equipo nun dos formatos indicados anteriormente. O proceso é o seguinte:
 
-     - A primeira vez que se inicia o programa pediráselle un correo electrónico (que actualmente
-       aínda non está implementado na aplicación, pero que obrigatoriamente debe seguir o formato
-       tradicional nome@xxxxx.com). A continuación, terá que seleccionar o idioma predeterminado
+     - A primeira vez que se inicia o programa terá que seleccionar o idioma predeterminado
        entre a lista de idiomas dispoñibles (Español, Català, Valencià, Galego, Euskara, Français
        e English).
 
@@ -56,7 +54,7 @@
      - Tras un saúdo inicial, abrirase un cadro de diálogo no que se lle pedirá que abra unha ficha
        nun dos formatos aceptados.
 
-     - Despois de seleccionar a ficha, o programa abriráa no navegador predeterminado do sistema e,
+     - Despois de seleccionar a ficha, o programa abriráa na aplicación predeterminada do sistema e,
        a continuación, abrirase o propio programa en forma de pequeno editor de textos, onde o usuario
        poderá escribir a resposta solicitada na ficha aberta e, unha vez rematada, utilizar a opción
        Gardar do menú.
@@ -70,8 +68,7 @@
       Con PCorrector, o profesor poderá desencriptar e ler as respostas que contén o ficheiro de
    informe xerado polo alumno en formato *.lgx. Para iso, deberá seguir o seguinte proceso:
 
-   - Na primeira apertura, igual que ocorre con Acr, haberá que proporcionar un correo electrónico
-     válido e seleccionar un dos idiomas dispoñibles.
+   - Na primeira apertura, haberá que seleccionar un dos idiomas dispoñibles.
 
    - A continuación, deberá escribir o seu nome e, tras un saúdo, o programa iniciarase directamente
      mostrando un menú que, na versión 1.0, é o seguinte:
@@ -155,20 +152,20 @@
         novo ficheiro de criterios de corrección mediante esta opción. Ao seleccionala, pediráselle
         que lle dea un nome ao novo ficheiro de criterios; a liberdade para escollelo só está limitada
         pola compatibilidade co sistema de nomes de ficheiro do ordenador. Un nome como «3º ESO Sociais»
-        podería ser perfectamente válido. Ao gardalo, o programa engadirá a extensión «.cri» e, de xeito
-        predeterminado, colocarao no mesmo cartafol desde o que se iniciou a aplicación. Posteriormente,
-        o profesor poderá cambiarlle o nome, movelo ou copialo noutro cartafol, pero sempre conservando
-        a extensión «.cri». Tamén poderá crear un contrasinal mediante a opción correspondente do menú.
+        podería ser perfectamente válido. Ao gardalo, o programa engadirá a extensión «.cri» e colocarao
+        no Escritorio do usuario. Posteriormente, o profesor poderá cambiarlle o nome, movelo ou copialo
+        noutro cartafol, pero sempre conservando a extensión «.cri». Tamén poderá crear un contrasinal
+        mediante a opción correspondente do menú.
 
      - CRITERIOS – Fichas – Engadir: Unha vez creado o ficheiro de criterios coa opción anterior,
-       aquí poderá ir engadindo os criterios de corrección das diferentes preguntas que queira propoñer
-       ao alumnado. Para iso, abrirase un cadro de diálogo no que se lle pedirá que abra o ficheiro que
-       contén a pregunta e que será o que visualice o alumno. Lembre as extensións permitidas (HTML, PDF,
-       GIF, JPG e PNG). Ao seleccionar o ficheiro, este abrirase no navegador predeterminado, igual que
-       ocorrerá cando o alumno o abra. Despois mostrarase unha xanela de texto que levará como título o
-       nome do ficheiro aberto. Este será o nome que o programa identificará como nome da ficha. No cadro
-       de texto deberá escribir a pregunta e os criterios que lle servirán á IA para corrixir. Un exemplo
-       podería ser: «Explica brevemente a teoría da evolución de Darwin (utiliza un mínimo de 100 palabras)».
+        aquí poderá ir engadindo os criterios de corrección das diferentes preguntas que queira propoñer
+        ao alumnado. Para iso, abrirase un cadro de diálogo no que se lle pedirá que abra o ficheiro que
+        contén a pregunta e que será o que visualice o alumno. Lembre as extensións permitidas (HTML, PDF,
+        GIF, JPG e PNG). Ao seleccionar o ficheiro, este abrirase na aplicación predeterminada, igual que
+        ocorrerá cando o alumno o abra. Despois mostrarase unha xanela de texto que levará como título o
+        nome do ficheiro aberto. Este será o nome que o programa identificará como nome da ficha. No cadro
+        de texto deberá escribir a pregunta e os criterios que lle servirán á IA para corrixir. Un exemplo
+        podería ser: «Explica brevemente a teoría da evolución de Darwin (utiliza un mínimo de 100 palabras)».
 
       - CRITERIOS – Fichas – Modificar: Nesta opción poderemos modificar calquera dos criterios creados
         previamente. Pode ser unha forma de aumentar ou diminuír as esixencias de corrección para a IA.

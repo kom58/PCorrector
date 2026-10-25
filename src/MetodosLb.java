@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,9 +23,6 @@ public class MetodosLb {
 
     private static final String NOMBRE_ARCHIVO_CONFIGURACION = "pcr.ini";
     private static final String NOMBRE_ARCHIVO_API = "pai.dt";
-    private static final Pattern PATRON_EMAIL = Pattern.compile(
-            "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
-    );
     private static final Pattern PATRON_NOMBRE_RESERVADO_WINDOWS = Pattern.compile(
             "(?i)^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?$"
     );
@@ -45,7 +43,7 @@ public class MetodosLb {
     private static final int POSICION_PRIMERA_FICHA = 6;
 
 
-    public String versionPCrr() {return "1.0.23";}
+    public String versionPCrr() {return "1.0.25";}
 
     public Path rutaArchivoPcrIni() {
         return rutaDirectorioConfiguracion().resolve(
@@ -158,12 +156,40 @@ public class MetodosLb {
                 .resolve(nombreArchivo);
     }
 
-    public boolean crearArchivoPcrIni() throws IOException {
-        String email = pedirEmailValido();
-        if (email == null) {
-            return false;
+    private Path rutaArchivoEnEscritorio(String nombreArchivo) {
+        Path directorioUsuario = rutaDirectorioUsuario();
+        String sistemaOperativo = System.getProperty("os.name", "")
+                .toLowerCase(Locale.ROOT);
+
+        if (sistemaOperativo.contains("win")) {
+            try {
+                Path escritorioWindows = FileSystemView
+                        .getFileSystemView()
+                        .getHomeDirectory()
+                        .toPath()
+                        .toAbsolutePath()
+                        .normalize();
+                if (Files.isDirectory(escritorioWindows)) {
+                    return escritorioWindows.resolve(nombreArchivo);
+                }
+            } catch (SecurityException e) {
+                // Se prueban las rutas habituales del usuario.
+            }
         }
 
+        for (String nombreDirectorio : List.of("Desktop", "Escritorio")) {
+            Path escritorio = directorioUsuario.resolve(nombreDirectorio);
+            if (Files.isDirectory(escritorio)) {
+                return escritorio.resolve(nombreArchivo);
+            }
+        }
+
+        // Si el Escritorio no está disponible, se evita guardar junto a la
+        // aplicación y se utiliza la carpeta personal del usuario.
+        return directorioUsuario.resolve(nombreArchivo);
+    }
+
+    public boolean crearArchivoPcrIni() throws IOException {
         JComboBox<String> selectorIdioma = new JComboBox<>(
                 new String[]{
                         "Español",
@@ -188,7 +214,7 @@ public class MetodosLb {
         }
 
         String idioma = (String) selectorIdioma.getSelectedItem();
-        String contenido = "email=" + email + System.lineSeparator()
+        String contenido = "email=" + System.lineSeparator()
                 + "idioma=" + idioma + System.lineSeparator()
                 + "ultimo=" + System.lineSeparator();
 
@@ -327,33 +353,6 @@ public class MetodosLb {
         }
 
         throw new IOException("No se encuentra el archivo " + nombreArchivo);
-    }
-
-    private String pedirEmailValido() {
-        while (true) {
-            String email = JOptionPane.showInputDialog(
-                    null,
-                    "Introduce tu email:",
-                    "Configuración inicial",
-                    JOptionPane.QUESTION_MESSAGE
-            );
-
-            if (email == null) {
-                return null;
-            }
-
-            email = email.trim();
-            if (PATRON_EMAIL.matcher(email).matches()) {
-                return email;
-            }
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Introduce un email válido.",
-                    "Email no válido",
-                    JOptionPane.WARNING_MESSAGE
-            );
-        }
     }
 
     /**
@@ -794,7 +793,7 @@ public class MetodosLb {
                 continue;
             }
 
-            Path rutaCriterio = rutaArchivoJuntoAplicacion(nombreArchivo);
+            Path rutaCriterio = rutaArchivoEnEscritorio(nombreArchivo);
             try {
                 crearArchivoCriterioInicial(rutaCriterio);
                 new Datos().setFchCriteriosCorrec(rutaCriterio.toString());

@@ -40,9 +40,7 @@
       ACorrector erabiliz, ikasleak irakasleak adierazitako fitxa ireki dezake, baldin eta fitxa
    ordenagailuan gordeta badago eta lehen aipatutako formatuetako bat badu. Prozesua honako hau da:
 
-     - Programa lehen aldiz abiaraztean, helbide elektroniko bat eskatuko da. Funtzio hori oraindik
-       ez dago aplikazioan inplementatuta, baina helbideak nahitaez izena@xxxxx.com ohiko formatua
-       izan behar du. Ondoren, hizkuntza lehenetsia hautatu beharko da erabilgarri dauden hizkuntzen
+     - Programa lehen aldiz abiaraztean, hizkuntza lehenetsia hautatu beharko da erabilgarri dauden hizkuntzen
        zerrendatik (Español, Català, Valencià, Galego, Euskara, Français eta English).
 
      - Jarraian, ikaslearen izena eskatuko da. Oso garrantzitsua da fitxari erantzuteko, ikaslearen
@@ -53,7 +51,7 @@
      - Hasierako ongietorriaren ondoren, elkarrizketa-koadro bat irekiko da eta onartutako formatuetako
        fitxa bat irekitzeko eskatuko du.
 
-     - Fitxa hautatu ondoren, programak sistemaren arakatzaile lehenetsian irekiko du. Jarraian,
+     - Fitxa hautatu ondoren, programak sistemaren aplikazio lehenetsian irekiko du. Jarraian,
        programa bera testu-editore txiki baten moduan irekiko da; erabiltzaileak fitxan eskatutako
        erantzuna idatzi ahal izango du, eta amaitzean menuko Gorde aukera erabili.
 
@@ -65,8 +63,7 @@
       PCorrector erabiliz, irakasleak ikasleak sortutako *.lgx formatuko txosten-fitxategian dauden
    erantzunak deszifratu eta irakur ditzake. Horretarako, prozesu hau jarraitu behar du:
 
-   - Lehen aldiz irekitzean, Acr moduluarekin gertatzen den bezala, baliozko helbide elektroniko bat
-     eman eta erabilgarri dauden hizkuntzetako bat hautatu behar da.
+   - Lehen aldiz irekitzean, erabilgarri dauden hizkuntzetako bat hautatu behar da.
 
    - Ondoren, irakasleak bere izena idatzi behar du. Ongietorriaren ostean, programa zuzenean abiaraziko
      da, eta 1.0 bertsioan honako menu hau erakutsiko du:
@@ -149,19 +146,19 @@
         fitxategi berri bat sortu behar du aukera honen bidez. Aukera hautatzean, irizpide-fitxategi
         berriari izena emateko eskatuko zaio. Izena aukeratzeko muga bakarra ordenagailuaren
         fitxategi-izenen sistemarekin bateragarria izatea da. «DBH 3 Gizarte Zientziak» gisako izen bat guztiz
-        baliozkoa izan daiteke. Gordetzean, programak «.cri» luzapena gehituko dio eta, lehenespenez,
-        aplikazioa abiarazi den karpeta berean kokatuko du. Geroago, irakasleak izena aldatu, beste
-        karpeta batera mugitu edo kopiatu ahal izango du, baina «.cri» luzapena beti mantendu behar da.
-        Menuko dagokion aukera erabiliz pasahitz bat ere sor diezaioke.
+        baliozkoa izan daiteke. Gordetzean, programak «.cri» luzapena gehituko dio eta erabiltzailearen
+        Mahaigainean kokatuko du. Geroago, irakasleak izena aldatu, beste karpeta batera mugitu edo kopiatu
+        ahal izango du, baina «.cri» luzapena beti mantendu behar da. Menuko dagokion aukera erabiliz pasahitz
+        bat ere sor diezaioke.
 
      - IRIZPIDEAK – Fitxak – Gehitu: Aurreko aukerarekin irizpide-fitxategia sortu ondoren, irakasleak
-       ikasleei proposatu nahi dizkien galderen zuzenketa-irizpideak gehitu ahal izango ditu.
-       Elkarrizketa-koadro bat irekiko da, galdera duen eta ikasleak ikusiko duen fitxategia hautatzeko. Gogoratu
-       onartutako luzapenak: HTML, PDF, GIF, JPG eta PNG. Fitxategia hautatzean, arakatzaile lehenetsian
-       irekiko da, ikasleak irekitzean gertatuko den bezala. Ondoren, irekitako fitxategiaren izena
-       izenburu duen testu-leiho bat agertuko da. Programak izen hori erabiliko du fitxa identifikatzeko.
-       Testu-koadroan, irakasleak galdera eta AAk zuzentzeko erabiliko dituen irizpideak idatzi behar ditu.
-       Adibidez: «Azaldu labur Darwinen eboluzioaren teoria (erabili gutxienez 100 hitz)».
+        ikasleei proposatu nahi dizkien galderen zuzenketa-irizpideak gehitu ahal izango ditu.
+        Elkarrizketa-koadro bat irekiko da, galdera duen eta ikasleak ikusiko duen fitxategia hautatzeko. Gogoratu
+        onartutako luzapenak: HTML, PDF, GIF, JPG eta PNG. Fitxategia hautatzean, aplikazio lehenetsian
+        irekiko da, ikasleak irekitzean gertatuko den bezala. Ondoren, irekitako fitxategiaren izena
+        izenburu duen testu-leiho bat agertuko da. Programak izen hori erabiliko du fitxa identifikatzeko.
+        Testu-koadroan, irakasleak galdera eta AAk zuzentzeko erabiliko dituen irizpideak idatzi behar ditu.
+        Adibidez: «Azaldu labur Darwinen eboluzioaren teoria (erabili gutxienez 100 hitz)».
 
       - IRIZPIDEAK – Fitxak – Aldatu: Aukera honek aurrez sortutako edozein irizpide aldatzeko aukera
         ematen du. AAren zuzenketa-eskakizunak handitzeko edo txikitzeko modu bat izan daiteke. Aurreko
